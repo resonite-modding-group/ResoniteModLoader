@@ -327,6 +327,8 @@ paket-files/
 __pycache__/
 *.pyc
 
+ResoniteHeadless/*
+
 # Cake - Uncomment if you are using it
 # tools/**
 # !tools/packages.config
@@ -396,3 +398,5 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+# Specifically allow the example log
+!/doc/example_log.log

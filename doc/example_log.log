@@ -1,0 +1,60 @@
+2:12:17 AM.319 ( -1 FPS)	Detecting output device
+2:12:17 AM.457 ( -1 FPS)	Creating FrooxEngineRunner
+2:12:17 AM.633 ( -1 FPS)	Initializing Engine Runner
+2:12:17 AM.633 ( -1 FPS)	Microphone permission authorized
+2:12:17 AM.633 ( -1 FPS)	External storage read permission authorized
+2:12:17 AM.633 ( -1 FPS)	External storage write permission authorized
+2:12:17 AM.634 ( -1 FPS)	DeviceName: Screen
+2:12:22 AM.734 ( -1 FPS)	AppPath: R:\SteamLibrary\steamapps\common\Resonite
+DataPath: U:\Resonite
+CachePath: U:\Resonite
+2:12:22 AM.768 ( -1 FPS)	Initializing App: Beta 2023.9.26.304
+Platform: Windows
+HeadDevice: Screen
+IsAOT: False
+OS: Windows 10  (10.0.19045) 64bit
+CPU: Intel(R) Core(TM) i9-9900K CPU @ 3.60GHz
+GPU: NVIDIA GeForce RTX 3080
+PhysicalCores: 
+MemoryBytes: 63.93 GB
+VRAMBytes: 11.82 GB
+MaxTextureSize: 16384
+IsGPUTexturePOTByteAligned: True
+UsingLinearSpace: True
+XR Device Name: 
+XR Device Model: 
+StereoRenderingMode: MultiPass
+Max GC Generation: 0, IsLittleEndian: True
+System.Numerics.Vectors HW accelerated: False, Vector<float>.Count: 4
+Brotli native encoding/decoding supported: True
+2:12:22 AM.769 ( -1 FPS)	Supported Texture Formats: Alpha8, RGB24, ARGB32, RGBA32, BGRA32, RGBAHalf, RGBAFloat, BC1, BC3, BC4, BC5, BC6H, BC7
+2:12:22 AM.770 ( -1 FPS)	Processing startup commands...
+2:12:22 AM.860 ( -1 FPS)	Scanning locales...
+2:12:22 AM.862 ( -1 FPS)	Available locales: cs, de, en, en-gb, eo, es, et, fi, fr, is, ja, ko, nl, no, pl, qps-ploc, ru, sv, tr, zh-cn, zh-tw
+2:12:22 AM.869 ( -1 FPS)	Loading Config.json...
+2:12:22 AM.869 ( -1 FPS)	Computing compatibility hash...
+2:12:22 AM.872 ( -1 FPS)	Loaded Extra Assembly: Libraries\ResoniteModLoader.dll
+2:12:22 AM.874 ( -1 FPS)	Compatibility Hash: pkJrcwZuU9k9oRlXT/DANw==
+2:12:22 AM.874 ( -1 FPS)	Initializing FrooxEngine...
+2:12:23 AM.933 ( -1 FPS)	FreeImage Version: 3.18.0
+2:12:23 AM.933 ( -1 FPS)	BepuPhysics Version: 2.4.0-frooxengine
+2:12:23 AM.942 ( -1 FPS)	FreeType Version: 2.10.4
+2:12:23 AM.942 ( -1 FPS)	Opus Version: libopus 1.3.1-138-g07376903
+2:12:23 AM.967 ( -1 FPS)	Supported 3D model formats: meshx, 3d, 3ds, 3mf, a3d, ac, ac3d, acc, amf, ase, ask, assbin, b3d, blend, bsp, bvh, cob, csm, dae, dxf, enff, fbx, glb, gltf, hmp, ifc, ifczip, irr, irrmesh, lwo, lws, lxo, m3d, md2, md3, md5anim, md5camera, md5mesh, mdc, mdl, mesh, mesh.xml, mot, ms3d, ndo, nff, obj, off, ogex, pk3, ply, pmx, prj, q3o, q3s, raw, scn, sib, smd, step, stl, stp, ter, uc, vta, x, xgl, xml, zae, zgl
+2:12:23 AM.967 ( -1 FPS)	Supported point cloud formats: pts, las, laz
+2:12:23 AM.967 ( -1 FPS)	Supported image formats: bmp, ico, jpg, jif, jpeg, jpe, jng, koa, iff, lbm, mng, pbm, pcd, pcx, pgm, png, ppm, ras, tga, targa, tif, tiff, wap, wbmp, wbm, psd, psb, cut, xbm, xpm, dds, gif, hdr, g3, sgi, rgb, rgba, bw, exr, j2k, j2c, jp2, pfm, pct, pict, pic, 3fr, arw, bay, bmq, cap, cine, cr2, crw, cs1, dc2, dcr, drf, dsc, dng, erf, fff, ia, iiq, k25, kc2, kdc, mdc, mef, mos, mrw, nef, nrw, orf, pef, ptx, pxn, qtk, raf, raw, rdc, rw2, rwl, rwz, sr2, srf, srw, sti, x3f, webp, jxr, wdp, hdp
+2:12:23 AM.967 ( -1 FPS)	Supported audio formats: wav, wave, flac, fla, ogg, aiff, aif, aifc
+2:12:23 AM.967 ( -1 FPS)	Supported video formats: mp4, mpeg, avi, mov, mpg, mkv, flv, webm, mts, 3gp, bik, m2v, m2s, wmv, m3u8, m3u, pls, m4a, mp3, mpeg3, aac, ac3, aif, aiff, ape, au, it, mka, mod, mp1, mp2, opus, s3m, sid, w64, wma, xm, nsf, nsfe, gbs, vgm, vgz, spc, gym
+2:12:23 AM.967 ( -1 FPS)	Supported font formats: ttf, otf, ttc, otc, woff
+2:12:23 AM.969 ( -1 FPS)	Supported subtitle formats: srt, sub, sub, ssa, ttml, vtt
+2:12:25 AM.746 ( -1 FPS)	[INFO] [ResoniteModLoader] Loading assemblies from rml_libs
+2:12:25 AM.777 ( -1 FPS)	[INFO] [ResoniteModLoader] Loaded libraries from rml_libs:
+0Harmony, Version=2.2.2.0, Culture=neutral, PublicKeyToken=null Sha256=6928F117D52C0683C44683C0656CD5A345D21AA45720B11C64DC72A35771CAC5
+2:12:25 AM.778 ( -1 FPS)	[INFO] [ResoniteModLoader] ResoniteModLoader v2.4.0 starting up!
+2:12:25 AM.779 ( -1 FPS)	[INFO] [ResoniteModLoader] CLR v4.0.30319.42000
+2:12:25 AM.779 ( -1 FPS)	[INFO] [ResoniteModLoader] Using Harmony v2.2.2.0
+2:12:25 AM.779 ( -1 FPS)	[INFO] [ResoniteModLoader] Using Elements.Core v1.0.0.0
+2:12:25 AM.779 ( -1 FPS)	[INFO] [ResoniteModLoader] Using FrooxEngine v2023.9.26.304
+2:12:25 AM.779 ( -1 FPS)	[INFO] [ResoniteModLoader] Using Json.NET v13.0.0.0
+2:12:26 AM.043 ( -1 FPS)	[INFO] [ResoniteModLoader] Compatibility hash spoofing succeeded
+2:12:26 AM.044 ( -1 FPS)	[INFO] [ResoniteModLoader] Loading assemblies from rml_mods

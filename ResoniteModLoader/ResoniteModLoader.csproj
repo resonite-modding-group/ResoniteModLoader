@@ -1,0 +1,67 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<ProjectGuid>{D4627C7F-8091-477A-ABDC-F1465D94D8D9}</ProjectGuid>
+		<OutputType>Library</OutputType>
+		<AppDesignerFolder>Properties</AppDesignerFolder>
+		<RootNamespace>ResoniteModLoader</RootNamespace>
+		<AssemblyName>ResoniteModLoader</AssemblyName>
+		
+		<!-- I don't think the separate Headless build is still required, Headless uses the same Newtonsoft.Json version now
+		<Headless Condition="'$(Headless)'!='true'">false</Headless>
+		<AssemblyTitle Condition="'$(Headless)'=='false'">ResoniteModLoader</AssemblyTitle>
+		<AssemblyTitle Condition="'$(Headless)'=='true'">ResoniteModLoaderHeadless</AssemblyTitle>
+		-->
+		<AssemblyFileName>ResoniteModLoader.dll</AssemblyFileName>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<TargetFramework>net462</TargetFramework>
+		<FileAlignment>512</FileAlignment>
+		<LangVersion>10.0</LangVersion>
+		<Nullable>enable</Nullable>
+		<Deterministic>true</Deterministic>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<EnableNETAnalyzers>True</EnableNETAnalyzers>
+		<AnalysisLevel>6.0-recommended</AnalysisLevel>
+		
+		<CopyToLibraries Condition="'$(CopyToLibraries)'==''">true</CopyToLibraries>
+		<DebugSymbols Condition="'$(Configuration)'=='Release'">false</DebugSymbols>
+		<DebugType Condition="'$(Configuration)'=='Release'">None</DebugType>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(ResonitePath)'==''">
+		<ResonitePath>$(MSBuildThisFileDirectory)Resonite/</ResonitePath>
+		<ResonitePath Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Resonite\')">C:\Program Files (x86)\Steam\steamapps\common\Resonite\</ResonitePath>
+		<ResonitePath Condition="Exists('$(HOME)/.steam/steam/steamapps/common/Resonite/')">$(HOME)/.steam/steam/steamapps/common/Resonite/</ResonitePath>
+		<ResonitePath Condition="Exists('R:\SteamLibrary\steamapps\common\Resonite\')">R:\SteamLibrary\steamapps\common\Resonite\</ResonitePath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<DebugType>none</DebugType>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Lib.Harmony" Version="2.2.2" />
+		<Reference Include="Newtonsoft.Json">
+			<HintPath>$(ResonitePath)Resonite_Data\Managed\Newtonsoft.Json.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Elements.Core">
+			<HintPath>$(ResonitePath)Resonite_Data\Managed\Elements.Core.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="FrooxEngine">
+			<HintPath>$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Using Remove="System.Net.Http" />
+	</ItemGroup>
+
+</Project>
