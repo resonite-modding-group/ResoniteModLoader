@@ -77,4 +77,4 @@ Third-party libraries used in source:
 
 <!--- Link References -->
 [LibHarmony]: https://github.com/pardeike/Harmony
-[Resonite Modding Discord]: https://discord.gg/vCDJK9xyvm
+[Resonite Modding Discord]: https://discord.gg/ZMRyQ8bryN
