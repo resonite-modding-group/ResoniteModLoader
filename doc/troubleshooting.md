@@ -130,5 +130,5 @@ If you are not sure which mod is broken, follow the below steps:
 If you are having trouble diagnosing the issue yourself, we have a #help-and-support channel in the [Resonite Modding Discord]. The first thing we're likely to ask for is your log, so please have that handy. You can find logs here: `C:\Program Files (x86)\Steam\steamapps\common\Resonite\Logs`
 
 <!--- Link References -->
-[Resonite Modding Discord]: https://discord.gg/vCDJK9xyvm
+[Resonite Modding Discord]: https://discord.gg/ZMRyQ8bryN
 [Resonite Discord]: https://discord.gg/resonite
