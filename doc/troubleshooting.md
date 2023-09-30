@@ -16,9 +16,9 @@ If the problem is the `-LoadAssembly` setup:
 1. Check the logs (`C:\Program Files (x86)\Steam\steamapps\common\Resonite\Logs`). If you search the log for "ResoniteModLoader" you should find a section that looks like this:
 
    ```log
-    2:12:22 AM.869 ( -1 FPS)   Computing compatibility hash...
-    2:12:22 AM.872 ( -1 FPS)   Loaded Extra Assembly: Libraries\ResoniteModLoader.dll
-    2:12:22 AM.874 ( -1 FPS)   Compatibility Hash: pkJrcwZuU9k9oRlXT/DANw
+	2:12:22 AM.869 ( -1 FPS)   Computing compatibility hash...
+	2:12:22 AM.872 ( -1 FPS)   Loaded Extra Assembly: Libraries\ResoniteModLoader.dll
+	2:12:22 AM.874 ( -1 FPS)   Compatibility Hash: pkJrcwZuU9k9oRlXT/DANw
    ```
 
    If those logs are absent it indicates you are not passing the `-LoadAssembly Libraries\ResoniteModLoader.dll` argument to Resonite correctly.
@@ -70,10 +70,10 @@ Possibility 1: Harmony is not installed correctly.
 1. Your log contains the following:
 
    ```log
-   2:04:54 AM.013 ( -1 FPS)   [ERROR][ResoniteModLoader] Exception in execution hook!
-System.IO.FileNotFoundException: Could not load file or assembly '0Harmony, Version=2.2.2.0, Culture=neutral, PublicKeyToken=null' or one of its dependencies.
-File name: '0Harmony, Version=2.2.2.0, Culture=neutral, PublicKeyToken=null'
-  at ResoniteModLoader.ExecutionHook..cctor () [0x00050] in <86a5d715b5ea4079ac09deb2b6184e56>:0 
+	2:04:54 AM.013 ( -1 FPS)   [ERROR][ResoniteModLoader] Exception in execution hook!
+	System.IO.FileNotFoundException: Could not load file or assembly '0Harmony, Version=2.2.2.0, Culture=neutral, PublicKeyToken=null' or one of its dependencies.
+	File name: '0Harmony, Version=2.2.2.0, Culture=neutral, PublicKeyToken=null'
+	  at ResoniteModLoader.ExecutionHook..cctor () [0x00050] in <86a5d715b5ea4079ac09deb2b6184e56>:0 
    ```
 
 2. Go back to the [installation instructions](../README.md#installation) and install Harmony to the correct location.
