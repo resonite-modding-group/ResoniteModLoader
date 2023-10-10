@@ -26,14 +26,14 @@ Your Resonite directory should now look similar to the following. Files not rela
 │       <Log files will generate here>
 │
 ├───rml_mods
-|       <Mods go here>
-|
+│       <Mods go here>
+│
 ├───rml_libs
 │       0Harmony.dll
-|       <More libs go here>
-|
+│       <More libs go here>
+│
 ├───rml_config
-|       <Mod config files here>
+│       <Mod config files here>
 │
 └───Libraries
         ResoniteModLoader.dll
