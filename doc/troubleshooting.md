@@ -17,11 +17,11 @@ If the problem is the `-LoadAssembly` setup:
 
    ```log
 	2:12:22 AM.869 ( -1 FPS)   Computing compatibility hash...
-	2:12:22 AM.872 ( -1 FPS)   Loaded Extra Assembly: Libraries\ResoniteModLoader.dll
+	2:12:22 AM.872 ( -1 FPS)   Loaded Extra Assembly: Libraries/ResoniteModLoader.dll
 	2:12:22 AM.874 ( -1 FPS)   Compatibility Hash: pkJrcwZuU9k9oRlXT/DANw
    ```
 
-   If those logs are absent it indicates you are not passing the `-LoadAssembly Libraries\ResoniteModLoader.dll` argument to Resonite correctly.
+   If those logs are absent it indicates you are not passing the `-LoadAssembly Libraries/ResoniteModLoader.dll` argument to Resonite correctly.
 2. Double check your shortcut to Resonite.
 3. If you have `ResoniteModLoader.dll` in a different folder than Libraries, you will likely need to use the absolute path like `-LoadAssembly "C:\Program Files (x86)\Steam\steamapps\common\Resonite\Libraries\ResoniteModLoader.dll"`
    - Absolute paths need to be surrounded with quotation marks if they include any spaces `""`
@@ -120,7 +120,7 @@ Remove the offending mod, and contact its developer so they can fix the bug.
 If you are not sure which mod is broken, follow the below steps:
 
 1. Check the logs (`C:\Program Files (x86)\Steam\steamapps\common\Resonite\Logs`). They should indicate which mod is failing. If the logs don't help, then continue with the following steps.
-2. Disable ResoniteModLoader by removing the `-LoadAssembly Libraries\ResoniteModLoader.dll` launch option. If Resonite is still having problems while completely unmodified, you can get support on the [Resonite Discord]. **You should not ask the Resonite Discord for help with mods.**
+2. Disable ResoniteModLoader by removing the `-LoadAssembly Libraries/ResoniteModLoader.dll` launch option. If Resonite is still having problems while completely unmodified, you can get support on the [Resonite Discord]. **You should not ask the Resonite Discord for help with mods.**
 3. If you only experience the problem while modded, try uninstalling all of your mods and re-installing them one by one. Once you find the problematic mod reach out it its developers. 
  - Alternatively you can re-add mods half at a time until the problem starts occuring then investigate within the smaller set of mods.
 4. If the issue appears to be with ResoniteModLoader itself, please open [an issue](https://github.com/resonite-modding-group/ResoniteModLoader/issues).

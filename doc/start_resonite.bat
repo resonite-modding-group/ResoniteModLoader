@@ -1,1 +1,1 @@
-@start Resonite.exe -LoadAssembly "Libraries\ResoniteModLoader.dll"
+@start Resonite.exe -LoadAssembly "Libraries/ResoniteModLoader.dll"
