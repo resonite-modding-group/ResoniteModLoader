@@ -24,7 +24,8 @@ If you've installed to a non-default location then finding the path is up to you
 
 | Description | Typical Path |
 | ----------- | ------------ |
-| Resonite Install Directory (Steam) | `$HOME/.local/share/Steam/steamapps/common/Resonite` |
+| Resonite Install Directory (Steam) | `$HOME/Steam/steamapps/common/Resonite` |
+| Resonite Install Directory (Steam) Alt | `$HOME/.local/share/Steam/steamapps/common/Resonite` |
 | Data Directory | `$HOME/.config/unity3d/Yellow Dog Man Studios/Resonite` |
 | Temporary Directory | `/tmp/Yellow Dog Man Studios/Resonite` |
 | Cache Directory | `/tmp/Yellow Dog Man Studios/Resonite/Cache` |
@@ -33,7 +34,8 @@ If you've installed to a non-default location then finding the path is up to you
 
 | Description | Typical Path |
 | ----------- | ------------ |
-| Resonite Install Directory (Steam) | `$HOME/.local/share/Steam/steamapps/common/Resonite` |
+| Resonite Install Directory (Steam) | `$HOME/Steam/steamapps/common/Resonite` |
+| Resonite Install Directory (Steam) Alt | `$HOME/.local/share/Steam/steamapps/common/Resonite` |
 | Data Directory | `$HOME/.local/share/Steam/steamapps/compatdata/2519830/pfx/drive_c/users/steamuser/AppData/LocalLow/Yellow Dog Man Studios/Resonite` |
 | Temporary Directory | `$HOME/.local/share/Steam/steamapps/compatdata/2519830/pfx/drive_c/users/steamuser/Temp/Yellow Dog Man Studios/Resonite` |
 | Cache Directory | `$HOME/.local/share/Steam/steamapps/compatdata/2519830/pfx/drive_c/users/steamuser/Temp/Yellow Dog Man Studios/Resonite/Cache` |
