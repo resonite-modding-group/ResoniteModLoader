@@ -102,13 +102,18 @@ public abstract class ModConfigurationKey {
 		try {
 			OnChanged?.SafeInvoke(value);
 		} catch (Exception e) {
-			Logger.ErrorInternal($"An OnChanged event subscriber for {this.Name} threw an exception:\n{e}");
+			Logger.ErrorInternal($"An OnChanged event subscriber for {Name} threw an exception:\n{e}");
 		}
 	}
 
 	internal bool Unset() {
 		bool hadValue = HasValue;
 		HasValue = false;
+		try {
+			OnChanged?.SafeInvoke();
+		} catch (Exception e) {
+			Logger.ErrorInternal($"An OnChanged event subscriber for {Name} threw an exception:\n{e}");
+		}
 		return hadValue;
 	}
 }
