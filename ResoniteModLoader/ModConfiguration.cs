@@ -389,7 +389,8 @@ public class ModConfiguration : IModConfigurationDefinition {
 						Logger.WarnInternal($"{mod.ResoniteMod.Name} saved config version is {version} which is incompatible with mod's definition version {definition.Version}. Clobbering old config and starting fresh.");
 						return new ModConfiguration(mod, definition);
 					case IncompatibleConfigurationHandlingOption.FORCE_LOAD:
-						// continue processing
+						break;
+					case IncompatibleConfigurationHandlingOption.FORCELOAD:
 						break;
 					case IncompatibleConfigurationHandlingOption.ERROR: // fall through to default
 					default:
@@ -610,5 +611,11 @@ public enum IncompatibleConfigurationHandlingOption {
 	/// <summary>
 	/// Ignore the version number and attempt to load the config from disk.
 	/// </summary>
+	[Obsolete ("Use IncompatibleConfigurationHandlingOption.FORCELOAD Instead")]
 	FORCE_LOAD,
+
+	/// <summary>
+	/// Ignore the version number and attempt to load the config from disk.
+	/// </summary>
+	FORCELOAD,
 }
