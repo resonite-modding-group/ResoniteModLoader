@@ -26,6 +26,19 @@ public abstract class ModConfigurationKey {
 	public bool InternalAccessOnly { get; private set; }
 
 	/// <summary>
+	/// Delegate for handling configuration changes.
+	/// </summary>
+	/// <param name="configKey">The key of the <see cref="ModConfigurationKey"/> that changed.</param>
+	/// <param name="newValue">The new value of the <see cref="ModConfigurationKey"/>.</param>
+
+	public delegate void OnChangedHandler(string configKey, object? newValue);
+
+	/// <summary>
+	/// Called if this <see cref="ModConfigurationKey"/> changed. 
+	/// </summary>
+	public event OnChangedHandler? OnChanged;
+
+	/// <summary>
 	/// Get the <see cref="Type"/> of this key's value.
 	/// </summary>
 	/// <returns>The <see cref="Type"/> of this key's value.</returns>
@@ -86,6 +99,11 @@ public abstract class ModConfigurationKey {
 	internal void Set(object? value) {
 		Value = value;
 		HasValue = true;
+		try {
+			OnChanged?.SafeInvoke(this.Name, value);
+		} catch (Exception e) {
+			Logger.ErrorInternal($"An OnChanged event subscriber for {this.Name} threw an exception:\n{e}");
+		}
 	}
 
 	internal bool Unset() {
