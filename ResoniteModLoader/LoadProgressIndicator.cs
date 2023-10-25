@@ -25,6 +25,7 @@ internal static class LoadProgressIndicator {
 
 	// Returned true means success, false means something went wrong.
 	internal static bool SetCustom(string text) {
+		if (ModLoaderConfiguration.Get().HideVisuals) { return true; }
 		if (ShowSubphase != null) {
 			ShowSubphase.SetValue(Engine.Current.InitProgress, text);
 			return true;
