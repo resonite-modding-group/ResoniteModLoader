@@ -12,6 +12,7 @@ Not all keys are required to be present. Missing keys will use the defaults outl
 | Configuration      | Default | Description |
 | ------------------ | ------- | ----------- |
 | `debug`            | `false` | If `true`, ResoniteMod.Debug() logs will appear in your log file. Otherwise, they are hidden. |
+| `hidevisuals`      | `false` | If `true`, RML won't show the LoadProgressIndicator on the splash screen. |
 | `nomods`           | `false` | If `true`, mods will not be loaded from `rml_mods`. |
 | `nolibraries`      | `false` | If `true`, extra libraries from `rml_libs` will not be loaded. |
 | `advertiseversion` | `false` | If `false`, your version will be spoofed and will resemble `2023.9.26.304`. If `true`, your version will be left unaltered and will resemble `2023.9.26.304+ResoniteModLoader.dll`. This version string is visible to other players under certain circumstances. |
