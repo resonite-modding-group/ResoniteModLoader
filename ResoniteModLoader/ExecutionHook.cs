@@ -18,7 +18,7 @@ internal class ExecutionHook {
 	static ExecutionHook() {
 		try {
 			HashSet<Assembly> initialAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToHashSet();
-
+			LoadProgressIndicator.SetCustom("Loading Libraries");
 			AssemblyFile[] loadedAssemblies = AssemblyLoader.LoadAssembliesFromDir("rml_libs");
 			// note that harmony may not be loaded until this point, so this class cannot directly import HarmonyLib.
 
@@ -26,9 +26,11 @@ internal class ExecutionHook {
 				string loadedAssemblyList = string.Join("\n", loadedAssemblies.Select(a => a.Assembly.FullName + " Sha256=" + a.Sha256));
 				Logger.MsgInternal($"Loaded libraries from rml_libs:\n{loadedAssemblyList}");
 			}
+			LoadProgressIndicator.SetCustom("Initializing");
 			DebugInfo.Log();
 			VersionReset.Initialize();
 			HarmonyWorker.LoadModsAndHideModAssemblies(initialAssemblies);
+			LoadProgressIndicator.SetCustom("Loaded");
 		} catch (Exception e) {
 			// it's important that this doesn't send exceptions back to Resonite
 			Logger.ErrorInternal($"Exception in execution hook!\n{e}");

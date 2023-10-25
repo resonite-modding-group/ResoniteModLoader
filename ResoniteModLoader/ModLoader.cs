@@ -32,7 +32,7 @@ public class ModLoader {
 			Logger.DebugInternal("Mods will not be loaded due to configuration file");
 			return;
 		}
-
+		LoadProgressIndicator.SetCustom("Gathering mods");
 		// generate list of assemblies to load
 		AssemblyFile[] modsToLoad;
 		if (AssemblyLoader.LoadAssembliesFromDir("rml_mods") is AssemblyFile[] arr) {
@@ -82,6 +82,7 @@ public class ModLoader {
 
 		// Log potential conflicts
 		if (config.LogConflicts) {
+			LoadProgressIndicator.SetCustom("Looking for conflicts");
 			IEnumerable<MethodBase> patchedMethods = Harmony.GetAllPatchedMethods();
 			foreach (MethodBase patchedMethod in patchedMethods) {
 				Patches patches = Harmony.GetPatchInfo(patchedMethod);
@@ -154,6 +155,7 @@ public class ModLoader {
 				return null;
 			}
 
+			LoadProgressIndicator.SetCustom($"Loading configuration for [{resoniteMod.Name}/{resoniteMod.Version}]");
 			LoadedResoniteMod loadedMod = new(resoniteMod, mod);
 			Logger.MsgInternal($"Loaded mod [{resoniteMod.Name}/{resoniteMod.Version}] ({Path.GetFileName(mod.File)}) by {resoniteMod.Author} with Sha256: {mod.Sha256}");
 			loadedMod.ModConfiguration = ModConfiguration.LoadConfigForMod(loadedMod);
@@ -162,6 +164,7 @@ public class ModLoader {
 	}
 
 	private static void HookMod(LoadedResoniteMod mod) {
+		LoadProgressIndicator.SetCustom($"Starting mod [{mod.ResoniteMod.Name}/{mod.ResoniteMod.Version}]");
 		Logger.DebugFuncInternal(() => $"calling OnEngineInit() for [{mod.ResoniteMod.Name}/{mod.ResoniteMod.Version}]");
 		try {
 			mod.ResoniteMod.OnEngineInit();

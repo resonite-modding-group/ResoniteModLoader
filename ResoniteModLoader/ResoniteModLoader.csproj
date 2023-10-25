@@ -58,6 +58,15 @@
 			<HintPath>$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
+		<Reference Include="Assembly-CSharp">
+			<HintPath>$(ResonitePath)Resonite_Data\Managed\Assembly-CSharp.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="lib-client-csharp">
+			<HintPath>$(ResonitePath)Resonite_Data\Managed\lib-client-csharp.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+
 	</ItemGroup>
 
 	<ItemGroup>
