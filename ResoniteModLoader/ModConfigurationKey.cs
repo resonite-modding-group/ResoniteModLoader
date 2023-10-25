@@ -31,7 +31,7 @@ public abstract class ModConfigurationKey {
 	/// <param name="configKey">The key of the <see cref="ModConfigurationKey"/> that changed.</param>
 	/// <param name="newValue">The new value of the <see cref="ModConfigurationKey"/>.</param>
 
-	public delegate void OnChangedHandler(string configKey, object? newValue);
+	public delegate void OnChangedHandler(object? newValue);
 
 	/// <summary>
 	/// Called if this <see cref="ModConfigurationKey"/> changed. 
@@ -100,7 +100,7 @@ public abstract class ModConfigurationKey {
 		Value = value;
 		HasValue = true;
 		try {
-			OnChanged?.SafeInvoke(this.Name, value);
+			OnChanged?.SafeInvoke(value);
 		} catch (Exception e) {
 			Logger.ErrorInternal($"An OnChanged event subscriber for {this.Name} threw an exception:\n{e}");
 		}
