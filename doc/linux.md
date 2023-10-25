@@ -2,7 +2,7 @@
 
 ### Note, I have not checked if these specific fixes are still required or if there are any new fixes that are needed.
 
-ResoniteModLoader works on Linux, but in addition to the [normal install steps](../README.md#installation) there are some extra steps you may need to take until the issue is fixed.
+ResoniteModLoader works on Linux, but in addition to the [normal install steps](../README.md#installation) there are some extra steps you may need to take.
 
 The log directory on Linux may be in `$HOME/Steam/steamapps/common/Resonite/Logs` or `$HOME/.local/share/Steam/steamapps/common/Resonite/Logs`
 

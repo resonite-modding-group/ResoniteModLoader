@@ -10,7 +10,8 @@ namespace ResoniteModLoader;
 internal static class AssemblyHider {
 	/// <summary>
 	/// Companies that indicate an assembly is part of .NET
-	/// This list was found by debug logging the AssemblyCompanyAttribute for all loaded assemblies.
+	/// This list was found by debug logging the AssemblyCompany
+	/// for all loaded assemblies.
 	/// </summary>
 	private static HashSet<string> knownDotNetCompanies = new List<string>() {
 		"Mono development team", // used by .NET stuff and Mono.Security

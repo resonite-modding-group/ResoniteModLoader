@@ -10,8 +10,7 @@ internal static class AssemblyLoader {
 		string[]? assembliesToLoad = null;
 		try {
 			// Directory.GetFiles and Directory.EnumerateFiles have a fucked up API: https://learn.microsoft.com/en-us/dotnet/api/system.io.directory.getfiles?view=netframework-4.6.2#system-io-directory-getfiles(system-string-system-string-system-io-searchoption)
-			// long story short if I searched for "*.dll" it would unhelpfully use some incredibly inconsistent behavior and return results like "foo.dll_disabled"
-			// So I have to filter shit after the fact... ugh
+			// Searching for "*.dll" would return results like "foo.dll_disabled"
 
 			assembliesToLoad = Directory.EnumerateFiles(assembliesDirectory, "*.dll")
 				.Where(file => file.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
@@ -35,7 +34,7 @@ internal static class AssemblyLoader {
 		LoadProgressIndicator.SetCustom($"Loading file: {filename}");
 		Assembly assembly;
 		try {
-			Logger.DebugFuncInternal(() => $"load assembly {filename}");
+			Logger.DebugFuncInternal(() => $"Load assembly {filename}");
 			assembly = Assembly.LoadFrom(filepath);
 		} catch (Exception e) {
 			Logger.ErrorInternal($"Error loading assembly from {filepath}: {e}");

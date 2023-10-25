@@ -203,7 +203,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 			return true;
 		}
 
-		// okay, the defining key was null, so lets try to get the defining key from the hashtable instead
+		// The defining key was null, so lets try to get the defining key from the hashtable instead
 		if (Definition.TryGetDefiningKey(key, out definingKey)) {
 			// we might as well set this now that we have the real defining key
 			key.DefiningKey = definingKey;
@@ -344,7 +344,6 @@ public class ModConfiguration : IModConfigurationDefinition {
 		if (!definingKey!.Validate(value)) {
 			throw new ArgumentException($"\"{value}\" is not a valid value for \"{Owner.Name}{definingKey.Name}\"");
 		}
-
 		definingKey.Set(value);
 		FireConfigurationChangedEvent(definingKey, eventLabel);
 	}
@@ -421,9 +420,6 @@ public class ModConfiguration : IModConfigurationDefinition {
 			var backupPath = configFile + "." + Convert.ToBase64String(Encoding.UTF8.GetBytes(((int)DateTimeOffset.Now.TimeOfDay.TotalSeconds).ToString("X"))) + ".bak"; //ExampleMod.json.40A4.bak, unlikely to already exist
 			Logger.ErrorExternal($"Error loading config for {mod.ResoniteMod.Name}, creating new config file (old file can be found at {backupPath}). Exception:\n{e}");
 			File.Move(configFile, backupPath);
-
-			//mod.AllowSavingConfiguration = false;
-			//throw new ModConfigurationException($"Error loading config for {mod.ResoniteMod.Name}", e);
 		}
 
 		return new ModConfiguration(mod, definition);
@@ -496,7 +492,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 	}
 
 	/// <summary>
-	/// performs the actual, synchronous save
+	/// Performs the actual, synchronous save
 	/// </summary>
 	/// <param name="saveDefaultValues">If true, default values will also be persisted</param>
 	private void SaveInternal(bool saveDefaultValues = false) {
