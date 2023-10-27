@@ -23,11 +23,14 @@ internal static class LoadProgressIndicator {
 		}
 	}
 
+	private static bool isHeadless => Type.GetType("FrooxEngine.Headless.HeadlessCommands, Resonite") != null;
 	// Returned true means success, false means something went wrong.
 	internal static bool SetCustom(string text) {
 		if (ModLoaderConfiguration.Get().HideVisuals) { return true; }
-		if (ShowSubphase != null) {
-			ShowSubphase.SetValue(Engine.Current.InitProgress, text);
+		if (!isHeadless) {
+			if (ShowSubphase != null) {
+				ShowSubphase.SetValue(Engine.Current.InitProgress, text);
+			}
 			return true;
 		}
 		return false;
