@@ -33,17 +33,16 @@ using System.Reflection;
 
 namespace ConfigurationExampleMod;
 
-public class ConfigurationExampleMod : ResoniteMod
-{
+public class ConfigurationExampleMod : ResoniteMod {
     public override string Name => "ConfigurationExampleMod";
     public override string Author => "YourNameHere";
     public override string Version => "1.0.0"; //Version of the mod, should match the AssemblyVersion
-    public override string Link => "https://github.com/YourNameHere/ConfigurationExampleMod";
+    public override string Link => "https://github.com/YourNameHere/ConfigurationExampleMod"; // Optional link to a repo where this mod would be located
 
     [AutoRegisterConfigKey]
-    private static readonly ModConfigurationKey<int> KEY_COUNT = new ModConfigurationKey<int>("count", "Example counter", internalAccessOnly: true);
+    private static readonly ModConfigurationKey<int> KEY_COUNT = new ModConfigurationKey<int>("count", "Example counter", internalAccessOnly: true); //Mod config for an int
 
-    private static ModConfiguration Config;
+    private static ModConfiguration Config; //This holds your mods' ModConfiguration
 
     public override void OnEngineInit() {
         Config = GetConfiguration(); //Get this mods' current ModConfiguration
@@ -132,6 +131,20 @@ A `ConfigurationChangedEvent` has the following properties:
 - `ModConfigurationKey Key` is the specific key who's value changed
 - `string Label` is a custom label that may be set by whoever changed the configuration. This may be `null`.
 
+To subscribe to either of these events, add 
+```csharp
+public override void OnEngineInit() {
+    Config = GetConfiguration();
+
+    ModConfiguration.OnAnyConfigurationChanged += OnConfigurationChanged; //Subscribe to any mod configuration changing
+    Config.OnThisConfigurationChanged += OnThisConfigurationChanged; //Subscribe to when any key in this mod has changed
+}
+```
+
+For individual `ModConfigurationKey`s there is also an `OnChanged` Event for when that specific key has changed
+```csharp
+ExampleConfigKey.OnChanged += (value) => { Msg($"Key set to {value}"); }
+```
 ### Handling Incompatible Configuration Versions
 
 You may optionally override a `HandleIncompatibleConfigurationVersions()` function in your ResoniteMod to define how incompatible versions are handled. You have two options:
