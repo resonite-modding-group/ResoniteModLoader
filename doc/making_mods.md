@@ -4,8 +4,8 @@ If you have some level of familiarity with C#, getting started making mods shoul
 
 ## Basic Visual Studio setup
 
-1. Make a new .NET library against .NET version 4.6.2. You can use 4.7.2 if you absolutely need it in order to compile, but some features may not work.
-2. Add ResoniteModLoader.dll as a reference.
+1. Make a new .NET library against .NET version 4.7.2.
+2. Add ResoniteModLoader.dll as a reference and optionally HarmonyLib (0harmony.dll)
 3. Add references to Resonite libraries as needed (`C:\Program Files (x86)\Steam\steamapps\common\Resonite\Resonite_Data\Managed`)
 4. Remove the reference to `System.Net.Http` if it was added automatically as it will make the compiler angry
 
@@ -13,18 +13,17 @@ If you have some level of familiarity with C#, getting started making mods shoul
 
 You'll likely want to grab a decompiler if you don't have one already to take a look at existing code. Here are a few popular options:
 
-[DnSpyEx](https://github.com/dnSpyEx/dnSpy)
-[dotPeek](https://www.jetbrains.com/decompiler/)
+[DnSpyEx](https://github.com/dnSpyEx/dnSpy),
+[dotPeek](https://www.jetbrains.com/decompiler/),
 [ILSpy](https://github.com/icsharpcode/ILSpy)
 
 ## Hooks
 
 ### `OnEngineInit()`
 
-Called once during FrooxEngine initialization. This is where you will set up and apply any harmony patches or setup anything your mod will need.
+Called once per mod during FrooxEngine initialization. This is where you will set up and apply any harmony patches or setup anything your mod will need.
 
 Happens **before** `OnEngineInit()`
-
 
 - Load Locales
 - Configs
@@ -41,10 +40,21 @@ Happens **after** `OnEngineInit()`
 - Worlds loading, including Local home and Userspace
 
 
-### PostInit?
+### RunPostInit
 
-Adding something to be run after init can be done with a single line added into your `OnEngineInit()`
-`Engine.Current.RunPostInit(FunctionToCall);` where `FunctionToCall` is whatever you want to be called
+Add something to be run after init can be done with `Engine.Current.RunPostInit` added in your `OnEngineInit()`, here are 2 examples.
+
+```csharp
+Engine.Current.RunPostInit(FunctionToCall);
+```
+OR
+```csharp
+Engine.Current.RunPostInit(() => {
+    //Code to call after Initialization
+    FunctionToCall();
+    AnotherFunctionToCall();
+}
+```
 
 ## Mod Configuration
 
@@ -60,8 +70,7 @@ using System.Reflection;
 
 namespace ExampleMod;
 
-public class ExampleMod : ResoniteMod
-{
+public class ExampleMod : ResoniteMod {
     public override string Name => "ExampleMod";
     public override string Author => "YourNameHere";
     public override string Version => "1.0.0"; //Version of the mod, should match the AssemblyVersion
