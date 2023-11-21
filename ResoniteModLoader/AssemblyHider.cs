@@ -60,8 +60,8 @@ internal static class AssemblyHider {
 			MethodInfo findTypePatch = AccessTools.DeclaredMethod(typeof(AssemblyHider), nameof(FindTypePostfix));
 			harmony.Patch(findTypeTarget, postfix: new HarmonyMethod(findTypePatch));
 
-			// WorkerManager.IsValidGenericType checks a type for validity, and if it returns `true` it reveals that the type exists
-			MethodInfo isValidGenericTypeTarget = AccessTools.DeclaredMethod(typeof(WorkerManager), nameof(WorkerManager.IsValidGenericType), new Type[] { typeof(Type), typeof(bool) });
+			// ReflectionExtensions.IsValidGenericType checks a type for validity, and if it returns `true` it reveals that the type exists
+			MethodInfo isValidGenericTypeTarget = AccessTools.DeclaredMethod(typeof(ReflectionExtensions), nameof(ReflectionExtensions.IsValidGenericType), new Type[] { typeof(Type), typeof(bool) });
 			MethodInfo isValidGenericTypePatch = AccessTools.DeclaredMethod(typeof(AssemblyHider), nameof(IsValidTypePostfix));
 			harmony.Patch(isValidGenericTypeTarget, postfix: new HarmonyMethod(isValidGenericTypePatch));
 
