@@ -53,7 +53,7 @@ Engine.Current.RunPostInit(() => {
     //Code to call after Initialization
     FunctionToCall();
     AnotherFunctionToCall();
-}
+});
 ```
 
 ## Mod Configuration
