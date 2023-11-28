@@ -36,11 +36,17 @@ If the problem is the FrooxEngine.dll path on Linux:
 
 1. If you are on Linux, make sure you've followed the [extra Linux instructions](linux.md).
 
-If the problem is Windows blocking the DLL file:
+Windows may be blocking the DLL files from being loaded:
+
+(Provided example from windows Headless)
+```log
+[ERROR][ResoniteModLoader] Error loading assembly from C:\Program Files (x86)\Steam\steamapps\common\Resonite\Headless\rml_libs\0Harmony.dll: System.IO.FileLoadException: Could not load file or assembly 'file:///C:\Program Files (x86)\Steam\steamapps\common\Resonite\Headless\rml_libs\0Harmony.dll' or one of its dependencies. Operation is not supported. (Exception from HRESULT: 0x80131515)
+File name: 'file:///C:\Program Files (x86)\Steam\steamapps\common\Resonite\Headless\rml_libs\0Harmony.dll' ---> System.NotSupportedException: An attempt was made to load an assembly from a network location which would have caused the assembly to be sandboxed in previous versions of the .NET Framework. This release of the .NET Framework does not enable CAS policy by default, so this load may be dangerous. If this load is not intended to sandbox the assembly, please enable the loadFromRemoteSources switch. See http://go.microsoft.com/fwlink/?LinkId=155569 for more information.
+```
 
 1. Right click on the ResoniteModLoader.dll file and open the properties.
 2. Check the unblock checkbox, and hit OK.  
-   ![add non-steam game screenshot](img/windows_unblock.png)
+   ![unblock dll on windows](img/windows_unblock.png)
 3. Repeat this process for 0Harmony.dll.
 
 If the problem is your antivirus:
