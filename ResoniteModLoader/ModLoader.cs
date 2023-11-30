@@ -18,19 +18,14 @@ public class ModLoader {
 	/// <summary>
 	/// True if ResoniteModLoader is being loaded by a headless server
 	/// </summary>
-	public static bool IsHeadless // Extremely thorough, but doesn't rely on any specific class to check for headless presence
-    {
-        get
-        {
-            return _isHeadless ??= AppDomain.CurrentDomain.GetAssemblies().Any(a =>
-            {
+	public static bool IsHeadless { // Extremely thorough, but doesn't rely on any specific class to check for headless presence
+        get {
+            return _isHeadless ??= AppDomain.CurrentDomain.GetAssemblies().Any(a => {
                 IEnumerable<Type> types;
-                try
-                {
+                try {
                     types = a.GetTypes();
                 }
-                catch (ReflectionTypeLoadException e)
-                {
+                catch (ReflectionTypeLoadException e) {
                     types = e.Types;
                 }
                 return types.Any(t => t != null && t.Namespace == "FrooxEngine.Headless");
