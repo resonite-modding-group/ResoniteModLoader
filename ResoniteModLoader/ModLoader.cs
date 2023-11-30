@@ -18,11 +18,11 @@ public class ModLoader {
 	/// <summary>
 	/// True if ResoniteModLoader is being loaded by a headless server
 	/// </summary>
-	public static bool IsHeadless
+	public static bool IsHeadless // Extremely thorough, but doesn't rely on any specific class to check for headless presence
     {
         get
         {
-            return _isHeadless ??= AppDomain.CurrentDomain.GetAssemblies().Any(a => // Overkill, but better safe than sorry. It only happens once anyways.
+            return _isHeadless ??= AppDomain.CurrentDomain.GetAssemblies().Any(a =>
             {
                 IEnumerable<Type> types;
                 try
