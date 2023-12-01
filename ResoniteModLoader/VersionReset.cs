@@ -161,19 +161,25 @@ internal static class VersionReset {
 	}
 
 	private static string CalculateCompatibilityHash(int ProtocolVersion, List<Assembly> plugins, bool includePluginsInHash) {
-		using MD5CryptoServiceProvider cryptoServiceProvider = new();
-		using (ConcatenatedStream inputStream = new()) {
-			inputStream.EnqueueStream(new MemoryStream(BitConverter.GetBytes(ProtocolVersion)));
-			if (includePluginsInHash) {
-				foreach (Assembly plugin in plugins) {
-					using (FileStream fileStream = File.OpenRead(plugin.Location)) {
-						fileStream.Seek(375L, SeekOrigin.Current);
-						inputStream.EnqueueStream(fileStream);
+		using (MD5CryptoServiceProvider cryptoServiceProvider = new()) {
+			using (ConcatenatedStream inputStream = new()) {
+				inputStream.EnqueueStream(new MemoryStream(BitConverter.GetBytes(ProtocolVersion)));
+				if (includePluginsInHash) {
+					foreach (Assembly plugin in plugins) {
+						try {
+							Logger.DebugFuncInternal(() => $"Creating hash for {plugin.FullName}");
+							FileStream fileStream = File.OpenRead(plugin.Location);
+							fileStream.Seek(375L, SeekOrigin.Current);
+							inputStream.EnqueueStream(fileStream);
+						} catch (Exception ex) {
+							Logger.ErrorInternal(ex.ToString());
+							throw;
+						}
 					}
 				}
+				byte[] hash = cryptoServiceProvider.ComputeHash(inputStream);
+				return Convert.ToBase64String(hash);
 			}
-			byte[] hash = cryptoServiceProvider.ComputeHash(inputStream);
-			return Convert.ToBase64String(hash);
 		}
 	}
 
