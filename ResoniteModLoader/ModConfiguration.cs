@@ -505,11 +505,8 @@ public class ModConfiguration : IModConfigurationDefinition {
 		JObject valueMap = new();
 		foreach (ModConfigurationKey key in ConfigurationItemDefinitions) {
 			if (key.TryGetValue(out object? value)) {
-				// I don't need to typecheck this as there's no way to sneak a bad type past my Set() API
 				valueMap[key.Name] = value == null ? null : JToken.FromObject(value, jsonSerializer);
 			} else if (saveDefaultValues && key.TryComputeDefault(out object? defaultValue)) {
-				// I don't need to typecheck this as there's no way to sneak a bad type past my computeDefault API
-				// like and say defaultValue can't be null because the Json.Net
 				valueMap[key.Name] = defaultValue == null ? null : JToken.FromObject(defaultValue, jsonSerializer);
 			}
 		}
@@ -517,16 +514,6 @@ public class ModConfiguration : IModConfigurationDefinition {
 		json[VALUES_JSON_KEY] = valueMap;
 
 		string configFile = GetModConfigPath(LoadedResoniteMod);
-
-		/*
-		using FileStream file = File.OpenWrite(configFile);
-		using StreamWriter streamWriter = new(file);
-		using JsonTextWriter jsonTextWriter = new(streamWriter);
-		json.WriteTo(jsonTextWriter);
-
-		// I actually cannot believe I have to truncate the file myself
-		file.SetLength(file.Position);
-		jsonTextWriter.Flush();*/
 
 		File.WriteAllText(configFile, json.ToString());
 

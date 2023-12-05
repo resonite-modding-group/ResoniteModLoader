@@ -101,7 +101,7 @@ public class ModLoader {
 	}
 
 	/// <summary>
-	/// We have a bunch of maps and things the mod needs to be registered in. This method does all that jazz.
+	/// Registers a successfully loaded mod, adding it to various lookup maps.
 	/// </summary>
 	/// <param name="mod">The successfully loaded mod to register</param>
 	private static void RegisterMod(LoadedResoniteMod mod) {
@@ -128,7 +128,10 @@ public class ModLoader {
 		return $"prefix={prefixCount}; postfix={postfixCount}; transpiler={transpilerCount}; finalizer={finalizerCount}";
 	}
 
-	// Loads mod class and mod config
+	/// <summary>
+	/// Load the mod class and mod config for a given mod.
+	/// </summary>
+	/// <param name="mod">The <see cref="AssemblyFile"/> for an unloaded mod </param>
 	private static LoadedResoniteMod? InitializeMod(AssemblyFile mod) {
 		if (mod.Assembly == null) {
 			return null;

@@ -102,22 +102,21 @@ internal static class AssemblyHider {
 	/// Checks if an <see cref="Assembly"/> belongs to a mod or not.
 	/// </summary>
 	/// <param name="assembly">The <see cref="Assembly"/> to check.</param>
-	/// <param name="typeOrAssembly">Type of root check being performed. Should be "type" or  "assembly". Used in logging.</param>
+	/// <param name="typeOrAssembly">Type of root check being performed. Should be "type" or "assembly". Used in logging.</param>
 	/// <param name="name">Name of the root check being performed. Used in logging.</param>
 	/// <param name="log">If `true`, this will emit logs. If `false`, this function will not log.</param>
 	/// <param name="forceShowLate">If `true`, then this function will always return `false` for late-loaded types</param>
 	/// <returns>`true` if this assembly belongs to a mod.</returns>
 	private static bool IsModAssembly(Assembly assembly, string typeOrAssembly, string name, bool log, bool forceShowLate) {
 		if (resoniteAssemblies!.Contains(assembly)) {
-			// the type belongs to a Resonite assembly
-			return false; // don't hide the thing
+			return false; // The assembly belongs to Resonite and shouldn't be hidden
 		} else {
 			if (modAssemblies!.Contains(assembly)) {
-				// known type from a mod assembly
+				// The assembly belongs to a mod and should be hidden
 				if (log) {
 					Logger.DebugFuncInternal(() => $"Hid {typeOrAssembly} \"{name}\" from Resonite");
 				}
-				return true; // hide the thing
+				return true;
 			} else {
 				// an assembly was in neither resoniteAssemblies nor modAssemblies
 				// this implies someone late-loaded an assembly after RML, and it was later used in-game
@@ -164,7 +163,7 @@ internal static class AssemblyHider {
 		}
 	}
 
-	// postfix for a method that validates a type (WorkerManager.IsValidGenericType)
+	// postfix for a method that validates a type (ReflectionExtensions.IsValidGenericType)
 	private static void IsValidTypePostfix(ref bool __result, Type type) {
 		if (__result == true) {
 			// we only need to think about types if the method actually returned a true result

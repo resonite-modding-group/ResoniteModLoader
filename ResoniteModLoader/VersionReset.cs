@@ -214,9 +214,9 @@ internal static class VersionReset {
 
 	// perform incredible bullshit to rip the hardcoded protocol version out of the dang IL
 	private static int? GetVanillaProtocolVersion() {
-		// raw IL immediately surrounding the number we need to find, which in this example is 12004 (0x2EE4)
+		// raw IL immediately surrounding the number we need to find, which in this example is 12017 (0x2EF1)
 
-		// ldc.i4		0x2EE4
+		// ldc.i4		0x2EF1
 		// call			uint8[] [mscorlib] System.BitConverter::GetBytes(int32)
 
 		// we're going to search for that method call, then grab the operand of the ldc.i4 that precedes it
