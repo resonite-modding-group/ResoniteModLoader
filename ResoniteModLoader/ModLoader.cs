@@ -15,6 +15,25 @@ public class ModLoader {
 	private static readonly List<LoadedResoniteMod> LoadedMods = new(); // used for mod enumeration
 	internal static readonly Dictionary<Assembly, ResoniteMod> AssemblyLookupMap = new(); // used for logging
 	private static readonly Dictionary<string, LoadedResoniteMod> ModNameLookupMap = new(); // used for duplicate mod checking
+	/// <summary>
+	/// True if ResoniteModLoader is being loaded by a headless server
+	/// </summary>
+	public static bool IsHeadless { // Extremely thorough, but doesn't rely on any specific class to check for headless presence
+        get {
+            return _isHeadless ??= AppDomain.CurrentDomain.GetAssemblies().Any(a => {
+                IEnumerable<Type> types;
+                try {
+                    types = a.GetTypes();
+                }
+                catch (ReflectionTypeLoadException e) {
+                    types = e.Types;
+                }
+                return types.Any(t => t != null && t.Namespace == "FrooxEngine.Headless");
+            });
+        }
+    }
+
+    private static bool? _isHeadless;
 
 	/// <summary>
 	/// Allows reading metadata for all loaded mods
