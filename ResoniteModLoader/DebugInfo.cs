@@ -5,6 +5,7 @@ namespace ResoniteModLoader;
 internal class DebugInfo {
 	internal static void Log() {
 		Logger.MsgInternal($"ResoniteModLoader v{ModLoader.VERSION} starting up!{(ModLoaderConfiguration.Get().Debug ? " Debug logs will be shown." : "")}");
+		Logger.DebugFuncInternal(() => $"Launched with args: {string.Join(" ", Environment.GetCommandLineArgs())}");
 		Logger.MsgInternal($"CLR v{Environment.Version}");
 		Logger.DebugFuncInternal(() => $"Using .NET Framework: \"{AppDomain.CurrentDomain.SetupInformation.TargetFrameworkName}\"");
 		Logger.DebugFuncInternal(() => $"Using .NET Core: \"{Assembly.GetEntryAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName}\"");
