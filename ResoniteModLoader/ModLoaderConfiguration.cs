@@ -44,7 +44,7 @@ internal class ModLoaderConfiguration {
 				}
 			} catch (Exception e) {
 				if (e is FileNotFoundException) {
-					Logger.MsgInternal($"{path} is missing! This is probably fine.");
+					Logger.MsgInternal($"No modloader config found at {path}, using defaults. This is probably fine.");
 				} else if (e is DirectoryNotFoundException || e is IOException || e is UnauthorizedAccessException) {
 					Logger.WarnInternal(e.ToString());
 				} else {

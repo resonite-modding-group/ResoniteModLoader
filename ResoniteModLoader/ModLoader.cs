@@ -117,6 +117,7 @@ public class ModLoader {
 				}
 			}
 		}
+		Logger.DebugInternal("Mod loading finished");
 	}
 
 	/// <summary>

@@ -97,6 +97,7 @@ internal static class VersionReset {
 		// else we should spoof normally
 
 		// get plugin assemblies sorted in the same order Resonite sorted them.
+		Logger.DebugFuncInternal(() => $"Sorting Plugins");
 		List<Assembly> sortedPlugins = extraAssemblies
 			.Select(path => plugins[path])
 			.ToList();
@@ -151,8 +152,9 @@ internal static class VersionReset {
 		string vanillaCompatibilityHash;
 		int? vanillaProtocolVersionMaybe = GetVanillaProtocolVersion();
 		if (vanillaProtocolVersionMaybe is int vanillaProtocolVersion) {
-			Logger.DebugFuncInternal(() => $"Vanilla protocol version is {vanillaProtocolVersion}");
+			Logger.DebugFuncInternal(() => $"Vanilla protocol version is: {vanillaProtocolVersion}");
 			vanillaCompatibilityHash = CalculateCompatibilityHash(vanillaProtocolVersion, plugins, includePluginsInHash);
+			Logger.DebugFuncInternal(() => $"Target CompatibilityHash version is: {vanillaCompatibilityHash}");
 			return SetCompatibilityHash(engine, vanillaCompatibilityHash);
 		} else {
 			Logger.ErrorInternal("Unable to determine vanilla protocol version");
