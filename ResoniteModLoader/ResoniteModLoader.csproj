@@ -28,6 +28,7 @@
 		<ResonitePath Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Resonite\')">C:\Program Files (x86)\Steam\steamapps\common\Resonite\</ResonitePath>
 		<ResonitePath Condition="Exists('$(HOME)/.steam/steam/steamapps/common/Resonite/')">$(HOME)/.steam/steam/steamapps/common/Resonite/</ResonitePath>
 		<ResonitePath Condition="Exists('R:\SteamLibrary\steamapps\common\Resonite\')">R:\SteamLibrary\steamapps\common\Resonite\</ResonitePath>
+		<ResonitePath Condition="Exists('E:\Programs/Steam\steamapps\common\Resonite\')">E:\Programs/Steam\steamapps\common\Resonite\</ResonitePath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
@@ -66,5 +67,9 @@
 	<ItemGroup>
 		<Using Remove="System.Net.Http" />
 	</ItemGroup>
-
+	
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(CopyToLibraries)'=='true'">
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ResonitePath)Libraries" />
+		<Message Text="Copied $(TargetFileName) to $(ResonitePath)Libraries" Importance="high" />
+	</Target>
 </Project>
