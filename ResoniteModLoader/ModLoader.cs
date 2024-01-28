@@ -12,10 +12,11 @@ public class ModLoader {
 	/// </summary>
 	public static readonly string VERSION = VERSION_CONSTANT;
 	private static readonly Type RESONITE_MOD_TYPE = typeof(ResoniteMod);
-	private static readonly List<LoadedResoniteMod> LoadedMods = new(); // used for mod enumeration
+	private static readonly List<ResoniteMod> LoadedMods = new(); // used for mod enumeration
 	internal static readonly Dictionary<Assembly, ResoniteMod> AssemblyLookupMap = new(); // used for logging
-	private static readonly Dictionary<string, LoadedResoniteMod> ModNameLookupMap = new(); // used for duplicate mod checking
-	/// <summary>
+	private static readonly Dictionary<string, ResoniteMod> ModNameLookupMap = new(); // used for duplicate mod checking
+	
+  /// <summary>
 	/// True if ResoniteModLoader is being loaded by a headless server
 	/// </summary>
 	public static bool IsHeadless { // Extremely thorough, but doesn't rely on any specific class to check for headless presence
@@ -41,7 +42,6 @@ public class ModLoader {
 	/// <returns>A new list containing each loaded mod</returns>
 	public static IEnumerable<ResoniteModBase> Mods() {
 		return LoadedMods
-			.Select(m => (ResoniteModBase)m.ResoniteMod)
 			.ToList();
 	}
 
@@ -65,7 +65,7 @@ public class ModLoader {
 		// Call InitializeMod() for each mod
 		foreach (AssemblyFile mod in modsToLoad) {
 			try {
-				LoadedResoniteMod? loaded = InitializeMod(mod);
+				ResoniteMod? loaded = InitializeMod(mod);
 				if (loaded != null) {
 					// if loading succeeded, then we need to register the mod
 					RegisterMod(loaded);
@@ -91,11 +91,11 @@ public class ModLoader {
 
 		ModConfiguration.RegisterShutdownHook(harmony);
 
-		foreach (LoadedResoniteMod mod in LoadedMods) {
+		foreach (ResoniteMod mod in LoadedMods) {
 			try {
 				HookMod(mod);
 			} catch (Exception e) {
-				Logger.ErrorInternal($"Unexpected exception in OnEngineInit() for mod {mod.ResoniteMod.Name} from {mod.ModAssembly.File}:\n{e}");
+				Logger.ErrorInternal($"Unexpected exception in OnEngineInit() for mod {mod.Name} from {mod.ModAssembly?.File ?? "Unknown Assembly"}:\n{e}");
 			}
 		}
 
@@ -124,18 +124,19 @@ public class ModLoader {
 	/// Registers a successfully loaded mod, adding it to various lookup maps.
 	/// </summary>
 	/// <param name="mod">The successfully loaded mod to register</param>
-	private static void RegisterMod(LoadedResoniteMod mod) {
+	private static void RegisterMod(ResoniteMod mod) {
+		if (mod.ModAssembly is null) throw new ArgumentException("Cannot register a mod before it's propertly initialized.");
+
 		try {
-			ModNameLookupMap.Add(mod.ResoniteMod.Name, mod);
+			ModNameLookupMap.Add(mod.Name, mod);
 		} catch (ArgumentException) {
-			LoadedResoniteMod existing = ModNameLookupMap[mod.ResoniteMod.Name];
-			Logger.ErrorInternal($"{mod.ModAssembly.File} declares duplicate mod {mod.ResoniteMod.Name} already declared in {existing.ModAssembly.File}. The new mod will be ignored.");
+			ResoniteModBase existing = ModNameLookupMap[mod.Name];
+			Logger.ErrorInternal($"{mod.ModAssembly?.File} declares duplicate mod {mod.Name} already declared in {existing.ModAssembly?.File ?? "Unknown Assembly"}. The new mod will be ignored.");
 			return;
 		}
 
 		LoadedMods.Add(mod);
-		AssemblyLookupMap.Add(mod.ModAssembly.Assembly, mod.ResoniteMod);
-		mod.ResoniteMod.loadedResoniteMod = mod; // complete the circular reference (used to look up config)
+		AssemblyLookupMap.Add(mod.ModAssembly.Assembly, mod);
 		mod.FinishedLoading = true; // used to signal that the mod is truly loaded
 	}
 
@@ -152,7 +153,7 @@ public class ModLoader {
 	/// Load the mod class and mod config for a given mod.
 	/// </summary>
 	/// <param name="mod">The <see cref="AssemblyFile"/> for an unloaded mod </param>
-	private static LoadedResoniteMod? InitializeMod(AssemblyFile mod) {
+	private static ResoniteMod? InitializeMod(AssemblyFile mod) {
 		if (mod.Assembly == null) {
 			return null;
 		}
@@ -179,20 +180,20 @@ public class ModLoader {
 			}
 
 			LoadProgressIndicator.SetCustom($"Loading configuration for [{resoniteMod.Name}/{resoniteMod.Version}]");
-			LoadedResoniteMod loadedMod = new(resoniteMod, mod);
+			resoniteMod.ModAssembly = mod;
 			Logger.MsgInternal($"Loaded mod [{resoniteMod.Name}/{resoniteMod.Version}] ({Path.GetFileName(mod.File)}) by {resoniteMod.Author} with Sha256: {mod.Sha256}");
-			loadedMod.ModConfiguration = ModConfiguration.LoadConfigForMod(loadedMod);
-			return loadedMod;
+			resoniteMod.ModConfiguration = ModConfiguration.LoadConfigForMod(resoniteMod);
+			return resoniteMod;
 		}
 	}
 
-	private static void HookMod(LoadedResoniteMod mod) {
-		LoadProgressIndicator.SetCustom($"Starting mod [{mod.ResoniteMod.Name}/{mod.ResoniteMod.Version}]");
-		Logger.DebugFuncInternal(() => $"calling OnEngineInit() for [{mod.ResoniteMod.Name}/{mod.ResoniteMod.Version}]");
+	private static void HookMod(ResoniteMod mod) {
+		LoadProgressIndicator.SetCustom($"Starting mod [{mod.Name}/{mod.Version}]");
+		Logger.DebugFuncInternal(() => $"calling OnEngineInit() for [{mod.Name}/{mod.Version}]");
 		try {
-			mod.ResoniteMod.OnEngineInit();
+			mod.OnEngineInit();
 		} catch (Exception e) {
-			Logger.ErrorInternal($"Mod {mod.ResoniteMod.Name} from {mod.ModAssembly.File} threw error from OnEngineInit():\n{e}");
+			Logger.ErrorInternal($"Mod {mod.Name} from {mod.ModAssembly?.File ?? "Unknown Assembly"} threw error from OnEngineInit():\n{e}");
 		}
 	}
 }

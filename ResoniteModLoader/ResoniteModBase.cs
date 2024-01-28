@@ -25,10 +25,13 @@ public abstract class ResoniteModBase {
 	public virtual string? Link { get; }
 
 	/// <summary>
-	/// A circular reference back to the LoadedResoniteMod that contains this ResoniteModBase.
+	/// A reference to the AssemblyFile that this mod was loaded from.
 	/// The reference is set once the mod is successfully loaded, and is null before that.
 	/// </summary>
-	internal LoadedResoniteMod? loadedResoniteMod;
+	internal AssemblyFile? ModAssembly { get; set; }
+
+	internal ModConfiguration? ModConfiguration { get; set; }
+	internal bool AllowSavingConfiguration = true;
 
 	/// <summary>
 	/// Gets this mod's current <see cref="ModConfiguration"/>.
@@ -40,7 +43,7 @@ public abstract class ResoniteModBase {
 		if (!FinishedLoading) {
 			throw new ModConfigurationException($"GetConfiguration() was called before {Name} was done initializing. Consider calling GetConfiguration() from within OnEngineInit()");
 		}
-		return loadedResoniteMod?.ModConfiguration;
+		return ModConfiguration;
 	}
 
 	internal bool FinishedLoading { get; set; }

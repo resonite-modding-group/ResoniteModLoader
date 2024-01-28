@@ -90,7 +90,6 @@ public class ModConfigurationDefinition : IModConfigurationDefinition {
 /// </summary>
 public class ModConfiguration : IModConfigurationDefinition {
 	private readonly ModConfigurationDefinition Definition;
-	internal LoadedResoniteMod LoadedResoniteMod { get; private set; }
 
 	private static readonly string ConfigDirectory = Path.Combine(Directory.GetCurrentDirectory(), "rml_config");
 	private static readonly string VERSION_JSON_KEY = "version";
@@ -159,8 +158,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 		return JsonSerializer.Create(settings);
 	}
 
-	private ModConfiguration(LoadedResoniteMod loadedResoniteMod, ModConfigurationDefinition definition) {
-		LoadedResoniteMod = loadedResoniteMod;
+	private ModConfiguration( ModConfigurationDefinition definition) {
 		Definition = definition;
 	}
 
@@ -168,7 +166,8 @@ public class ModConfiguration : IModConfigurationDefinition {
 		Directory.CreateDirectory(ConfigDirectory);
 	}
 
-	private static string GetModConfigPath(LoadedResoniteMod mod) {
+	private static string GetModConfigPath(ResoniteModBase mod) {
+		if (mod.ModAssembly is null) throw new ArgumentException("Cannot get the config path of a mod that has not been fully loaded");
 
 		string filename = Path.ChangeExtension(Path.GetFileName(mod.ModAssembly.File), ".json");
 		return Path.Combine(ConfigDirectory, filename);
@@ -234,7 +233,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 		if (TryGetValue(key, out object? value)) {
 			return value!;
 		} else {
-			throw new KeyNotFoundException($"{key.Name} not found in {LoadedResoniteMod.ResoniteMod.Name} configuration");
+			throw new KeyNotFoundException($"{key.Name} not found in {Owner.Name} configuration");
 		}
 	}
 
@@ -249,7 +248,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 		if (TryGetValue(key, out T? value)) {
 			return value;
 		} else {
-			throw new KeyNotFoundException($"{key.Name} not found in {LoadedResoniteMod.ResoniteMod.Name} configuration");
+			throw new KeyNotFoundException($"{key.Name} not found in {Owner.Name} configuration");
 		}
 	}
 
@@ -305,7 +304,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 	/// <exception cref="ArgumentException">The new value is not valid for the given key.</exception>
 	public void Set(ModConfigurationKey key, object? value, string? eventLabel = null) {
 		if (!Definition.TryGetDefiningKey(key, out ModConfigurationKey? definingKey)) {
-			throw new KeyNotFoundException($"{key.Name} is not defined in the config definition for {LoadedResoniteMod.ResoniteMod.Name}");
+			throw new KeyNotFoundException($"{key.Name} is not defined in the config definition for {Owner.Name}");
 		}
 
 		if (value == null) {
@@ -338,7 +337,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 		// the reason we don't fall back to untyped Set() here is so we can skip the type check
 
 		if (!Definition.TryGetDefiningKey(key, out ModConfigurationKey? definingKey)) {
-			throw new KeyNotFoundException($"{key.Name} is not defined in the config definition for {LoadedResoniteMod.ResoniteMod.Name}");
+			throw new KeyNotFoundException($"{key.Name} is not defined in the config definition for {Owner.Name}");
 		}
 
 		if (!definingKey!.Validate(value)) {
@@ -358,7 +357,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 		if (Definition.TryGetDefiningKey(key, out ModConfigurationKey? definingKey)) {
 			return definingKey!.Unset();
 		} else {
-			throw new KeyNotFoundException($"{key.Name} is not defined in the config definition for {LoadedResoniteMod.ResoniteMod.Name}");
+			throw new KeyNotFoundException($"{key.Name} is not defined in the config definition for {Owner.Name}");
 		}
 	}
 
@@ -368,8 +367,8 @@ public class ModConfiguration : IModConfigurationDefinition {
 			.Any();
 	}
 
-	internal static ModConfiguration? LoadConfigForMod(LoadedResoniteMod mod) {
-		ModConfigurationDefinition? definition = mod.ResoniteMod.BuildConfigurationDefinition();
+	internal static ModConfiguration? LoadConfigForMod(ResoniteMod mod) {
+		ModConfigurationDefinition? definition = mod.BuildConfigurationDefinition();
 		if (definition == null) {
 			// if there's no definition, then there's nothing for us to do here
 			return null;
@@ -383,19 +382,18 @@ public class ModConfiguration : IModConfigurationDefinition {
 			JObject json = JObject.Load(reader);
 			Version version = new(json[VERSION_JSON_KEY]!.ToObject<string>(jsonSerializer));
 			if (!AreVersionsCompatible(version, definition.Version)) {
-				var handlingMode = mod.ResoniteMod.HandleIncompatibleConfigurationVersions(definition.Version, version);
+				var handlingMode = mod.HandleIncompatibleConfigurationVersions(definition.Version, version);
 				switch (handlingMode) {
 					case IncompatibleConfigurationHandlingOption.CLOBBER:
-						Logger.WarnInternal($"{mod.ResoniteMod.Name} saved config version is {version} which is incompatible with mod's definition version {definition.Version}. Clobbering old config and starting fresh.");
-						return new ModConfiguration(mod, definition);
+						Logger.WarnInternal($"{mod.Name} saved config version is {version} which is incompatible with mod's definition version {definition.Version}. Clobbering old config and starting fresh.");
+						return new ModConfiguration(definition);
 					case IncompatibleConfigurationHandlingOption.FORCE_LOAD:
-						break;
 					case IncompatibleConfigurationHandlingOption.FORCELOAD:
 						break;
 					case IncompatibleConfigurationHandlingOption.ERROR: // fall through to default
 					default:
 						mod.AllowSavingConfiguration = false;
-						throw new ModConfigurationException($"{mod.ResoniteMod.Name} saved config version is {version} which is incompatible with mod's definition version {definition.Version}");
+						throw new ModConfigurationException($"{mod.Name} saved config version is {version} which is incompatible with mod's definition version {definition.Version}");
 				}
 			}
 			foreach (ModConfigurationKey key in definition.ConfigurationItemDefinitions) {
@@ -409,21 +407,21 @@ public class ModConfiguration : IModConfigurationDefinition {
 				} catch (Exception e) {
 					// I know not what exceptions the JSON library will throw, but they must be contained
 					mod.AllowSavingConfiguration = false;
-					throw new ModConfigurationException($"Error loading {key.ValueType()} config key \"{keyName}\" for {mod.ResoniteMod.Name}", e);
+					throw new ModConfigurationException($"Error loading {key.ValueType()} config key \"{keyName}\" for {mod.Name}", e);
 				}
 			}
 		} catch (FileNotFoundException) {
 			// return early and create a new config
-			return new ModConfiguration(mod, definition);
+			return new ModConfiguration(definition);
 		} catch (Exception e) {
 			// I know not what exceptions the JSON library will throw, but they must be contained
 			mod.AllowSavingConfiguration = true;
 			var backupPath = configFile + "." + Convert.ToBase64String(Encoding.UTF8.GetBytes(((int)DateTimeOffset.Now.TimeOfDay.TotalSeconds).ToString("X"))) + ".bak"; //ExampleMod.json.40A4.bak, unlikely to already exist
-			Logger.ErrorExternal($"Error loading config for {mod.ResoniteMod.Name}, creating new config file (old file can be found at {backupPath}). Exception:\n{e}");
+			Logger.ErrorExternal($"Error loading config for {mod.Name}, creating new config file (old file can be found at {backupPath}). Exception:\n{e}");
 			File.Move(configFile, backupPath);
 		}
 
-		return new ModConfiguration(mod, definition);
+		return new ModConfiguration(definition);
 	}
 
 	/// <summary>
@@ -462,7 +460,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 			float elapsedMillis = saveTimer.ElapsedMilliseconds;
 			saveTimer.Restart();
 			if (elapsedMillis < debounceMilliseconds) {
-				Logger.WarnInternal($"ModConfiguration.Save({saveDefaultValues}) called for \"{LoadedResoniteMod.ResoniteMod.Name}\" by \"{callee?.Name}\" from thread with id=\"{thread.ManagedThreadId}\", name=\"{thread.Name}\", bg=\"{thread.IsBackground}\", pool=\"{thread.IsThreadPoolThread}\". Last called {elapsedMillis / 1000f}s ago. This is very recent! Do not spam calls to ModConfiguration.Save()! All Save() calls by this mod are now subject to a {debounceMilliseconds}ms debouncing delay.");
+				Logger.WarnInternal($"ModConfiguration.Save({saveDefaultValues}) called for \"{Owner.Name}\" by \"{callee?.Name}\" from thread with id=\"{thread.ManagedThreadId}\", name=\"{thread.Name}\", bg=\"{thread.IsBackground}\", pool=\"{thread.IsThreadPoolThread}\". Last called {elapsedMillis / 1000f}s ago. This is very recent! Do not spam calls to ModConfiguration.Save()! All Save() calls by this mod are now subject to a {debounceMilliseconds}ms debouncing delay.");
 				if (saveAction == null && callee != null) {
 					// congrats, you've switched into Ultimate Punishment Mode where now I don't trust you and your Save() calls get debounced
 					saveAction = Util.Debounce<bool>(SaveInternal, debounceMilliseconds);
@@ -470,16 +468,16 @@ public class ModConfiguration : IModConfigurationDefinition {
 					naughtySavers.Add(callee.Name);
 				}
 			} else {
-				Logger.DebugFuncInternal(() => $"ModConfiguration.Save({saveDefaultValues}) called for \"{LoadedResoniteMod.ResoniteMod.Name}\" by \"{callee?.Name}\" from thread with id=\"{thread.ManagedThreadId}\", name=\"{thread.Name}\", bg=\"{thread.IsBackground}\", pool=\"{thread.IsThreadPoolThread}\". Last called {elapsedMillis / 1000f}s ago.");
+				Logger.DebugFuncInternal(() => $"ModConfiguration.Save({saveDefaultValues}) called for \"{Owner.Name}\" by \"{callee?.Name}\" from thread with id=\"{thread.ManagedThreadId}\", name=\"{thread.Name}\", bg=\"{thread.IsBackground}\", pool=\"{thread.IsThreadPoolThread}\". Last called {elapsedMillis / 1000f}s ago.");
 			}
 		} else {
 			saveTimer.Start();
-			Logger.DebugFuncInternal(() => $"ModConfiguration.Save({saveDefaultValues}) called for \"{LoadedResoniteMod.ResoniteMod.Name}\" by \"{callee?.Name}\" from thread with id=\"{thread.ManagedThreadId}\", name=\"{thread.Name}\", bg=\"{thread.IsBackground}\", pool=\"{thread.IsThreadPoolThread}\"");
+			Logger.DebugFuncInternal(() => $"ModConfiguration.Save({saveDefaultValues}) called for \"{Owner.Name}\" by \"{callee?.Name}\" from thread with id=\"{thread.ManagedThreadId}\", name=\"{thread.Name}\", bg=\"{thread.IsBackground}\", pool=\"{thread.IsThreadPoolThread}\"");
 		}
 
 		// prevent saving if we've determined something is amiss with the configuration
-		if (!LoadedResoniteMod.AllowSavingConfiguration) {
-			Logger.WarnInternal($"ModConfiguration for {LoadedResoniteMod.ResoniteMod.Name} will NOT be saved due to a safety check failing. This is probably due to you downgrading a mod.");
+		if (!Owner.AllowSavingConfiguration) {
+			Logger.WarnInternal($"ModConfiguration for {Owner.Name} will NOT be saved due to a safety check failing. This is probably due to you downgrading a mod.");
 			return;
 		}
 
@@ -513,11 +511,11 @@ public class ModConfiguration : IModConfigurationDefinition {
 
 		json[VALUES_JSON_KEY] = valueMap;
 
-		string configFile = GetModConfigPath(LoadedResoniteMod);
+		string configFile = GetModConfigPath(Owner);
 
 		File.WriteAllText(configFile, json.ToString());
 
-		Logger.DebugFuncInternal(() => $"Saved ModConfiguration for \"{LoadedResoniteMod.ResoniteMod.Name}\" in {stopwatch.ElapsedMilliseconds}ms");
+		Logger.DebugFuncInternal(() => $"Saved ModConfiguration for \"{Owner.Name}\" in {stopwatch.ElapsedMilliseconds}ms");
 	}
 
 	private void FireConfigurationChangedEvent(ModConfigurationKey key, string? label) {
