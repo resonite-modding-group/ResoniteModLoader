@@ -1,12 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
 	<PropertyGroup>
-		<ProjectGuid>{D4627C7F-8091-477A-ABDC-F1465D94D8D9}</ProjectGuid>
-		<OutputType>Library</OutputType>
-		<AppDesignerFolder>Properties</AppDesignerFolder>
 		<RootNamespace>ResoniteModLoader</RootNamespace>
 		<AssemblyName>ResoniteModLoader</AssemblyName>
-		<AssemblyFileName>ResoniteModLoader.dll</AssemblyFileName>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<TargetFramework>net472</TargetFramework>
 		<FileAlignment>512</FileAlignment>
@@ -16,34 +11,21 @@
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<EnableNETAnalyzers>True</EnableNETAnalyzers>
-		<AnalysisLevel>6.0-recommended</AnalysisLevel>
-		
-		<CopyToLibraries Condition="'$(CopyToLibraries)'==''">true</CopyToLibraries>
-		<DebugSymbols Condition="'$(Configuration)'=='Release'">false</DebugSymbols>
-		<DebugType Condition="'$(Configuration)'=='Release'">None</DebugType>
+		<AnalysisLevel>7.0-Recommended</AnalysisLevel>
+		<!-- Change CopyToLibraries to true if you'd like builds to be moved into the Libraries folder automatically-->
+		<CopyToLibraries Condition="'$(CopyToLibraries)'==''">false</CopyToLibraries>
+		<DebugType Condition="'$(Configuration)'=='Debug'">embedded</DebugType>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(ResonitePath)'==''">
+		<!-- If you don't want to provide a ResonitePath in dotnet build, you can specify one here -->
 		<ResonitePath>$(MSBuildThisFileDirectory)Resonite/</ResonitePath>
 		<ResonitePath Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Resonite\')">C:\Program Files (x86)\Steam\steamapps\common\Resonite\</ResonitePath>
 		<ResonitePath Condition="Exists('$(HOME)/.steam/steam/steamapps/common/Resonite/')">$(HOME)/.steam/steam/steamapps/common/Resonite/</ResonitePath>
-		<ResonitePath Condition="Exists('R:\SteamLibrary\steamapps\common\Resonite\')">R:\SteamLibrary\steamapps\common\Resonite\</ResonitePath>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)'=='Release'">
-		<DebugType>none</DebugType>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
-		<DebugType>embedded</DebugType>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Lib.Harmony" Version="2.2.2" />
-		<Reference Include="Newtonsoft.Json">
-			<HintPath>$(ResonitePath)Resonite_Data\Managed\Newtonsoft.Json.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
 		<Reference Include="Elements.Core">
 			<HintPath>$(ResonitePath)Resonite_Data\Managed\Elements.Core.dll</HintPath>
 			<Private>False</Private>
@@ -52,19 +34,28 @@
 			<HintPath>$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
+		<Reference Include="Newtonsoft.Json">
+			<HintPath>$(ResonitePath)Resonite_Data\Managed\Newtonsoft.Json.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
 		<Reference Include="Assembly-CSharp">
 			<HintPath>$(ResonitePath)Resonite_Data\Managed\Assembly-CSharp.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
-		<Reference Include="lib-client-csharp">
-			<HintPath>$(ResonitePath)Resonite_Data\Managed\lib-client-csharp.dll</HintPath>
+		<Reference Include="UnityEngine.CoreModule">
+			<HintPath>R:\SteamLibrary\steamapps\common\Resonite\Resonite_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
-
 	</ItemGroup>
 
 	<ItemGroup>
 		<Using Remove="System.Net.Http" />
 	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(CopyToLibraries)'=='true'">
+		<Message Text="Attempting to copy $(TargetFileName) to $(ResonitePath)Libraries" Importance="high" />
+		<Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(ResonitePath)Libraries" ContinueOnError="true" />
+		<Copy SourceFiles="$(TargetDir)$(TargetName).xml" DestinationFolder="$(ResonitePath)Libraries" ContinueOnError="true" />
+	</Target>
 
 </Project>
