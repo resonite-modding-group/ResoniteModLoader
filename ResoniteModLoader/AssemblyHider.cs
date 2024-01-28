@@ -15,7 +15,7 @@ internal static class AssemblyHider {
 	/// </summary>
 	private static HashSet<string> knownDotNetCompanies = new List<string>() {
 		"Mono development team", // used by .NET stuff and Mono.Security
-	}.Select(company => company.ToLower()).ToHashSet();
+	}.Select(company => company.ToLowerInvariant()).ToHashSet();
 
 	/// <summary>
 	/// Products that indicate an assembly is part of .NET.
@@ -25,7 +25,7 @@ internal static class AssemblyHider {
 		"Microsoft® .NET", // used by a few System.* assemblies
 		"Microsoft® .NET Framework", // used by most of the System.* assemblies
 		"Mono Common Language Infrastructure", // used by mscorlib stuff
-	}.Select(product => product.ToLower()).ToHashSet();
+	}.Select(product => product.ToLowerInvariant()).ToHashSet();
 
 	/// <summary>
 	/// Assemblies that were already loaded when RML started up, minus a couple known non-assemblies.
@@ -204,13 +204,13 @@ internal static class AssemblyHider {
 	private static bool LooksLikeDotNetAssembly(Assembly assembly) {
 		// check the assembly's company
 		string? company = assembly.GetCustomAttribute<AssemblyCompanyAttribute>()?.Company;
-		if (company != null && knownDotNetCompanies.Contains(company.ToLower())) {
+		if (company != null && knownDotNetCompanies.Contains(company.ToLowerInvariant())) {
 			return true;
 		}
 
 		// check the assembly's product
 		string? product = assembly.GetCustomAttribute<AssemblyProductAttribute>()?.Product;
-		if (product != null && knownDotNetProducts.Contains(product.ToLower())) {
+		if (product != null && knownDotNetProducts.Contains(product.ToLowerInvariant())) {
 			return true;
 		}
 
