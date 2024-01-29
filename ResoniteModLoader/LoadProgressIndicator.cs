@@ -27,9 +27,7 @@ internal static class LoadProgressIndicator {
 	internal static bool SetCustom(string text) {
 		if (ModLoaderConfiguration.Get().HideVisuals) { return true; }
 		if (!ModLoader.IsHeadless) {
-			if (ShowSubphase != null) {
-				ShowSubphase.SetValue(Engine.Current.InitProgress, text);
-			}
+			ShowSubphase?.SetValue(Engine.Current.InitProgress, text);
 			return true;
 		}
 		return false;

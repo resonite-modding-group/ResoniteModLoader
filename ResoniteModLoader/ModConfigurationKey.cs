@@ -5,7 +5,7 @@ namespace ResoniteModLoader;
 /// </summary>
 public abstract class ModConfigurationKey {
 	internal ModConfigurationKey(string name, string? description, bool internalAccessOnly) {
-		Name = name ?? throw new ArgumentNullException("Configuration key name must not be null");
+		Name = name ?? throw new ArgumentNullException(nameof(name));
 		Description = description;
 		InternalAccessOnly = internalAccessOnly;
 	}
@@ -28,7 +28,6 @@ public abstract class ModConfigurationKey {
 	/// <summary>
 	/// Delegate for handling configuration changes.
 	/// </summary>
-	/// <param name="configKey">The key of the <see cref="ModConfigurationKey"/> that changed.</param>
 	/// <param name="newValue">The new value of the <see cref="ModConfigurationKey"/>.</param>
 
 	public delegate void OnChangedHandler(object? newValue);

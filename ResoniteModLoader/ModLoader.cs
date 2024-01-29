@@ -16,25 +16,26 @@ public class ModLoader {
 	internal static readonly Dictionary<Assembly, ResoniteMod> AssemblyLookupMap = new(); // used for logging
 	private static readonly Dictionary<string, ResoniteMod> ModNameLookupMap = new(); // used for duplicate mod checking
 	
-  /// <summary>
-	/// True if ResoniteModLoader is being loaded by a headless server
+
+	/// <summary>
+	/// Returns <c>true</c> if ResoniteModLoader was loaded by a headless
 	/// </summary>
 	public static bool IsHeadless { // Extremely thorough, but doesn't rely on any specific class to check for headless presence
-        get {
-            return _isHeadless ??= AppDomain.CurrentDomain.GetAssemblies().Any(a => {
-                IEnumerable<Type> types;
-                try {
-                    types = a.GetTypes();
-                }
-                catch (ReflectionTypeLoadException e) {
-                    types = e.Types;
-                }
-                return types.Any(t => t != null && t.Namespace == "FrooxEngine.Headless");
-            });
-        }
-    }
+		get {
+			return _isHeadless ??= AppDomain.CurrentDomain.GetAssemblies().Any(a => {
+				IEnumerable<Type> types;
+				try {
+					types = a.GetTypes();
+				} catch (ReflectionTypeLoadException e) {
+					types = e.Types;
+				}
+				return types.Any(t => t != null && t.Namespace == "FrooxEngine.Headless");
+			});
+		}
+	}
 
-    private static bool? _isHeadless;
+
+	private static bool? _isHeadless;
 
 	/// <summary>
 	/// Allows reading metadata for all loaded mods
@@ -123,7 +124,7 @@ public class ModLoader {
 	/// </summary>
 	/// <param name="mod">The successfully loaded mod to register</param>
 	private static void RegisterMod(ResoniteMod mod) {
-		if (mod.ModAssembly is null) throw new ArgumentException("Cannot register a mod before it's propertly initialized.");
+		if (mod.ModAssembly is null) throw new ArgumentException("Cannot register a mod before it's properly initialized.");
 
 		try {
 			ModNameLookupMap.Add(mod.Name, mod);
