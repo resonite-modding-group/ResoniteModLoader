@@ -45,7 +45,7 @@ public class ModLoader {
 			.ToList();
 	}
 
-	internal static void LoadMods(Harmony harmony) {
+	internal static void LoadMods() {
 		ModLoaderConfiguration config = ModLoaderConfiguration.Get();
 		if (config.NoMods) {
 			Logger.DebugInternal("Mods will not be loaded due to configuration file");
@@ -88,8 +88,6 @@ public class ModLoader {
 				Logger.ErrorInternal($"Unexpected exception initializing mod from {mod.File}:\n{e}");
 			}
 		}
-
-		ModConfiguration.RegisterShutdownHook(harmony);
 
 		foreach (ResoniteMod mod in LoadedMods) {
 			try {
