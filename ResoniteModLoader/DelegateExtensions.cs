@@ -12,7 +12,7 @@ internal static class DelegateExtensions {
 			}
 		}
 
-		if (exceptions.Any()) {
+		if (exceptions.Count != 0) {
 			throw new AggregateException(exceptions);
 		}
 	}

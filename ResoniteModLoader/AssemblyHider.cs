@@ -13,7 +13,7 @@ internal static class AssemblyHider {
 	/// This list was found by debug logging the AssemblyCompany
 	/// for all loaded assemblies.
 	/// </summary>
-	private static HashSet<string> knownDotNetCompanies = new List<string>() {
+	private readonly static HashSet<string> knownDotNetCompanies = new List<string>() {
 		"Mono development team", // used by .NET stuff and Mono.Security
 	}.Select(company => company.ToLowerInvariant()).ToHashSet();
 
@@ -21,7 +21,7 @@ internal static class AssemblyHider {
 	/// Products that indicate an assembly is part of .NET.
 	/// This list was found by debug logging the AssemblyProductAttribute for all loaded assemblies.
 	/// </summary>
-	private static HashSet<string> knownDotNetProducts = new List<string>() {
+	private readonly static HashSet<string> knownDotNetProducts = new List<string>() {
 		"Microsoft® .NET", // used by a few System.* assemblies
 		"Microsoft® .NET Framework", // used by most of the System.* assemblies
 		"Mono Common Language Infrastructure", // used by mscorlib stuff

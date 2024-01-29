@@ -3,7 +3,7 @@ using FrooxEngine;
 namespace ResoniteModLoader;
 
 [ImplementableClass(true)]
-internal class ExecutionHook {
+internal static class ExecutionHook {
 #pragma warning disable CS0169, IDE0051, CA1823
 	// fields must exist due to reflective access
 	private static Type? __connectorType;

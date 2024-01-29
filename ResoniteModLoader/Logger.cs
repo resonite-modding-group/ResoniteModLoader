@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace ResoniteModLoader;
 
-internal class Logger {
+internal sealed class Logger {
 	// logged for null objects
 	internal const string NULL_STRING = "null";
 

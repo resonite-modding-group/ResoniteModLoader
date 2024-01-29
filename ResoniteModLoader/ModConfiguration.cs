@@ -92,8 +92,8 @@ public class ModConfiguration : IModConfigurationDefinition {
 	private readonly ModConfigurationDefinition Definition;
 
 	private static readonly string ConfigDirectory = Path.Combine(Directory.GetCurrentDirectory(), "rml_config");
-	private static readonly string VERSION_JSON_KEY = "version";
-	private static readonly string VALUES_JSON_KEY = "values";
+	private const string VERSION_JSON_KEY = "version";
+	private const string VALUES_JSON_KEY = "values";
 
 	/// <inheritdoc/>
 	public ResoniteModBase Owner => Definition.Owner;
@@ -132,7 +132,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 	// any mod that calls Save() for the ModConfiguration within debounceMilliseconds of the previous call to the same ModConfiguration
 	// will be put into Ultimate Punishment Mode, and ALL their Save() calls, regardless of ModConfiguration, will be debounced.
 	// The naughty list is global, while the actual debouncing is per-configuration.
-	private static ISet<string> naughtySavers = new HashSet<string>();
+	private static HashSet<string> naughtySavers = new HashSet<string>();
 
 	// used to keep track of the debouncers for this configuration.
 	private Dictionary<string, Action<bool>> saveActionForCallee = new();
@@ -218,7 +218,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 	/// </summary>
 	/// <param name="key">The key to check.</param>
 	/// <returns><c>true</c> if the key is the defining key.</returns>
-	internal bool IsKeyDefiningKey(ModConfigurationKey key) {
+	internal static bool IsKeyDefiningKey(ModConfigurationKey key) {
 		// a key is the defining key if and only if its DefiningKey property references itself
 		return ReferenceEquals(key, key.DefiningKey); // this is safe because we'll throw a NRE if key is null
 	}

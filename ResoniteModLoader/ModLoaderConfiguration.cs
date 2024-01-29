@@ -1,6 +1,6 @@
 namespace ResoniteModLoader;
 
-internal class ModLoaderConfiguration {
+internal sealed class ModLoaderConfiguration {
 	private const string CONFIG_FILENAME = "ResoniteModLoader.config";
 
 	private static ModLoaderConfiguration? _configuration;

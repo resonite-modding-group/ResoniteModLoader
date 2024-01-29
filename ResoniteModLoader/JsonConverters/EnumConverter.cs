@@ -29,7 +29,7 @@ internal sealed class EnumConverter : JsonConverter {
 		writer.WriteValue(serialized);
 	}
 
-	private bool TryConvert(object value, Type newType, out object? converted) {
+	private static bool TryConvert(object value, Type newType, out object? converted) {
 		try {
 			converted = Convert.ChangeType(value, newType);
 			return true;
