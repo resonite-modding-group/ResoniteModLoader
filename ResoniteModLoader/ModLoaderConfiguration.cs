@@ -16,7 +16,6 @@ internal sealed class ModLoaderConfiguration {
 				{ "debug", (value) => _configuration.Debug = bool.Parse(value) },
 				{ "hidevisuals", (value) => _configuration.HideVisuals = bool.Parse(value) },
 				{ "nomods", (value) => _configuration.NoMods = bool.Parse(value) },
-				{ "nolibraries", (value) => _configuration.NoLibraries = bool.Parse(value) },
 				{ "advertiseversion", (value) => _configuration.AdvertiseVersion = bool.Parse(value) },
 				{ "logconflicts", (value) => _configuration.LogConflicts = bool.Parse(value) },
 				{ "hidemodtypes", (value) => _configuration.HideModTypes = bool.Parse(value) },
@@ -67,7 +66,6 @@ internal sealed class ModLoaderConfiguration {
 	public bool Debug { get; private set; } = false;
 	public bool NoMods { get; private set; } = false;
 	public bool HideVisuals { get; private set; } = false;
-	public bool NoLibraries { get; private set; } = false;
 	public bool AdvertiseVersion { get; private set; } = false;
 	public bool LogConflicts { get; private set; } = true;
 	public bool HideModTypes { get; private set; } = true;
