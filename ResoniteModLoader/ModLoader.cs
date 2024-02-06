@@ -15,7 +15,7 @@ public sealed class ModLoader {
 	private static readonly List<ResoniteMod> LoadedMods = new(); // used for mod enumeration
 	internal static readonly Dictionary<Assembly, ResoniteMod> AssemblyLookupMap = new(); // used for logging
 	private static readonly Dictionary<string, ResoniteMod> ModNameLookupMap = new(); // used for duplicate mod checking
-	
+
 
 	/// <summary>
 	/// Returns <c>true</c> if ResoniteModLoader was loaded by a headless

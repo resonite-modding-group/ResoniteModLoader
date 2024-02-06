@@ -158,7 +158,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 		return JsonSerializer.Create(settings);
 	}
 
-	private ModConfiguration( ModConfigurationDefinition definition) {
+	private ModConfiguration(ModConfigurationDefinition definition) {
 		Definition = definition;
 	}
 
@@ -596,7 +596,7 @@ public enum IncompatibleConfigurationHandlingOption {
 	/// <summary>
 	/// Ignore the version number and attempt to load the config from disk.
 	/// </summary>
-	[Obsolete ("Use IncompatibleConfigurationHandlingOption.FORCELOAD Instead")]
+	[Obsolete("Use IncompatibleConfigurationHandlingOption.FORCELOAD Instead")]
 	FORCE_LOAD,
 
 	/// <summary>

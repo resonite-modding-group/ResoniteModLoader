@@ -1,6 +1,6 @@
 using HarmonyLib;
 
-namespace ResoniteModLoader; 
+namespace ResoniteModLoader;
 // this class does all the harmony-related RML work.
 // this is needed to avoid importing harmony in ExecutionHook, where it may not be loaded yet.
 internal sealed class HarmonyWorker {
