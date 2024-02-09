@@ -6,7 +6,7 @@ A mod loader for [Resonite](https://resonite.com/). Consider joining our communi
 
 If you are using the Steam version of Resonite you are in the right place. If you are on Linux, read the [Linux Notes](doc/linux.md).
 
-1. Download [ResoniteModLoader.dll](https://github.com/resonite-modding-group/ResoniteModLoader/releases/latest/download/ResoniteModLoader.dll) to Resonite's `Libraries` folder (`C:\Program Files (x86)\Steam\steamapps\common\Resonite\Libraries`).
+1. Download [ResoniteModLoader.dll](https://github.com/resonite-modding-group/ResoniteModLoader/releases/latest/download/ResoniteModLoader.dll) to Resonite's `Libraries` folder (`C:\Program Files (x86)\Steam\steamapps\common\Resonite\Libraries`). You may need to create this folder if it's missing. 
 2. Place [0Harmony.dll](https://github.com/resonite-modding-group/ResoniteModLoader/releases/latest/download/0Harmony.dll) into a `rml_libs` folder under your Resonite install directory (`C:\Program Files (x86)\Steam\steamapps\common\Resonite\rml_libs`). You will need to create this folder.
 3. Add the following to Resonite's [launch options](doc/launch_options.md): `-LoadAssembly Libraries/ResoniteModLoader.dll`. If you put `ResoniteModLoader.dll` somewhere else you will need to change the path. 
 4. Optionally add mod DLL files to a `rml_mods` folder under your Resonite install directory (`C:\Program Files (x86)\Steam\steamapps\common\Resonite\rml_mods`). You can create the folder if it's missing, or launch Resonite once with ResoniteModLoader installed and it will be created automatically.
