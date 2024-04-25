@@ -141,6 +141,7 @@ internal static class VersionReset {
 			Type.GetType("FrooxEngine.IComponent, FrooxEngine")?.Assembly,
 			Type.GetType("ProtoFlux.Nodes.FrooxEngine.ProtoFluxMapper, ProtoFlux.Nodes.FrooxEngine")?.Assembly,
 			Type.GetType("ProtoFluxBindings.ProtoFluxMapper, ProtoFluxBindings")?.Assembly,
+			Type.GetType("FrooxEngineBootstrap, Assembly-CSharp")?.Assembly,
 			Assembly.GetExecutingAssembly(),
 		};
 		return list
