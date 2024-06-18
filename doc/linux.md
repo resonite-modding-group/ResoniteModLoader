@@ -18,7 +18,3 @@ To set up the workaround, run the following commands in your terminal:
 cd "$HOME/Steam/steamapps/common/Resonite"
 ln -s Resonite_Data/Managed 'Resonite_Data\Managed'
 ```
-
-## Headless
-
-At the moment, the headless requires steam to be logged in and running to be used which can complicate a standalone headless setup such as in a container. This should be resolved soon when the game is fully released.
