@@ -69,6 +69,11 @@ public abstract class ModConfigurationKey {
 	}
 
 	/// <inheritdoc/>
+	public override string ToString() {
+		return $"ConfigKey Name: {Name}, Description: {Description}, InternalAccessOnly: {InternalAccessOnly}, Type: {ValueType()}, Value: {Value}";
+	}
+
+	/// <inheritdoc/>
 	public override int GetHashCode() {
 		return 539060726 + EqualityComparer<string>.Default.GetHashCode(Name);
 	}
