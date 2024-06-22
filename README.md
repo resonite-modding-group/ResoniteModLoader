@@ -12,11 +12,6 @@ A mod loader for [Resonite](https://resonite.com/). Consider joining our communi
 
 If ResoniteModLoader isn't working after following these steps, take a look at our [troubleshooting page](doc/troubleshooting.md).
 
-## Optional Mod Manager
-
-For an easy way to manage mods, check out [Resolute](https://github.com/Gawdl3y/Resolute). It simplifies the installation and updating for verified mods from the [mod manifest](https://github.com/resonite-modding-group/resonite-mod-manifest).
-
-
 ### Example Directory Structure
 
 Your Resonite directory should now look similar to the following. Files not related to modding are not shown.
@@ -46,7 +41,9 @@ Note that additional libraries (rml_libs) can also be in the root of the Resonit
 
 ## Finding Mods
 
-A list of known mods will be made available on the Resonite Mod List. New mods and updates will also announced in [our Discord][Resonite Modding Discord].
+For an easy way to find and manage mods, check out [Resolute](https://github.com/Gawdl3y/Resolute). It simplifies the installation and updating for verified mods from the [mod manifest](https://github.com/resonite-modding-group/resonite-mod-manifest).
+
+New mods and updates also are posted in [our Discord][Resonite Modding Discord].
 
 ## Frequently Asked Questions
 
