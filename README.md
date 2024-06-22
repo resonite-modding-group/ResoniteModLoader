@@ -6,7 +6,7 @@ A mod loader for [Resonite](https://resonite.com/). Consider joining our communi
 
 1. Download [ResoniteModLoader.dll](https://github.com/resonite-modding-group/ResoniteModLoader/releases/latest/download/ResoniteModLoader.dll) to Resonite's `Libraries` folder (`C:\Program Files (x86)\Steam\steamapps\common\Resonite\Libraries`). You may need to create this folder if it's missing. 
 2. Place [0Harmony.dll](https://github.com/resonite-modding-group/ResoniteModLoader/releases/latest/download/0Harmony.dll) into a `rml_libs` folder under your Resonite install directory (`C:\Program Files (x86)\Steam\steamapps\common\Resonite\rml_libs`). You will need to create this folder.
-3. Add the following to Resonite's [launch options](doc/launch_options.md): `-LoadAssembly Libraries/ResoniteModLoader.dll`. If you put `ResoniteModLoader.dll` somewhere else you will need to change the path. 
+3. Add the following to Resonite's [launch options](https://github.com/resonite-modding-group/ResoniteModLoader/wiki/Launch-Options): `-LoadAssembly Libraries/ResoniteModLoader.dll`. If you put `ResoniteModLoader.dll` somewhere else you will need to change the path. 
 4. Optionally add mod DLL files to a `rml_mods` folder under your Resonite install directory (`C:\Program Files (x86)\Steam\steamapps\common\Resonite\rml_mods`). You can create the folder if it's missing, or launch Resonite once with ResoniteModLoader installed and it will be created automatically.
 5. Start the game. If you want to verify that ResoniteModLoader is working you can check the Resonite logs. (`C:\Program Files (x86)\Steam\steamapps\common\Resonite\Logs`). The modloader adds some very obvious logs on startup, and if they're missing something has gone wrong. Here is an [example log file](doc/example_log.log) where everything worked correctly.
 
@@ -51,11 +51,11 @@ Many questions about what RML is and how it works are answered on our [frequentl
 
 ## Making a Mod
 
-Check out the [Mod Creation Guide](doc/making_mods.md).
+Check out the [Mod Creation Guide](https://github.com/resonite-modding-group/ResoniteModLoader/wiki/Creating-Mods).
 
 ## Configuration
 
-ResoniteModLoader aims to have a reasonable default configuration, but certain things can be adjusted via an [optional config file](doc/modloader_config.md).
+ResoniteModLoader aims to have a reasonable default configuration, but certain things can be adjusted via an [optional config file](https://github.com/resonite-modding-group/ResoniteModLoader/wiki/Modloader-Config).
 
 ## Contributing
 
