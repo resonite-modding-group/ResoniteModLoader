@@ -28,7 +28,7 @@ Your Resonite directory should now look similar to the following. Files not rela
 │
 ├───rml_libs
 │       0Harmony.dll
-│       <More libs go here>
+│       <More mod libraries go here>
 │
 ├───rml_config
 │       <Mod config files here>
