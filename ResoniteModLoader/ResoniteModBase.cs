@@ -20,7 +20,7 @@ public abstract class ResoniteModBase {
 	public abstract string Version { get; }
 
 	/// <summary>
-	/// Gets an optional hyperlink to the mod's homepage.
+	/// Gets an optional hyperlink to the mod's repo or homepage.
 	/// </summary>
 	public virtual string? Link { get; }
 
