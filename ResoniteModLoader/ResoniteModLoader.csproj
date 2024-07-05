@@ -25,7 +25,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Lib.Harmony" Version="2.2.2" />
+		<PackageReference Include="Lib.Harmony" Version="2.3.3" />
 		<Reference Include="Elements.Core">
 			<HintPath>$(ResonitePath)Resonite_Data\Managed\Elements.Core.dll</HintPath>
 			<Private>False</Private>
