@@ -387,7 +387,6 @@ public class ModConfiguration : IModConfigurationDefinition {
 					case IncompatibleConfigurationHandlingOption.CLOBBER:
 						Logger.WarnInternal($"{mod.Name} saved config version is {version} which is incompatible with mod's definition version {definition.Version}. Clobbering old config and starting fresh.");
 						return new ModConfiguration(definition);
-					case IncompatibleConfigurationHandlingOption.FORCE_LOAD:
 					case IncompatibleConfigurationHandlingOption.FORCELOAD:
 						break;
 					case IncompatibleConfigurationHandlingOption.ERROR: // fall through to default
@@ -592,12 +591,6 @@ public enum IncompatibleConfigurationHandlingOption {
 	/// Destroy the saved config and start over from scratch.
 	/// </summary>
 	CLOBBER,
-
-	/// <summary>
-	/// Ignore the version number and attempt to load the config from disk.
-	/// </summary>
-	[Obsolete("Use IncompatibleConfigurationHandlingOption.FORCELOAD Instead")]
-	FORCE_LOAD,
 
 	/// <summary>
 	/// Ignore the version number and attempt to load the config from disk.
