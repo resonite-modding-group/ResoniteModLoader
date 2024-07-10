@@ -4,7 +4,7 @@ namespace ResoniteModLoader;
 
 [ImplementableClass(true)]
 internal static class ExecutionHook {
-#pragma warning disable CS0169, IDE0051, CA1823
+#pragma warning disable CS0169, IDE0051, CA1823, IDE0044
 	// fields must exist due to reflective access
 	private static Type? __connectorType;
 	private static Type? __connectorTypes;
@@ -13,7 +13,7 @@ internal static class ExecutionHook {
 	private static DummyConnector InstantiateConnector() {
 		return new DummyConnector();
 	}
-#pragma warning restore CS0169, IDE0051, CA1823
+#pragma warning restore CS0169, IDE0051, CA1823, IDE0044
 
 	static ExecutionHook() {
 		Logger.DebugInternal($"Start of ExecutionHook");
