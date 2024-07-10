@@ -16,6 +16,7 @@ internal static class ExecutionHook {
 #pragma warning restore CS0169, IDE0051, CA1823
 
 	static ExecutionHook() {
+		Logger.DebugInternal($"Start of ExecutionHook");
 		try {
 			HashSet<Assembly> initialAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToHashSet();
 			LoadProgressIndicator.SetCustom("Loading Libraries");
