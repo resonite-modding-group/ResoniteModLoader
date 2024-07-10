@@ -1,6 +1,6 @@
-using Elements.Core;
-
 using System.Diagnostics;
+
+using Elements.Core;
 
 namespace ResoniteModLoader;
 

@@ -42,8 +42,7 @@ public sealed class ModLoader {
 	/// </summary>
 	/// <returns>A new list containing each loaded mod</returns>
 	public static IEnumerable<ResoniteModBase> Mods() {
-		return LoadedMods
-			.ToList();
+		return LoadedMods.ToList();
 	}
 
 	internal static void LoadMods() {

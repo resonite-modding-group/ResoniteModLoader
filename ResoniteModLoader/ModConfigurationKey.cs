@@ -29,7 +29,6 @@ public abstract class ModConfigurationKey {
 	/// Delegate for handling configuration changes.
 	/// </summary>
 	/// <param name="newValue">The new value of the <see cref="ModConfigurationKey"/>.</param>
-
 	public delegate void OnChangedHandler(object? newValue);
 
 	/// <summary>

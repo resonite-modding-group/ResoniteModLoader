@@ -2,7 +2,7 @@ namespace ResoniteModLoader;
 
 internal static class AssemblyLoader {
 	private static string[]? GetAssemblyPathsFromDir(string dirName) {
-		
+
 		string assembliesDirectory = Path.Combine(Directory.GetCurrentDirectory(), dirName);
 
 		Logger.MsgInternal($"Loading assemblies from {dirName}");

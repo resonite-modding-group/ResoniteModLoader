@@ -1,4 +1,3 @@
-using Elements.Core;
 using FrooxEngine;
 
 namespace ResoniteModLoader;
@@ -23,8 +22,7 @@ internal static class ExecutionHook {
 			var byName = (Dictionary<string, AssemblyTypeRegistry>)typeof(GlobalTypeRegistry).GetField("_byName", flags).GetValue(null);
 
 			var firstAsm = byName.FirstOrDefault(asm => asm.Value.Assembly == typeof(ExecutionHook).Assembly);
-			if (firstAsm.Value != null && byName.ContainsKey(firstAsm.Key))
-			{
+			if (firstAsm.Value != null && byName.ContainsKey(firstAsm.Key)) {
 				Logger.DebugInternal($"Removing Assembly {firstAsm.Key} from global type registry");
 				byName.Remove(firstAsm.Key);
 			}
