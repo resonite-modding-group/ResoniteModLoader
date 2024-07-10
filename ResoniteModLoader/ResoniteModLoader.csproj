@@ -17,7 +17,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<EnableNETAnalyzers>True</EnableNETAnalyzers>
 		<AnalysisLevel>6.0-recommended</AnalysisLevel>
-		
+
 		<CopyToLibraries Condition="'$(CopyToLibraries)'==''">true</CopyToLibraries>
 		<DebugSymbols Condition="'$(Configuration)'=='Release'">false</DebugSymbols>
 		<DebugType Condition="'$(Configuration)'=='Release'">None</DebugType>
@@ -38,6 +38,7 @@
 		<DebugType>embedded</DebugType>
 	</PropertyGroup>
 
+	
 	<ItemGroup>
 		<PackageReference Include="Lib.Harmony" Version="2.2.2" />
 		<Reference Include="Newtonsoft.Json">
@@ -60,9 +61,9 @@
 			<HintPath>$(ResonitePath)Resonite_Data\Managed\lib-client-csharp.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
-
+		
 	</ItemGroup>
-
+	
 	<ItemGroup>
 		<Using Remove="System.Net.Http" />
 	</ItemGroup>

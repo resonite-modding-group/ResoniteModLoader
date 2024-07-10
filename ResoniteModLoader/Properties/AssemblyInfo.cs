@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using Elements.Core;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
@@ -34,6 +35,10 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion(ResoniteModLoader.ModLoader.VERSION_CONSTANT)]
 [assembly: AssemblyFileVersion(ResoniteModLoader.ModLoader.VERSION_CONSTANT)]
 
+// Mark this assembly as part of the data model so that FrooxEngine knows to load it properly
+[assembly: DataModelAssembly(false)]
+
 // Prevent FrooxEngine.Weaver from modifying this assembly, as it doesn't need anything done to it
 // This keeps Weaver from overwriting AssemblyVersionAttribute
 [module: Description("FROOXENGINE_WEAVED")]
+
