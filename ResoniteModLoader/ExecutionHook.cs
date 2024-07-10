@@ -1,3 +1,4 @@
+using Elements.Core;
 using FrooxEngine;
 
 namespace ResoniteModLoader;
@@ -16,7 +17,18 @@ internal class ExecutionHook {
 #pragma warning restore CS0169, IDE0051, CA1823
 
 	static ExecutionHook() {
+		Logger.MsgInternal("AM I LOADED???");
 		try {
+			BindingFlags flags = BindingFlags.Static | BindingFlags.NonPublic;
+			var byName = (Dictionary<string, AssemblyTypeRegistry>)typeof(GlobalTypeRegistry).GetField("_byName", flags).GetValue(null);
+
+			var firstAsm = byName.FirstOrDefault(asm => asm.Value.Assembly == typeof(ExecutionHook).Assembly);
+
+			if (firstAsm.Value != null && byName.ContainsKey(firstAsm.Key)) {
+				byName.Remove(firstAsm.Key);
+				Logger.MsgInternal("Found my assembly in the global type registry, removing to retain compatibility. :) <3");
+			}
+
 			HashSet<Assembly> initialAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToHashSet();
 			LoadProgressIndicator.SetCustom("Loading Libraries");
 			AssemblyFile[] loadedAssemblies = AssemblyLoader.LoadAssembliesFromDir("rml_libs");
@@ -28,7 +40,6 @@ internal class ExecutionHook {
 			}
 			LoadProgressIndicator.SetCustom("Initializing");
 			DebugInfo.Log();
-			VersionReset.Initialize();
 			HarmonyWorker.LoadModsAndHideModAssemblies(initialAssemblies);
 			LoadProgressIndicator.SetCustom("Loaded");
 		} catch (Exception e) {
