@@ -18,4 +18,4 @@ using Elements.Core;
 [module: Description("FROOXENGINE_WEAVED")]
 
 //Mark as DataModelAssembly for the Plugin loading system to load this assembly
-[assembly: DataModelAssembly(false)]
+[assembly: DataModelAssembly(DataModelAssemblyType.Optional)]
