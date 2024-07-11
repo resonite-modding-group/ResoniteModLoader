@@ -151,7 +151,7 @@ You may optionally override a `HandleIncompatibleConfigurationVersions()` functi
 
 - `IncompatibleConfigurationHandlingOption.ERROR`: Fail to read the config, and block saving over the config on disk.
 - `IncompatibleConfigurationHandlingOption.CLOBBER`: Destroy the saved config and start over from scratch.
-- `IncompatibleConfigurationHandlingOption.FORCE_LOAD`: Ignore the version number and load the config anyways. This may throw exceptions and break your mod.
+- `IncompatibleConfigurationHandlingOption.FORCELOAD`: Ignore the version number and load the config anyways. This may throw exceptions and break your mod.
 
 If you do not override `HandleIncompatibleConfigurationVersions()`, the default is to return `ERROR` on all incompatibilities. `HandleIncompatibleConfigurationVersions()` is only called for configs that are detected to be incompatible under [semantic versioning][semver].
 
