@@ -9,9 +9,12 @@ internal sealed class DashScreenInjector
 
 	internal static void PatchScreenManager(Harmony harmony)
 	{
-		MethodInfo SetupDefaultMethod = AccessTools.DeclaredMethod(typeof(UserspaceScreensManager), "SetupDefaults");
-		MethodInfo TryInjectScreenMethod = AccessTools.DeclaredMethod(typeof(DashScreenInjector), nameof(TryInjectScreen));
-		harmony.Patch(SetupDefaultMethod, postfix: new HarmonyMethod(TryInjectScreen));
+		MethodInfo setupDefaultMethod = AccessTools.DeclaredMethod(typeof(UserspaceScreensManager), "SetupDefaults");
+		MethodInfo onLoadingMethod = AccessTools.DeclaredMethod(typeof(UserspaceScreensManager), "OnLoading");
+		MethodInfo tryInjectScreenMethod = AccessTools.DeclaredMethod(typeof(DashScreenInjector), nameof(TryInjectScreen));
+		harmony.Patch(setupDefaultMethod, postfix: new HarmonyMethod(tryInjectScreenMethod));
+		harmony.Patch(onLoadingMethod, postfix: new HarmonyMethod(tryInjectScreenMethod));
+		Logger.DebugInternal("UserspaceScreensManager patched");
 	}
 
 	internal static async void TryInjectScreen(UserspaceScreensManager __instance)
@@ -30,6 +33,8 @@ internal sealed class DashScreenInjector
 		{
 			Logger.WarnInternal("Dash screen will not be injected again because it already exists");
 		}
+
+		Logger.DebugInternal("Injecting dash screen");
 
 		RadiantDash dash = __instance.Slot.GetComponentInParents<RadiantDash>();
 		InjectedScreen = dash.AttachScreen("Mods", RadiantUI_Constants.Hero.RED, OfficialAssets.Graphics.Icons.General.BoxClosed); // Replace with RML icon later
@@ -57,5 +62,7 @@ internal sealed class DashScreenInjector
 		}
 
 		view.Feed.Target = feed;
+
+		Logger.DebugInternal("Dash screen should be injected!");
 	}
 }

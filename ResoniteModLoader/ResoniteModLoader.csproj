@@ -26,6 +26,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Lib.Harmony" Version="2.3.3" />
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />
 		<Reference Include="Elements.Core">
 			<HintPath>$(ResonitePath)Resonite_Data\Managed\Elements.Core.dll</HintPath>
 			<Private>False</Private>
@@ -53,9 +54,6 @@
 		<Reference Include="UnityEngine.CoreModule">
 			<HintPath>$(ResonitePath)Resonite_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
 			<Private>False</Private>
-		</Reference>
-		<Reference Include="Microsoft.Bcl.AsyncInterfaces">
-			<HintPath>$(ResonitePath)Resonite_Data\Managed\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
 		</Reference>
 	</ItemGroup>
 
