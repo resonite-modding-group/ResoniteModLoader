@@ -48,7 +48,7 @@ internal static class AssemblyHider {
 	/// <param name="harmony">Our RML harmony instance</param>
 	/// <param name="initialAssemblies">Assemblies that were loaded when RML first started</param>
 	internal static void PatchResonite(Harmony harmony, HashSet<Assembly> initialAssemblies) {
-		//if (ModLoaderConfiguration.Get().HideModTypes) {
+		if (ModLoaderConfiguration.Get().HideModTypes) {
 			// initialize the static assembly sets that our patches will need later
 			resoniteAssemblies = GetResoniteAssemblies(initialAssemblies);
 			modAssemblies = GetModAssemblies(resoniteAssemblies);
@@ -68,7 +68,7 @@ internal static class AssemblyHider {
 			MethodInfo getAssembliesTarget = AccessTools.DeclaredMethod(typeof(AppDomain), nameof(AppDomain.GetAssemblies), Array.Empty<Type>());
 			MethodInfo getAssembliesPatch = AccessTools.DeclaredMethod(typeof(AssemblyHider), nameof(GetAssembliesPostfix));
 			harmony.Patch(getAssembliesTarget, postfix: new HarmonyMethod(getAssembliesPatch));
-		//}
+		}
 	}
 
 	private static HashSet<Assembly> GetResoniteAssemblies(HashSet<Assembly> initialAssemblies) {
@@ -116,13 +116,13 @@ internal static class AssemblyHider {
 				// this implies someone late-loaded an assembly after RML, and it was later used in-game
 				// this is super weird, and probably shouldn't ever happen... but if it does, I want to know about it.
 				// since this is an edge case users may want to handle in different ways, the HideLateTypes rml config option allows them to choose.
-				//bool hideLate = true;// ModLoaderConfiguration.Get().HideLateTypes;
-				/*if (log) {
+				bool hideLate = ModLoaderConfiguration.Get().HideLateTypes;
+				if (log) {
 					Logger.WarnInternal($"The \"{name}\" {typeOrAssembly} does not appear to part of Resonite or a mod. It is unclear whether it should be hidden or not. Due to the HideLateTypes config option being {hideLate} it will be {(hideLate ? "Hidden" : "Shown")}");
-				}*/
+				}
 				// if forceShowLate == true, then this function will always return `false` for late-loaded types
 				// if forceShowLate == false, then this function will return `true` when hideLate == true
-				return !forceShowLate;
+				return hideLate && !forceShowLate;
 			}
 		}
 	}
