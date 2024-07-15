@@ -20,6 +20,7 @@ internal sealed class ModLoaderConfiguration {
 				{ "logconflicts", (value) => _configuration.LogConflicts = bool.Parse(value) },
 				//{ "hidemodtypes", (value) => _configuration.HideModTypes = bool.Parse(value) },
 				//{ "hidelatetypes", (value) => _configuration.HideLateTypes = bool.Parse(value) }
+				{ "nodashscreen", (value) => _configuration.NoDashScreen = bool.Parse(value) },
 			};
 
 			// .NET's ConfigurationManager is some hot trash to the point where I'm just done with it.
@@ -70,5 +71,6 @@ internal sealed class ModLoaderConfiguration {
 	public bool LogConflicts { get; private set; } = true;
 	//public bool HideModTypes { get; private set; } = true;
 	//public bool HideLateTypes { get; private set; } = true;
+	public bool NoDashScreen { get; private set; } = false;
 #pragma warning restore CA1805
 }
