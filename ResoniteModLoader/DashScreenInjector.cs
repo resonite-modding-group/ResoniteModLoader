@@ -1,4 +1,5 @@
 using FrooxEngine;
+using FrooxEngine.UIX;
 using HarmonyLib;
 
 namespace ResoniteModLoader;
@@ -19,7 +20,9 @@ internal sealed class DashScreenInjector
 
 	internal static async void TryInjectScreen(UserspaceScreensManager __instance)
 	{
-		if (ModLoaderConfiguration.Get().NoDashScreen)
+		ModLoaderConfiguration config = ModLoaderConfiguration.Get();
+
+		if (config.NoDashScreen)
 		{
 			Logger.DebugInternal("Dash screen will not be injected due to configuration file");
 			return;
@@ -37,28 +40,44 @@ internal sealed class DashScreenInjector
 		Logger.DebugInternal("Injecting dash screen");
 
 		RadiantDash dash = __instance.Slot.GetComponentInParents<RadiantDash>();
-		InjectedScreen = dash.AttachScreen("Mods", RadiantUI_Constants.Hero.RED, OfficialAssets.Graphics.Icons.General.BoxClosed); // Replace with RML icon later
+		InjectedScreen = dash.AttachScreen("Mods", RadiantUI_Constants.MidLight.ORANGE, OfficialAssets.Graphics.Icons.General.BoxClosed); // Replace with RML icon later
 
-		Slot screenSlot = InjectedScreen.Slot;
-		screenSlot.OrderOffset = 128;
-		screenSlot.PersistentSelf = false;
+		InjectedScreen.Slot.OrderOffset = 128;
+		InjectedScreen.Slot.PersistentSelf = false;
 
-		SingleFeedView view = screenSlot.AttachComponent<SingleFeedView>();
-		ModConfigurationDataFeed feed = screenSlot.AttachComponent<ModConfigurationDataFeed>();
+		SingleFeedView view = InjectedScreen.ScreenRoot.AttachComponent<SingleFeedView>();
+		ModConfigurationDataFeed feed = InjectedScreen.ScreenRoot.AttachComponent<ModConfigurationDataFeed>();
 
-		Slot templates = screenSlot.AddSlot("Template");
+		Slot templates = InjectedScreen.ScreenRoot.AddSlot("Template");
 		templates.ActiveSelf = false;
 
-		if (await templates.LoadObjectAsync(__instance.Cloud.Platform.GetSpawnObjectUri("SettingsItemMappers"), skipHolder: true))
+		if (await templates.LoadObjectAsync(__instance.Cloud.Platform.GetSpawnObjectUri("Settings"), skipHolder: true))
 		{
-			DataFeedItemMapper itemMapper = templates.FindChild("ItemsMapper").GetComponent<DataFeedItemMapper>();
+			// we do a little bit of thievery
+			RootCategoryView rootCategoryView = templates.GetComponentInChildren<RootCategoryView>();
+			rootCategoryView.Slot.GetComponentInChildren<BreadcrumbManager>().Path.Target = view.Path;
+			rootCategoryView.CategoryManager.ContainerRoot.Target.ActiveSelf = false;
+			rootCategoryView.Slot.Children.First().Parent = InjectedScreen.ScreenCanvas.Slot;
+			view.ItemsManager.TemplateMapper.Target = rootCategoryView.ItemsManager.TemplateMapper.Target;
+			view.ItemsManager.ContainerRoot.Target = rootCategoryView.ItemsManager.ContainerRoot.Target;
+			rootCategoryView.Destroy();
+		}
+		else if (config.Debug)
+		{
+			Logger.ErrorInternal("Failed to load SettingsItemMappers for dash screen, falling back to template.");
+			DataFeedItemMapper itemMapper = templates.AttachComponent<DataFeedItemMapper>();
+			Canvas tempCanvas = templates.AttachComponent<Canvas>(); // Needed for next method to work
+			itemMapper.SetupTemplate();
+			tempCanvas.Destroy();
 			view.ItemsManager.TemplateMapper.Target = itemMapper;
-			view.ItemsManager.ContainerRoot.Target = InjectedScreen.ScreenRoot;
+			view.ItemsManager.ContainerRoot.Target = InjectedScreen.ScreenCanvas.Slot;
+			InjectedScreen.ScreenCanvas.Slot.AttachComponent<VerticalLayout>(); // just for debugging
 		}
 		else
 		{
-			Logger.ErrorInternal("Failed to load SettingsItemMappers for dash screen, aborting.");
+			Logger.ErrorInternal("Failed to load SettingsItemMappers for dash screen, aborting and cleaning up.");
 			InjectedScreen.Slot.Destroy();
+			return;
 		}
 
 		view.Feed.Target = feed;
