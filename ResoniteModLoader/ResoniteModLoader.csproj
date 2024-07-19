@@ -31,6 +31,10 @@
 			<HintPath>$(ResonitePath)Resonite_Data\Managed\Elements.Core.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
+		<Reference Include="Elements.Quantity">
+			<HintPath>$(ResonitePath)Resonite_Data\Managed\Elements.Quantity.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
 		<Reference Include="FrooxEngine">
 			<HintPath>$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll</HintPath>
 			<Private>False</Private>

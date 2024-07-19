@@ -8,6 +8,10 @@ internal sealed class Logger {
 	// logged for null objects
 	internal const string NULL_STRING = "null";
 
+	internal enum LogType { DEBUG, INFO, WARN, ERROR }
+
+	internal static readonly List<(ResoniteModBase?, LogType, string, StackTrace)> LogBuffer = new();
+
 	internal static bool IsDebugEnabled() {
 		return ModLoaderConfiguration.Get().Debug;
 	}
@@ -52,21 +56,24 @@ internal sealed class Logger {
 	internal static void ErrorExternal(object message) => LogInternal(LogType.ERROR, message, SourceFromStackTrace(new(1)));
 	internal static void ErrorListExternal(object[] messages) => LogListInternal(LogType.ERROR, messages, SourceFromStackTrace(new(1)));
 
-	private static void LogInternal(string logTypePrefix, object message, string? source = null) {
+	private static void LogInternal(LogType logType, object message, string? source = null) {
 		message ??= NULL_STRING;
+		string logTypePrefix = LogTypeTag(logType);
 		if (source == null) {
 			UniLog.Log($"{logTypePrefix}[ResoniteModLoader] {message}");
-		} else {
+		}
+		else {
 			UniLog.Log($"{logTypePrefix}[ResoniteModLoader/{source}] {message}");
 		}
 	}
 
-	private static void LogListInternal(string logTypePrefix, object[] messages, string? source) {
+	private static void LogListInternal(LogType logType, object[] messages, string? source) {
 		if (messages == null) {
-			LogInternal(logTypePrefix, NULL_STRING, source);
-		} else {
+			LogInternal(logType, NULL_STRING, source);
+		}
+		else {
 			foreach (object element in messages) {
-				LogInternal(logTypePrefix, element.ToString(), source);
+				LogInternal(logType, element.ToString(), source);
 			}
 		}
 	}
@@ -76,10 +83,5 @@ internal sealed class Logger {
 		return Util.ExecutingMod(stackTrace)?.Name;
 	}
 
-	private static class LogType {
-		internal const string DEBUG = "[DEBUG]";
-		internal const string INFO = "[INFO] ";
-		internal const string WARN = "[WARN] ";
-		internal const string ERROR = "[ERROR]";
-	}
+	private static string LogTypeTag(LogType logType) => $"[{Enum.GetName(typeof(LogType), logType)}]";
 }
