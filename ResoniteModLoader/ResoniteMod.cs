@@ -1,3 +1,5 @@
+using FrooxEngine;
+
 namespace ResoniteModLoader;
 
 /// <summary>
@@ -98,5 +100,11 @@ public abstract class ResoniteMod : ResoniteModBase {
 	/// <returns></returns>
 	public virtual IncompatibleConfigurationHandlingOption HandleIncompatibleConfigurationVersions(Version serializedVersion, Version definedVersion) {
 		return IncompatibleConfigurationHandlingOption.ERROR;
+	}
+
+	/// <inheritdoc/>
+	public override async IAsyncEnumerable<DataFeedItem> BuildConfigurationFeed(IReadOnlyList<string> path, IReadOnlyList<string> groupKeys, string searchPhrase, object viewData, bool includeInternal = false) {
+		foreach (DataFeedItem item in this.GenerateModConfigurationFeed(path, groupKeys, searchPhrase, viewData, includeInternal))
+			yield return item;
 	}
 }

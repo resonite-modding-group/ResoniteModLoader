@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using Elements.Core;
+﻿using Elements.Core;
 using FrooxEngine;
-using SkyFrost.Base;
+using System.Collections;
 
 namespace ResoniteModLoader;
 
 /// <summary>
 /// A custom data feed that can be used to show information about loaded mods, and alter their configuration. Path must start with "ResoniteModLoder"
 /// </summary>
-[Category(["Userspace"])]
+[Category(["ResoniteModLoder"])]
 public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed, IWorldElement {
 #pragma warning disable CS1591
 	public override bool UserspaceOnly => true;
@@ -20,23 +16,32 @@ public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed
 #pragma warning restore CS1591
 #pragma warning disable CS8618, CA1051 // FrooxEngine weaver will take care of these
 	/// <summary>
-	/// Show mod configuration keys marked as internal. Default: False.
+	/// Show mod configuration keys marked as internal.
 	/// </summary>
 	public readonly Sync<bool> IncludeInternalConfigItems;
 
 	/// <summary>
-	/// Enable or disable the use of custom configuration feeds. Default: True.
+	/// Enable or disable the use of custom configuration feeds.
 	/// </summary>
-	public readonly Sync<bool> UseModDefinedEnumerate;
+	public readonly Sync<bool> IgnoreModDefinedEnumerate;
+
+	/// <summary>
+	/// Set to true if this feed is being used in a RootCategoryView.
+	/// </summary>
+	public readonly Sync<bool> UsingRootCategoryView;
 #pragma warning restore CS8618, CA1051
 #pragma warning disable CS1591
-	protected override void OnAttach() {
-		base.OnAttach();
-		IncludeInternalConfigItems.Value = false;
-		UseModDefinedEnumerate.Value = true;
-	}
-
 	public async IAsyncEnumerable<DataFeedItem> Enumerate(IReadOnlyList<string> path, IReadOnlyList<string> groupKeys, string searchPhrase, object viewData) {
+		if (UsingRootCategoryView.Value) {
+			if (path.Count == 0) {
+				foreach (ResoniteModBase mod in ModLoader.Mods())
+					yield return FeedBuilder.Category(KeyFromMod(mod), mod.Name);
+				yield break;
+			}
+
+			path = path.Prepend("ResoniteModLoader").ToList().AsReadOnly();
+		}
+
 		switch (path.Count) {
 			case 0: {
 					yield return FeedBuilder.Category("ResoniteModLoader", "Open ResoniteModLoader category");
@@ -46,25 +51,33 @@ public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed
 			case 1: {
 					if (path[0] != "ResoniteModLoader") yield break;
 
-					yield return FeedBuilder.Label("ResoniteModLoder.Version", $"ResoniteModLoader version {ModLoader.VERSION}");
-					yield return FeedBuilder.StringIndicator("ResoniteModLoder.LoadedModCount", "Loaded mods:", ModLoader.Mods().Count());
+					if (string.IsNullOrEmpty(searchPhrase)) {
+						yield return FeedBuilder.Group("ResoniteModLoder", "RML", [
+							FeedBuilder.Label("ResoniteModLoder.Version", $"ResoniteModLoader version {ModLoader.VERSION}"),
+							FeedBuilder.StringIndicator("ResoniteModLoder.LoadedModCount", "Loaded mods:", ModLoader.Mods().Count())
+						]);
+						List<DataFeedCategory> modCategories = new();
+						foreach (ResoniteModBase mod in ModLoader.Mods())
+							modCategories.Add(FeedBuilder.Category(KeyFromMod(mod), mod.Name));
 
-					List<DataFeedItem> groupChildren = Pool.BorrowList<DataFeedItem>();
-					foreach (ResoniteModBase mod in ModLoader.Mods())
-						if (string.IsNullOrEmpty(searchPhrase) || mod.Name.IndexOf(searchPhrase, StringComparison.InvariantCultureIgnoreCase) >= 0)
-							yield return GenerateModInfoGroup(mod, false, groupChildren);
-					Pool.Return(ref groupChildren);
+						yield return FeedBuilder.Grid("Mods", "Mods", modCategories);
+					}
+					else {
+						// yield return FeedBuilder.Label("SearchResults", "Search results");
+						foreach (ResoniteModBase mod in ModLoader.Mods().Where((mod) => mod.Name.IndexOf(searchPhrase, StringComparison.InvariantCultureIgnoreCase) >= 0))
+							yield return mod.GenerateModInfoGroup();
+					}
 				}
 				yield break;
 
 			case 2: {
 					if (path[0] != "ResoniteModLoader" || !TryModFromKey(path[1], out var mod)) yield break;
-
-					List<DataFeedItem> groupChildren = Pool.BorrowList<DataFeedItem>();
-					yield return GenerateModInfoGroup(mod, true, groupChildren);
-					Pool.Return(ref groupChildren);
-					// GenerateModLogFeed
-					// GenerateModExceptionFeed
+					yield return mod.GenerateModInfoGroup(true);
+					string key = KeyFromMod(mod);
+					IReadOnlyList<DataFeedItem> latestLogs = mod.GenerateModLogFeed(5).Append(FeedBuilder.Category("Logs", "View full log")).ToList().AsReadOnly();
+					yield return FeedBuilder.Group(key + ".Logs", "Recent mod logs", latestLogs);
+					IReadOnlyList<DataFeedItem> latestException = mod.GenerateModExceptionFeed(1).Append(FeedBuilder.Category("Exceptions", "View all exceptions")).ToList().AsReadOnly();
+					yield return FeedBuilder.Group(key + ".Exceptions", "Latest mod exception", latestException);
 				}
 				yield break;
 
@@ -72,17 +85,47 @@ public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed
 					if (path[0] != "ResoniteModLoader" || !TryModFromKey(path[1], out var mod)) yield break;
 					switch (path[2].ToLower()) {
 						case "configuration": {
-
+								if (IgnoreModDefinedEnumerate.Value) {
+									foreach (DataFeedItem item in mod.GenerateModConfigurationFeed(path.Skip(3).ToArray(), groupKeys, searchPhrase, viewData, IncludeInternalConfigItems.Value))
+										yield return item;
+								}
+								else {
+									await foreach (DataFeedItem item in mod.BuildConfigurationFeed(path.Skip(3).ToArray(), groupKeys, searchPhrase, viewData, IncludeInternalConfigItems.Value))
+										yield return item;
+								}
 							}
 							yield break;
 						case "logs": {
-
+								foreach (DataFeedLabel item in mod.GenerateModLogFeed())
+									yield return item;
 							}
 							yield break;
 						case "exceptions": {
-
+								foreach (DataFeedLabel item in mod.GenerateModExceptionFeed())
+									yield return item;
 							}
 							yield break;
+						default: {
+								// Reserved for future use - mods defining their own subfeeds
+							}
+							yield break;
+					}
+				}
+			case > 3: {
+					if (path[0] != "ResoniteModLoader" || !TryModFromKey(path[1], out var mod)) yield break;
+					if (path[2].ToLower() == "configuration") {
+						if (IgnoreModDefinedEnumerate.Value) {
+							foreach (DataFeedItem item in mod.GenerateModConfigurationFeed(path.Skip(3).ToArray(), groupKeys, searchPhrase, viewData, IncludeInternalConfigItems.Value))
+								yield return item;
+						}
+						else {
+							await foreach (DataFeedItem item in mod.BuildConfigurationFeed(path.Skip(3).ToArray(), groupKeys, searchPhrase, viewData, IncludeInternalConfigItems.Value))
+								yield return item;
+						}
+						yield break;
+					}
+					else {
+						// Reserved for future use - mods defining their own subfeeds
 					}
 				}
 				yield break;
@@ -96,6 +139,7 @@ public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed
 	public LocaleString PathSegmentName(string segment, int depth) {
 		return depth switch {
 			2 => ModFromKey(segment)?.Name ?? "INVALID",
+			3 => segment.Capitalize(),
 			_ => segment
 		};
 	}
@@ -120,7 +164,7 @@ public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed
 	/// <returns>A unique key representing the mod.</returns>
 	/// <seealso cref="ModFromKey"/>
 	/// <seealso cref="TryModFromKey"/>
-	public static string KeyFromMod(ResoniteModBase mod) => mod.ModAssembly!.Sha256;
+	public static string KeyFromMod(ResoniteModBase mod) => Path.GetFileNameWithoutExtension(mod.ModAssembly!.File);
 
 	/// <summary>
 	/// Returns the mod that corresponds to a unique key.
@@ -140,25 +184,19 @@ public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed
 		mod = ModFromKey(key)!;
 		return mod is not null;
 	}
+}
 
+public static class ModConfigurationDataFeedExtensions {
 	/// <summary>
-	/// Spawns the prompt for a user to open a hyperlink.
+	/// Generates a DataFeedGroup that displays basic information about a mod.
 	/// </summary>
-	/// <param name="uri">The URI that the user will be prompted to open.</param>
-	[SyncMethod(typeof(Action<Uri>), [])]
-	public static void OpenURI(Uri uri) {
-		Userspace.UserspaceWorld.RunSynchronously(delegate {
-			Slot slot = Userspace.UserspaceWorld.AddSlot("Hyperlink");
-			slot.PositionInFrontOfUser(float3.Backward);
-			slot.AttachComponent<HyperlinkOpenDialog>().Setup(uri, "Outgoing hyperlink");
-		});
-	}
-
-	private static DataFeedGroup GenerateModInfoGroup(ResoniteModBase mod, bool standalone = false, List<DataFeedItem> groupChildren = null!) {
+	/// <param name="mod">The target mod</param>
+	/// <param name="standalone">Set to true if this group will be displayed on its own page</param>
+	/// <returns></returns>
+	public static DataFeedGroup GenerateModInfoGroup(this ResoniteModBase mod, bool standalone = false) {
 		DataFeedGroup modFeedGroup = new();
-		groupChildren = groupChildren ?? new();
-		groupChildren.Clear();
-		string key = KeyFromMod(mod);
+		List<DataFeedItem> groupChildren = new();
+		string key = ModConfigurationDataFeed.KeyFromMod(mod);
 
 		if (standalone) groupChildren.Add(FeedBuilder.Indicator(key + ".Name", "Name", mod.Name));
 		groupChildren.Add(FeedBuilder.Indicator(key + ".Author", "Author", mod.Author));
@@ -176,11 +214,58 @@ public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed
 		return FeedBuilder.Group(key + ".Group", standalone ? "Mod info" : mod.Name, groupChildren);
 	}
 
-	// private static DataFeedGroup GenerateModLogFeed(ResoniteModBase mod, int last = -1) {
+	public static IEnumerable<DataFeedItem> GenerateModConfigurationFeed(this ResoniteModBase mod, IReadOnlyList<string> path, IReadOnlyList<string> groupKeys, string searchPhrase, object viewData, bool includeInternal = false) {
+		if (!mod.TryGetConfiguration(out ModConfiguration config) || !config.ConfigurationItemDefinitions.Any()) {
+			yield return FeedBuilder.Label("NoConfig", "This mod does not define any configuration keys.", color.Red);
+			yield break;
+		}
 
-	// }
+		ModConfigurationFeedBuilder.CachedBuilders.TryGetValue(config, out ModConfigurationFeedBuilder builder);
+		builder = builder ?? new ModConfigurationFeedBuilder(config);
+		IEnumerable<DataFeedItem> items;
 
-	// private static DataFeedGroup GenerateModExceptionFeed(ResoniteModBase mod, int last = -1) {
+		if (path.Any()) {
+			ModConfigurationKey key = config.ConfigurationItemDefinitions.First((config) => config.Name == path[0]);
+			if (!typeof(IEnumerable).IsAssignableFrom(key.ValueType())) yield break;
+			MethodInfo genericEnumerablePage = typeof(ModConfigurationFeedBuilder).GetMethod(nameof(ModConfigurationFeedBuilder.OrderedPage)).MakeGenericMethod(key.ValueType());
+			items = (IEnumerable<DataFeedItem>)genericEnumerablePage.Invoke(builder, [key]);
+		}
+		else {
+			items = builder.RootPage(searchPhrase, includeInternal);
+		}
+		foreach (DataFeedItem item in items)
+			yield return item;
+	}
 
-	// }
+	private static DataFeedItem AsFeedItem(this string text, int index, bool copyable = true) {
+		if (copyable)
+			return FeedBuilder.ValueAction<string>(index.ToString(), text, (action) => action.Target = CopyText, text);
+		else
+			return FeedBuilder.Label(index.ToString(), text);
+	}
+
+	public static IEnumerable<DataFeedItem> GenerateModLogFeed(this ResoniteModBase mod, int last = -1, bool copyable = true) {
+		yield return "Not implemented".AsFeedItem(0, copyable);
+	}
+
+	public static IEnumerable<DataFeedItem> GenerateModExceptionFeed(this ResoniteModBase mod, int last = -1, bool copyable = true) {
+		yield return "Not implemented".AsFeedItem(0, copyable);
+	}
+
+	/// <summary>
+	/// Spawns the prompt for a user to open a hyperlink.
+	/// </summary>
+	/// <param name="uri">The URI that the user will be prompted to open.</param>
+	[SyncMethod(typeof(Action<Uri>), [])]
+	public static void OpenURI(Uri uri) {
+		Slot slot = Userspace.UserspaceWorld.AddSlot("Hyperlink");
+		slot.PositionInFrontOfUser(float3.Backward);
+		slot.AttachComponent<HyperlinkOpenDialog>().Setup(uri, "Outgoing hyperlink");
+	}
+
+	[SyncMethod(typeof(Action<string>), [])]
+	public static void CopyText(string text) {
+		Userspace.UserspaceWorld.InputInterface.Clipboard.SetText(text);
+		NotificationMessage.SpawnTextMessage("Copied line.", colorX.White);
+	}
 }

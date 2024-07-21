@@ -1,3 +1,5 @@
+using FrooxEngine;
+
 namespace ResoniteModLoader;
 
 /// <summary>
@@ -45,6 +47,22 @@ public abstract class ResoniteModBase {
 		}
 		return ModConfiguration;
 	}
+
+	public bool TryGetConfiguration(out ModConfiguration configuration) {
+		configuration = ModConfiguration!;
+		return configuration is not null;
+	}
+
+	/// <summary>
+	/// Define a custom configuration DataFeed for this mod.
+	/// </summary>
+	/// <param name="path">Starts empty at the root of the configuration category, allows sub-categories to be used.</param>
+	/// <param name="groupKeys">Passed-through from <see cref="ModConfigurationDataFeed"/>'s Enumerate call.</param>
+	/// <param name="searchPhrase">A phrase by which configuration items should be filtered. Passed-through from <see cref="ModConfigurationDataFeed"/>'s Enumerate call</param>
+	/// <param name="viewData">Passed-through from <see cref="ModConfigurationDataFeed"/>'s Enumerate call.</param>
+	/// <param name="includeInternal">Indicates whether the user has requested that internal configuration keys are included in the returned feed.</param>
+	/// <returns>DataFeedItem's to be directly returned by the calling <see cref="ModConfigurationDataFeed"/>.</returns>
+	public abstract IAsyncEnumerable<DataFeedItem> BuildConfigurationFeed(IReadOnlyList<string> path, IReadOnlyList<string> groupKeys, string searchPhrase, object viewData, bool includeInternal = false);
 
 	internal bool FinishedLoading { get; set; }
 }

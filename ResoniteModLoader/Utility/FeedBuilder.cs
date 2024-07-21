@@ -1,10 +1,15 @@
 using Elements.Core;
 using Elements.Quantity;
 using FrooxEngine;
+using HarmonyLib;
 
 namespace ResoniteModLoader;
 
+/// <summary>
+/// Utility class to easily generate DataFeedItem's.
+/// </summary>
 public static class FeedBuilder {
+#pragma warning disable CS8625, CS1591, CA1715
 	public static T Item<T>(string itemKey, LocaleString label, IReadOnlyList<string> path = null, IReadOnlyList<string> groupingParameters = null, Uri icon = null, Action<IField<bool>> setupVisible = null, Action<IField<bool>> setupEnabled = null, IReadOnlyList<DataFeedItem> subitems = null, object customEntity = null) where T : DataFeedItem
 		=> Activator.CreateInstance<T>().ChainInitBase(itemKey, path, groupingParameters, label, icon, setupVisible, setupEnabled, subitems, customEntity);
 
@@ -200,11 +205,11 @@ public static class FeedBuilder {
 	public static T Item<T>(string itemKey, LocaleString label, LocaleString description, IReadOnlyList<string> path = null, IReadOnlyList<string> groupingParameters = null, Uri icon = null, Action<IField<bool>> setupVisible = null, Action<IField<bool>> setupEnabled = null, IReadOnlyList<DataFeedItem> subitems = null, object customEntity = null) where T : DataFeedItem
 		=> Activator.CreateInstance<T>().ChainInitBase(itemKey, path, groupingParameters, label, description, icon, setupVisible, setupEnabled, subitems, customEntity);
 
-	// CONFLICT AB
+	// CONFLICT CD
 	public static DataFeedCategory Category(string itemKey, LocaleString label, LocaleString description, IReadOnlyList<string> path = null, IReadOnlyList<string> groupingParameters = null, Uri icon = null, Action<IField<bool>> setupVisible = null, Action<IField<bool>> setupEnabled = null, IReadOnlyList<DataFeedItem> subitems = null, object customEntity = null)
 		=> Item<DataFeedCategory>(itemKey, label, description, path, groupingParameters, icon, setupVisible, setupEnabled, subitems, customEntity);
 
-	// CONFLICT BA
+	// CONFLICT DC
 	public static DataFeedCategory Category(string itemKey, LocaleString label, LocaleString description, string[] subpath, IReadOnlyList<string> path = null, IReadOnlyList<string> groupingParameters = null, Uri icon = null, Action<IField<bool>> setupVisible = null, Action<IField<bool>> setupEnabled = null, IReadOnlyList<DataFeedItem> subitems = null, object customEntity = null)
 		=> Category(itemKey, label, description, path, groupingParameters, icon, setupVisible, setupEnabled, subitems, customEntity).ChainSetOverrideSubpath(subpath);
 
@@ -257,10 +262,10 @@ public static class FeedBuilder {
 		=> Item<DataFeedLabel>(itemKey, label, description, path, groupingParameters, icon, setupVisible, setupEnabled, subitems, customEntity);
 
 	public static DataFeedLabel Label(string itemKey, LocaleString label, LocaleString description, colorX color, IReadOnlyList<string> path = null, IReadOnlyList<string> groupingParameters = null, Uri icon = null, Action<IField<bool>> setupVisible = null, Action<IField<bool>> setupEnabled = null, IReadOnlyList<DataFeedItem> subitems = null, object customEntity = null)
-		=> Label(itemKey, $"<color={color.ToHexString(true)}>{label}</color>", path, groupingParameters, icon, setupVisible, setupEnabled, subitems, customEntity);
+		=> Label(itemKey, $"<color={color.ToHexString(true)}>{label}</color>", description, path, groupingParameters, icon, setupVisible, setupEnabled, subitems, customEntity);
 
 	public static DataFeedLabel Label(string itemKey, LocaleString label, LocaleString description, color color, IReadOnlyList<string> path = null, IReadOnlyList<string> groupingParameters = null, Uri icon = null, Action<IField<bool>> setupVisible = null, Action<IField<bool>> setupEnabled = null, IReadOnlyList<DataFeedItem> subitems = null, object customEntity = null)
-		=> Label(itemKey, $"<color={color.ToHexString(true)}>{label}</color>", path, groupingParameters, icon, setupVisible, setupEnabled, subitems, customEntity);
+		=> Label(itemKey, $"<color={color.ToHexString(true)}>{label}</color>", description, path, groupingParameters, icon, setupVisible, setupEnabled, subitems, customEntity);
 
 	public static DataFeedIndicator<T> Indicator<T>(string itemKey, LocaleString label, LocaleString description, IReadOnlyList<string> path = null, IReadOnlyList<string> groupingParameters = null, Uri icon = null, Action<IField<bool>> setupVisible = null, Action<IField<bool>> setupEnabled = null, IReadOnlyList<DataFeedItem> subitems = null, object customEntity = null)
 		=> Item<DataFeedIndicator<T>>(itemKey, label, description, path, groupingParameters, icon, setupVisible, setupEnabled, subitems, customEntity);
@@ -386,120 +391,165 @@ public static class FeedBuilder {
 
 	public static DataFeedSlider<T> Slider<T>(string itemKey, LocaleString label, LocaleString description, Action<IField<T>> value, T min, T max, string formatting, Action<IField<T>> setupReferenceValue, IReadOnlyList<string> path = null, IReadOnlyList<string> groupingParameters = null, Uri icon = null, Action<IField<bool>> setupVisible = null, Action<IField<bool>> setupEnabled = null, IReadOnlyList<DataFeedItem> subitems = null, object customEntity = null)
 		=> Slider<T>(itemKey, label, description, path, groupingParameters, icon, setupVisible, setupEnabled, subitems, customEntity).ChainInitSetup(value, min, max).ChainInitSlider(setupReferenceValue).ChainInitFormatting<DataFeedSlider<T>, T>(formatting);
+#pragma warning restore CS8625, CS1591, CA1715
 }
 
+/// <summary>
+/// Extends all DataFeedItem's "Init" methods so they can be called in a chain (methods return original item).
+/// </summary>
 public static class DataFeedItemChaining {
+#pragma warning disable CS8625, CA1715
+	/// <summary>Mapped to InitBase</summary>
 	public static I ChainInitBase<I>(this I item, string itemKey, IReadOnlyList<string> path, IReadOnlyList<string> groupingParameters, LocaleString label, Uri icon = null, Action<IField<bool>> setupVisible = null, Action<IField<bool>> setupEnabled = null, IReadOnlyList<DataFeedItem> subitems = null, object customEntity = null) where I : DataFeedItem {
 		item.InitBase(itemKey, path, groupingParameters, label, icon, setupVisible, setupEnabled, subitems, customEntity);
 		return item;
 	}
 
+	/// <summary>Mapped to InitBase</summary>
 	public static I ChainInitBase<I>(this I item, string itemKey, IReadOnlyList<string> path, IReadOnlyList<string> groupingParameters, LocaleString label, LocaleString description, Uri icon = null, Action<IField<bool>> setupVisible = null, Action<IField<bool>> setupEnabled = null, IReadOnlyList<DataFeedItem> subitems = null, object customEntity = null) where I : DataFeedItem {
 		item.InitBase(itemKey, path, groupingParameters, label, description, icon, setupVisible, setupEnabled, subitems, customEntity);
 		return item;
 	}
 
+	/// <summary>Mapped to InitVisible</summary>
 	public static I ChainInitVisible<I>(this I item, Action<IField<bool>> setupVisible) where I : DataFeedItem {
 		item.InitVisible(setupVisible);
 		return item;
 	}
 
+	/// <summary>Mapped to InitEnabled</summary>
 	public static I ChainInitEnabled<I>(this I item, Action<IField<bool>> setupEnabled) where I : DataFeedItem {
 		item.InitEnabled(setupEnabled);
 		return item;
 	}
 
+	/// <summary>Mapped to InitDescription</summary>
 	public static I ChainInitDescription<I>(this I item, LocaleString description) where I : DataFeedItem {
 		item.InitDescription(description);
 		return item;
 	}
 
+	/// <summary>Mapped to InitSorting</summary>
 	public static I ChainInitSorting<I>(this I item, long order) where I : DataFeedItem {
 		item.InitSorting(order);
 		return item;
 	}
 
+	/// <summary>Mapped to InitSorting</summary>
 	public static I ChainInitSorting<I>(this I item, Func<long> orderGetter) where I : DataFeedItem {
 		item.InitSorting(orderGetter);
 		return item;
 	}
 
+	/// <summary>Mapped to SetOverrideSubpath</summary>
 	public static DataFeedCategory ChainSetOverrideSubpath(this DataFeedCategory item, params string[] subpath) {
 		item.SetOverrideSubpath(subpath);
 		return item;
 	}
 
+	/// <summary>Mapped to InitEntity</summary>
 	public static DataFeedEntity<E> ChainInitEntity<E>(this DataFeedEntity<E> item, E entity) {
 		item.InitEntity(entity);
 		return item;
 	}
 
+	/// <summary>Mapped to InitSetupValue</summary>
 	public static I ChainInitSetupValue<I, T>(this I item, Action<IField<T>> setup) where I : DataFeedValueElement<T> {
 		item.InitSetupValue(setup);
 		return item;
 	}
 
+	/// <summary>Mapped to InitFormatting</summary>
 	public static I ChainInitFormatting<I, T>(this I item, Action<IField<string>> setupFormatting) where I : DataFeedValueElement<T> {
 		item.InitFormatting(setupFormatting);
 		return item;
 	}
 
+	/// <summary>Mapped to InitFormatting</summary>
 	public static I ChainInitFormatting<I, T>(this I item, string formatting) where I : DataFeedValueElement<T> {
 		item.InitFormatting(formatting);
 		return item;
 	}
 
+	/// <summary>Mapped to InitSetup</summary>
 	public static DataFeedOrderedItem<T> ChainInitSetup<T>(this DataFeedOrderedItem<T> item, Action<IField<T>> orderValue, Action<IField<bool>> setupIsFirst, Action<IField<bool>> setupIsLast, Action<SyncDelegate<Action>> setupMoveUp, Action<SyncDelegate<Action>> setupMoveDown, Action<SyncDelegate<Action>> setupMakeFirst, Action<SyncDelegate<Action>> setupMakeLast, LocaleString moveUpLabel = default, LocaleString moveDownLabel = default, LocaleString makeFirstLabel = default, LocaleString makeLastLabel = default) where T : IComparable<T> {
 		item.InitSetup(orderValue, setupIsFirst, setupIsLast, setupMoveUp, setupMoveDown, setupMakeFirst, setupMakeLast, moveUpLabel, moveDownLabel, makeFirstLabel, makeLastLabel);
 		return item;
 	}
 
+	/// <summary>Mapped to InitSetup</summary>
 	public static I ChainInitSetup<I, T>(this I item, Action<IField<T>> value, Action<IField<T>> min, Action<IField<T>> max) where I : DataFeedClampedValueField<T> {
 		item.InitSetup(value, min, max);
 		return item;
 	}
+	/// <summary>Mapped to InitSetup</summary>
 	public static I ChainInitSetup<I, T>(this I item, Action<IField<T>> value, T min, T max) where I : DataFeedClampedValueField<T> {
 		item.InitSetup(value, min, max);
 		return item;
 	}
 
+	/// <summary>Mapped to InitUnitConfiguration</summary>
 	public static DataFeedQuantityField<Q, T> ChainInitUnitConfiguration<Q, T>(this DataFeedQuantityField<Q, T> item, UnitConfiguration defaultConfig, UnitConfiguration imperialConfig = null) where Q : unmanaged, IQuantity<Q> {
 		item.InitUnitConfiguration(defaultConfig, imperialConfig);
 		return item;
 	}
 
+	/// <summary>Mapped to InitSlider</summary>
 	public static DataFeedSlider<T> ChainInitSlider<T>(this DataFeedSlider<T> item, Action<IField<T>> setupReferenceValue) {
 		item.InitSlider(setupReferenceValue);
 		return item;
 	}
 
+	/// <summary>Mapped to InitAction</summary>
 	public static DataFeedAction ChainInitAction(this DataFeedAction item, Action<SyncDelegate<Action>> setupAction) {
 		item.InitAction(setupAction);
 		return item;
 	}
 
+	/// <summary>Mapped to InitHighlight</summary>
 	public static DataFeedAction ChainInitHighlight(this DataFeedAction item, Action<IField<bool>> setupHighlight) {
 		item.InitHighlight(setupHighlight);
 		return item;
 	}
 
+	/// <summary>Mapped to InitAction</summary>
 	public static DataFeedValueAction<T> ChainInitAction<T>(this DataFeedValueAction<T> item, Action<SyncDelegate<Action<T>>> setupAction, Action<IField<T>> setupValue) {
 		item.InitAction(setupAction, setupValue);
 		return item;
 	}
 
+	/// <summary>Mapped to InitAction</summary>
 	public static DataFeedValueAction<T> ChainInitAction<T>(this DataFeedValueAction<T> item, Action<SyncDelegate<Action<T>>> setupAction, T value) {
 		item.InitAction(setupAction, value);
 		return item;
 	}
 
+	/// <summary>Mapped to InitHighlight</summary>
 	public static DataFeedValueAction<T> ChainInitHighlight<T>(this DataFeedValueAction<T> item, Action<IField<bool>> setupHighlight) {
 		item.InitHighlight(setupHighlight);
 		return item;
 	}
 
+	/// <summary>Mapped to InitSetupValue</summary>
 	public static DataFeedIndicator<T> ChainInitSetupValue<T>(this DataFeedIndicator<T> item, Action<IField<T>> setup, string format = null) {
 		item.InitSetupValue(setup, format);
 		return item;
 	}
+
+	private static MethodInfo SubItemsSetter = AccessTools.PropertySetter(typeof(DataFeedItem), nameof(DataFeedItem.SubItems));
+
+	public static I Subitem<I>(this I item, params DataFeedItem[] subitem) where I : DataFeedItem {
+		if (item.SubItems is null)
+			SubItemsSetter.Invoke(item, [subitem]);
+		else
+			SubItemsSetter.Invoke(item, [item.SubItems.Concat(subitem).ToArray()]);
+		return item;
+	}
+
+	public static I ClearSubitems<I>(this I item, params DataFeedItem[] subitem) where I : DataFeedItem {
+		if (item.SubItems is not null && item.SubItems.Any())
+			SubItemsSetter.Invoke(item, [null]);
+		return item;
+	}
+#pragma warning restore CS8625, CA1715
 }
