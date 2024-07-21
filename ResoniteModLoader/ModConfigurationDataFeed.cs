@@ -38,8 +38,8 @@ public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed
 					yield return FeedBuilder.Category(KeyFromMod(mod), mod.Name);
 				yield break;
 			}
-
-			path = path.Prepend("ResoniteModLoader").ToList().AsReadOnly();
+			else if (path[0] != "ResoniteModLoader")
+				path = path.Prepend("ResoniteModLoader").ToList().AsReadOnly();
 		}
 
 		switch (path.Count) {

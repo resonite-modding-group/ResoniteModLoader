@@ -54,7 +54,12 @@ public class ModConfigurationFeedBuilder {
 
 	public DataFeedValueField<T> GenerateDataFeedField<T>(ModConfigurationKey key) {
 		AssertChildKey(key);
-		return FeedBuilder.ValueField<T>(key.Name, key.Name, key.Description, (field) => field.SyncWithModConfiguration(Config, key));
+		return FeedBuilder.ValueField<T>(key.Name, key.Description ?? key.Name, (field) => field.SyncWithModConfiguration(Config, key));
+	}
+
+	public DataFeedEnum<T> GenerateDataFeedEnum<T>(ModConfigurationKey key) where T : Enum {
+		AssertChildKey(key);
+		return FeedBuilder.Enum<T>(key.Name, key.Description ?? key.Name, (field) => field.SyncWithModConfiguration(Config, key));
 	}
 
 	public DataFeedItem GenerateDataFeedItem(ModConfigurationKey key) {
@@ -63,11 +68,13 @@ public class ModConfigurationFeedBuilder {
 		if (valueType == typeof(dummy))
 			return FeedBuilder.Label(key.Name, key.Description ?? key.Name);
 		else if (valueType == typeof(bool))
-			return FeedBuilder.Toggle(key.Name, key.Name, key.Description, (field) => field.SyncWithModConfiguration(Config, key));
+			return FeedBuilder.Toggle(key.Name, key.Description ?? key.Name, (field) => field.SyncWithModConfiguration(Config, key));
 		else if (valueType == typeof(float) && HasRangeAttribute(KeyFields[key], out RangeAttribute range))
-			return FeedBuilder.Slider<float>(key.Name, key.Name, key.Description, (field) => field.SyncWithModConfiguration(Config, key), range.Min, range.Max, range.TextFormat);
+			return FeedBuilder.Slider<float>(key.Name, key.Description ?? key.Name, (field) => field.SyncWithModConfiguration(Config, key), range.Min, range.Max, range.TextFormat);
 		else if (valueType != typeof(string) && valueType != typeof(Uri) && typeof(IEnumerable).IsAssignableFrom(valueType))
-			return FeedBuilder.Category(key.Name, key.Name, key.Description);
+			return FeedBuilder.Category(key.Name, key.Description ?? key.Name);
+		else if (valueType.InheritsFrom(typeof(Enum)))
+			return (DataFeedItem)typeof(ModConfigurationFeedBuilder).GetMethod(nameof(GenerateDataFeedEnum)).MakeGenericMethod(key.ValueType()).Invoke(this, [key]);
 		else
 			return (DataFeedItem)typeof(ModConfigurationFeedBuilder).GetMethod(nameof(GenerateDataFeedField)).MakeGenericMethod(key.ValueType()).Invoke(this, [key]);
 	}
