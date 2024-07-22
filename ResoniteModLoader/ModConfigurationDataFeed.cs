@@ -24,24 +24,9 @@ public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed
 	/// Enable or disable the use of custom configuration feeds.
 	/// </summary>
 	public readonly Sync<bool> IgnoreModDefinedEnumerate;
-
-	/// <summary>
-	/// Set to true if this feed is being used in a RootCategoryView.
-	/// </summary>
-	public readonly Sync<bool> UsingRootCategoryView;
 #pragma warning restore CS8618, CA1051
 #pragma warning disable CS1591
 	public async IAsyncEnumerable<DataFeedItem> Enumerate(IReadOnlyList<string> path, IReadOnlyList<string> groupKeys, string searchPhrase, object viewData) {
-		if (UsingRootCategoryView.Value) {
-			if (path.Count == 0) {
-				foreach (ResoniteModBase mod in ModLoader.Mods())
-					yield return FeedBuilder.Category(KeyFromMod(mod), mod.Name);
-				yield break;
-			}
-			else if (path[0] != "ResoniteModLoader")
-				path = path.Prepend("ResoniteModLoader").ToList().AsReadOnly();
-		}
-
 		switch (path.Count) {
 			case 0: {
 					yield return FeedBuilder.Category("ResoniteModLoader", "Open ResoniteModLoader category");
@@ -74,10 +59,14 @@ public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed
 					if (path[0] != "ResoniteModLoader" || !TryModFromKey(path[1], out var mod)) yield break;
 					yield return mod.GenerateModInfoGroup(true);
 					string key = KeyFromMod(mod);
-					IReadOnlyList<DataFeedItem> latestLogs = mod.GenerateModLogFeed(5).Append(FeedBuilder.Category("Logs", "View full log")).ToList().AsReadOnly();
-					yield return FeedBuilder.Group(key + ".Logs", "Recent mod logs", latestLogs);
-					IReadOnlyList<DataFeedItem> latestException = mod.GenerateModExceptionFeed(1).Append(FeedBuilder.Category("Exceptions", "View all exceptions")).ToList().AsReadOnly();
-					yield return FeedBuilder.Group(key + ".Exceptions", "Latest mod exception", latestException);
+					if (mod.Logs().Any()) {
+						IReadOnlyList<DataFeedItem> latestLogs = mod.GenerateModLogFeed(5, false).Append(FeedBuilder.Category("Logs", "View full log")).ToList().AsReadOnly();
+						yield return FeedBuilder.Group(key + ".Logs", "Recent mod logs", latestLogs);
+					}
+					if (mod.Exceptions().Any()) {
+						IReadOnlyList<DataFeedItem> latestException = mod.GenerateModExceptionFeed(1, false).Append(FeedBuilder.Category("Exceptions", "View all exceptions")).ToList().AsReadOnly();
+						yield return FeedBuilder.Group(key + ".Exceptions", "Latest mod exception", latestException);
+					}
 				}
 				yield break;
 
@@ -224,15 +213,16 @@ public static class ModConfigurationDataFeedExtensions {
 		builder = builder ?? new ModConfigurationFeedBuilder(config);
 		IEnumerable<DataFeedItem> items;
 
-		if (path.Any()) {
-			ModConfigurationKey key = config.ConfigurationItemDefinitions.First((config) => config.Name == path[0]);
-			if (!typeof(IEnumerable).IsAssignableFrom(key.ValueType())) yield break;
-			MethodInfo genericEnumerablePage = typeof(ModConfigurationFeedBuilder).GetMethod(nameof(ModConfigurationFeedBuilder.OrderedPage)).MakeGenericMethod(key.ValueType());
-			items = (IEnumerable<DataFeedItem>)genericEnumerablePage.Invoke(builder, [key]);
-		}
-		else {
-			items = builder.RootPage(searchPhrase, includeInternal);
-		}
+		// if (path.Any()) {
+		// 	ModConfigurationKey key = config.ConfigurationItemDefinitions.First((config) => config.Name == path[0]);
+		// 	if (!typeof(IEnumerable).IsAssignableFrom(key.ValueType())) yield break;
+		// 	MethodInfo genericEnumerablePage = typeof(ModConfigurationFeedBuilder).GetMethod(nameof(ModConfigurationFeedBuilder.OrderedPage)).MakeGenericMethod(key.ValueType());
+		// 	items = (IEnumerable<DataFeedItem>)genericEnumerablePage.Invoke(builder, [key]);
+		// }
+		// else {
+		// 	items = builder.Page(searchPhrase, includeInternal);
+		// }
+		items = builder.GeneratePage(path.ToArray(), searchPhrase, includeInternal);
 		foreach (DataFeedItem item in items)
 			yield return item;
 	}
@@ -245,11 +235,19 @@ public static class ModConfigurationDataFeedExtensions {
 	}
 
 	public static IEnumerable<DataFeedItem> GenerateModLogFeed(this ResoniteModBase mod, int last = -1, bool copyable = true) {
-		yield return "Not implemented".AsFeedItem(0, copyable);
+		last = last < 0 ? int.MaxValue : last;
+		List<Logger.LogMessage> modLogs = mod.Logs().ToList();
+		modLogs.Reverse();
+		foreach (Logger.LogMessage line in modLogs.GetRange(0, Math.Min(modLogs.Count, last)))
+			yield return line.ToString().AsFeedItem(line.Time.GetHashCode(), copyable);
 	}
 
 	public static IEnumerable<DataFeedItem> GenerateModExceptionFeed(this ResoniteModBase mod, int last = -1, bool copyable = true) {
-		yield return "Not implemented".AsFeedItem(0, copyable);
+		last = last < 0 ? int.MaxValue : last;
+		List<Logger.LogException> modExceptions = mod.Exceptions().ToList();
+		modExceptions.Reverse();
+		foreach (Logger.LogException line in modExceptions.GetRange(0, Math.Min(modExceptions.Count, last)))
+			yield return line.ToString().AsFeedItem(line.Time.GetHashCode(), copyable);
 	}
 
 	/// <summary>
@@ -266,6 +264,6 @@ public static class ModConfigurationDataFeedExtensions {
 	[SyncMethod(typeof(Action<string>), [])]
 	public static void CopyText(string text) {
 		Userspace.UserspaceWorld.InputInterface.Clipboard.SetText(text);
-		NotificationMessage.SpawnTextMessage("Copied line.", colorX.White);
+		NotificationMessage.SpawnTextMessage("Copied line", colorX.White);
 	}
 }

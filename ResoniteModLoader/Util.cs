@@ -81,7 +81,8 @@ internal static class Util {
 	internal static IEnumerable<Type> GetLoadableTypes(this Assembly assembly, Predicate<Type> predicate) {
 		try {
 			return assembly.GetTypes().Where(type => CheckType(type, predicate));
-		} catch (ReflectionTypeLoadException e) {
+		}
+		catch (ReflectionTypeLoadException e) {
 			return e.Types.Where(type => CheckType(type, predicate));
 		}
 	}
@@ -95,14 +96,16 @@ internal static class Util {
 
 		try {
 			string _name = type.Name;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			Logger.DebugFuncInternal(() => $"Could not read the name for a type: {e}");
 			return false;
 		}
 
 		try {
 			return predicate(type);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			Logger.DebugFuncInternal(() => $"Could not load type \"{type}\": {e}");
 			return false;
 		}

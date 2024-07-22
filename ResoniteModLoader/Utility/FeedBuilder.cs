@@ -397,7 +397,7 @@ public static class FeedBuilder {
 /// <summary>
 /// Extends all DataFeedItem's "Init" methods so they can be called in a chain (methods return original item).
 /// </summary>
-public static class DataFeedItemChaining {
+public static class FeedBuilderExtensions {
 #pragma warning disable CS8625, CA1715
 	/// <summary>Mapped to InitBase</summary>
 	public static I ChainInitBase<I>(this I item, string itemKey, IReadOnlyList<string> path, IReadOnlyList<string> groupingParameters, LocaleString label, Uri icon = null, Action<IField<bool>> setupVisible = null, Action<IField<bool>> setupEnabled = null, IReadOnlyList<DataFeedItem> subitems = null, object customEntity = null) where I : DataFeedItem {
