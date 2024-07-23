@@ -6,16 +6,13 @@ using System.Collections;
 namespace ResoniteModLoader;
 
 public class ModConfigurationFeedBuilder {
+	public readonly static Dictionary<ModConfiguration, ModConfigurationFeedBuilder> CachedBuilders = new();
 
 	private readonly ModConfiguration Config;
 
 	private readonly Dictionary<ModConfigurationKey, FieldInfo> KeyFields = new();
 
 	private readonly Dictionary<string, HashSet<ModConfigurationKey>> KeyGrouping = new();
-
-	private readonly Dictionary<string[], HashSet<ModConfigurationKey>> KeyCategories = new(new StringArrayEqualityComparer());
-
-	public readonly static Dictionary<ModConfiguration, ModConfigurationFeedBuilder> CachedBuilders = new();
 
 	private static bool HasAutoRegisterAttribute(FieldInfo field) => field.GetCustomAttribute<AutoRegisterConfigKeyAttribute>() is not null;
 
@@ -36,24 +33,16 @@ public class ModConfigurationFeedBuilder {
 			throw new InvalidOperationException($"Mod key ({key}) is not owned by {Config.Owner.Name}'s config");
 	}
 
-	private static bool IsFirstChild(string[] x, string[] y) {
-		Logger.DebugInternal($"Is [({x.Length})[{string.Join(", ", x)}]] a first child to [({y.Length})[{string.Join(", ", y)}]]?");
-		if (x.Length != y.Length + 1) return false;
-		for (int i = 0; i < y.Length; i++)
-			if (x[i] != y[i]) return false;
-		Logger.DebugInternal("You are the father!");
-		return true;
-	}
-
 	public ModConfigurationFeedBuilder(ModConfiguration config) {
 		Config = config;
 		IEnumerable<FieldInfo> autoConfigKeys = config.Owner.GetType().GetDeclaredFields().Where(HasAutoRegisterAttribute);
 		HashSet<ModConfigurationKey> groupedKeys = new();
-		HashSet<ModConfigurationKey> categorizedKeys = new();
+
 		foreach (FieldInfo field in autoConfigKeys) {
 			ModConfigurationKey key = (ModConfigurationKey)field.GetValue(field.IsStatic ? null : config.Owner);
 			if (key is null) continue; // dunno why this would happen
 			KeyFields[key] = field;
+
 			AutoRegisterConfigKeyAttribute attribute = field.GetCustomAttribute<AutoRegisterConfigKeyAttribute>();
 			if (attribute.Group is string groupName) {
 				if (!KeyGrouping.ContainsKey(groupName))
@@ -61,48 +50,33 @@ public class ModConfigurationFeedBuilder {
 				KeyGrouping[groupName].Add(key);
 				groupedKeys.Add(key);
 			}
-			if (attribute.Path is string[] categoryPath) {
-				if (!KeyCategories.ContainsKey(categoryPath))
-					KeyCategories[categoryPath] = new();
-				KeyCategories[categoryPath].Add(key);
-				categorizedKeys.Add(key);
-			}
 		}
+
 		foreach (ModConfigurationKey key in config.ConfigurationItemDefinitions) {
 			if (groupedKeys.Any() && !groupedKeys.Contains(key)) {
 				if (!KeyGrouping.ContainsKey("Uncategorized"))
 					KeyGrouping["Uncategorized"] = new();
 				KeyGrouping["Uncategorized"].Add(key);
 			}
-			if (!categorizedKeys.Contains(key)) {
-				if (!KeyCategories.ContainsKey([]))
-					KeyCategories[[]] = new();
-				KeyCategories[[]].Add(key);
-			}
 		}
+
 		CachedBuilders[config] = this;
+
 		if (Logger.IsDebugEnabled()) {
 			Logger.DebugInternal("--- ModConfigurationFeedBuilder instantiated ---");
 			Logger.DebugInternal($"Config owner: {config.Owner.Name}");
 			Logger.DebugInternal($"Total keys: {config.ConfigurationItemDefinitions.Count}");
-			Logger.DebugInternal($"AutoRegistered keys: {autoConfigKeys.Count()}, Grouped: {groupedKeys.Count}, Categorized: {categorizedKeys.Count}");
+			Logger.DebugInternal($"AutoRegistered keys: {autoConfigKeys.Count()}, Grouped: {groupedKeys.Count}");
 			Logger.DebugInternal($"Key groups ({KeyGrouping.Keys.Count}): [{string.Join(", ", KeyGrouping.Keys)}]");
-			List<string> categories = new();
-			KeyCategories.Keys.Do((key) => categories.Add($"[{string.Join(", ", key)}]"));
-			Logger.DebugInternal($"Key categories ({KeyCategories.Keys.Count}): {string.Join(", ", categories)}");
 		}
 	}
 
-	public IEnumerable<DataFeedItem> GeneratePage(string[] path, string searchPhrase = "", bool includeInternal = false) {
-		Logger.DebugInternal($"KeyCategories[({path.Length})[{string.Join(", ", path)}]].Contains");
-		path = path ?? [];
-		DataFeedGrid? subcategories = GenerateSubcategoryButtons(path);
-		if (subcategories is not null) yield return subcategories;
-		IEnumerable<ModConfigurationKey> filteredItems = string.IsNullOrEmpty(searchPhrase) ? Config.ConfigurationItemDefinitions.Where(KeyCategories[path].Contains) : Config.ConfigurationItemDefinitions;
+	public IEnumerable<DataFeedItem> RootPage(string searchPhrase = "", bool includeInternal = false) {
+
 		if (KeyGrouping.Any()) {
 			foreach (string group in KeyGrouping.Keys) {
 				DataFeedGroup container = FeedBuilder.Group(group, group);
-				foreach (ModConfigurationKey key in filteredItems.Where(KeyGrouping[group].Contains)) {
+				foreach (ModConfigurationKey key in Config.ConfigurationItemDefinitions.Where(KeyGrouping[group].Contains)) {
 					if (key.InternalAccessOnly && !includeInternal) continue;
 					if (!string.IsNullOrEmpty(searchPhrase) && string.Join("\n", key.Name, key.Description).IndexOf(searchPhrase, StringComparison.InvariantCultureIgnoreCase) < 0) continue;
 					container.AddSubitem(GenerateDataFeedItem(key));
@@ -111,16 +85,17 @@ public class ModConfigurationFeedBuilder {
 			}
 		}
 		else {
-			foreach (ModConfigurationKey key in filteredItems) {
+			foreach (ModConfigurationKey key in Config.ConfigurationItemDefinitions) {
 				if (key.InternalAccessOnly && !includeInternal) continue;
 				if (!string.IsNullOrEmpty(searchPhrase) && string.Join("\n", key.Name, key.Description).IndexOf(searchPhrase, StringComparison.InvariantCultureIgnoreCase) < 0) continue;
 				yield return GenerateDataFeedItem(key);
 			}
 		}
+
 		yield return GenerateSaveControlButtons();
 	}
 
-	public IEnumerable<DataFeedOrderedItem<int>> OrderedItem(ModConfigurationKey key) {
+	public IEnumerable<DataFeedOrderedItem<int>> ListPage(ModConfigurationKey key) {
 		AssertChildKey(key);
 		if (!typeof(IEnumerable).IsAssignableFrom(key.ValueType())) yield break;
 		var value = (IEnumerable)Config.GetValue(key);
@@ -160,16 +135,6 @@ public class ModConfigurationFeedBuilder {
 			return (DataFeedItem)typeof(ModConfigurationFeedBuilder).GetMethod(nameof(GenerateDataFeedField)).MakeGenericMethod(key.ValueType()).Invoke(this, [key]);
 	}
 
-	public DataFeedGrid? GenerateSubcategoryButtons(string[] currentPath) {
-		if (!KeyCategories.Any()) return null;
-		IEnumerable<string[]> subCategories = KeyCategories.Keys.Where((subPath) => subPath.Length == currentPath.Length + 1 && IsFirstChild(subPath, currentPath));
-		if (subCategories is null || !subCategories.Any()) return null;
-		DataFeedGrid container = FeedBuilder.Grid("SubcategoryButtonsGrid", "");
-		foreach (string[] subCategory in subCategories)
-			container.AddSubitem(FeedBuilder.Category(subCategory.Last(), subCategory.Last() + " >"));
-		return container;
-	}
-
 	public DataFeedGrid GenerateSaveControlButtons() {
 		string configName = Path.GetFileNameWithoutExtension(Config.Owner.ModAssembly!.File);
 		DataFeedGrid container = FeedBuilder.Grid("SaveControlButtonsGrid", "", [
@@ -181,35 +146,17 @@ public class ModConfigurationFeedBuilder {
 	}
 
 	[SyncMethod(typeof(Action<string>), [])]
-	public static void SaveConfig(string configName) {
+	private static void SaveConfig(string configName) {
 
 	}
 
 	[SyncMethod(typeof(Action<string>), [])]
-	public static void DiscardConfig(string configName) {
+	private static void DiscardConfig(string configName) {
 
 	}
 
 	[SyncMethod(typeof(Action<string>), [])]
-	public static void ResetConfig(string configName) {
+	private static void ResetConfig(string configName) {
 
-	}
-}
-
-internal class StringArrayEqualityComparer : EqualityComparer<string[]> {
-	public override bool Equals(string[] x, string[] y) {
-		Logger.DebugInternal($"Comparing [({x.Length})[{string.Join(", ", x)}]] to [({y.Length})[{string.Join(", ", y)}]]");
-		if (x.Length != y.Length) return false;
-		for (int i = 0; i < x.Length; i++)
-			if (x[i] != y[i]) return false;
-		Logger.DebugInternal("Values equal");
-		return true;
-	}
-
-	public override int GetHashCode(string[] obj) {
-		int hashCode = 699494;
-		foreach (string item in obj)
-			hashCode += item.GetHashCode() - (item.Length + 621) ^ 8;
-		return hashCode;
 	}
 }

@@ -5,22 +5,11 @@ namespace ResoniteModLoader;
 /// </summary>
 [AttributeUsage(AttributeTargets.Field)]
 public sealed class AutoRegisterConfigKeyAttribute : Attribute {
-	public readonly string Group;
-
-	public readonly string[] Path;
+	public readonly string? Group;
 
 	public AutoRegisterConfigKeyAttribute() { }
 
-	public AutoRegisterConfigKeyAttribute(string groupName) {
-		Group = groupName;
-	}
-
-	public AutoRegisterConfigKeyAttribute(string[] subpath) {
-		Path = subpath;
-	}
-
-	public AutoRegisterConfigKeyAttribute(string[] subpath, string groupName) {
-		Group = groupName;
-		Path = subpath;
+	public AutoRegisterConfigKeyAttribute(string group) {
+		Group = group;
 	}
 }
