@@ -13,7 +13,7 @@ public class ModConfigurationFeedBuilder {
 
 	private readonly Dictionary<string, HashSet<ModConfigurationKey>> KeyGrouping = new();
 
-	private readonly Dictionary<string[], HashSet<ModConfigurationKey>> KeyCategories = new();
+	private readonly Dictionary<string[], HashSet<ModConfigurationKey>> KeyCategories = new(new StringArrayEqualityComparer());
 
 	public readonly static Dictionary<ModConfiguration, ModConfigurationFeedBuilder> CachedBuilders = new();
 
@@ -36,7 +36,14 @@ public class ModConfigurationFeedBuilder {
 			throw new InvalidOperationException($"Mod key ({key}) is not owned by {Config.Owner.Name}'s config");
 	}
 
-	private static bool AStartsWithB<T>(T[] A, T[] B) => string.Join("\t", A).StartsWith(string.Join("\t", B), StringComparison.InvariantCultureIgnoreCase);
+	private static bool IsFirstChild(string[] x, string[] y) {
+		Logger.DebugInternal($"Is [({x.Length})[{string.Join(", ", x)}]] a first child to [({y.Length})[{string.Join(", ", y)}]]?");
+		if (x.Length != y.Length + 1) return false;
+		for (int i = 0; i < y.Length; i++)
+			if (x[i] != y[i]) return false;
+		Logger.DebugInternal("You are the father!");
+		return true;
+	}
 
 	public ModConfigurationFeedBuilder(ModConfiguration config) {
 		Config = config;
@@ -74,13 +81,23 @@ public class ModConfigurationFeedBuilder {
 			}
 		}
 		CachedBuilders[config] = this;
+		if (Logger.IsDebugEnabled()) {
+			Logger.DebugInternal("--- ModConfigurationFeedBuilder instantiated ---");
+			Logger.DebugInternal($"Config owner: {config.Owner.Name}");
+			Logger.DebugInternal($"Total keys: {config.ConfigurationItemDefinitions.Count}");
+			Logger.DebugInternal($"AutoRegistered keys: {autoConfigKeys.Count()}, Grouped: {groupedKeys.Count}, Categorized: {categorizedKeys.Count}");
+			Logger.DebugInternal($"Key groups ({KeyGrouping.Keys.Count}): [{string.Join(", ", KeyGrouping.Keys)}]");
+			List<string> categories = new();
+			KeyCategories.Keys.Do((key) => categories.Add($"[{string.Join(", ", key)}]"));
+			Logger.DebugInternal($"Key categories ({KeyCategories.Keys.Count}): {string.Join(", ", categories)}");
+		}
 	}
 
 	public IEnumerable<DataFeedItem> GeneratePage(string[] path, string searchPhrase = "", bool includeInternal = false) {
+		Logger.DebugInternal($"KeyCategories[({path.Length})[{string.Join(", ", path)}]].Contains");
 		path = path ?? [];
 		DataFeedGrid? subcategories = GenerateSubcategoryButtons(path);
 		if (subcategories is not null) yield return subcategories;
-		Logger.DebugInternal($"KeyCategories[{string.Join(", ", path)}].Contains");
 		IEnumerable<ModConfigurationKey> filteredItems = string.IsNullOrEmpty(searchPhrase) ? Config.ConfigurationItemDefinitions.Where(KeyCategories[path].Contains) : Config.ConfigurationItemDefinitions;
 		if (KeyGrouping.Any()) {
 			foreach (string group in KeyGrouping.Keys) {
@@ -88,9 +105,9 @@ public class ModConfigurationFeedBuilder {
 				foreach (ModConfigurationKey key in filteredItems.Where(KeyGrouping[group].Contains)) {
 					if (key.InternalAccessOnly && !includeInternal) continue;
 					if (!string.IsNullOrEmpty(searchPhrase) && string.Join("\n", key.Name, key.Description).IndexOf(searchPhrase, StringComparison.InvariantCultureIgnoreCase) < 0) continue;
-					container.Subitem(GenerateDataFeedItem(key));
+					container.AddSubitem(GenerateDataFeedItem(key));
 				}
-				if (container.SubItems is not null && container.SubItems.Any()) yield return container;
+				if (container.SubItems?.Any() ?? false) yield return container;
 			}
 		}
 		else {
@@ -114,26 +131,29 @@ public class ModConfigurationFeedBuilder {
 
 	public DataFeedValueField<T> GenerateDataFeedField<T>(ModConfigurationKey key) {
 		AssertChildKey(key);
-		if (typeof(T) == typeof(bool))
-			return (DataFeedValueField<T>)(object)FeedBuilder.Toggle(key.Name, key.Description ?? key.Name, (field) => field.SyncWithModConfiguration(Config, key));
-		else if (typeof(T).IsAssignableFrom(typeof(float)) && KeyFields.TryGetValue(key, out FieldInfo field) && TryGetRangeAttribute(field, out RangeAttribute range) && range.Min is T min && range.Max is T max)
-			return FeedBuilder.Slider<T>(key.Name, key.Description ?? key.Name, (field) => field.SyncWithModConfiguration(Config, key), min, max, range.TextFormat);
+		string label = (key.InternalAccessOnly ? "[INTERNAL] " : "") + key.Description ?? key.Name;
+		if (typeof(T).IsAssignableFrom(typeof(float)) && KeyFields.TryGetValue(key, out FieldInfo field) && TryGetRangeAttribute(field, out RangeAttribute range) && range.Min is T min && range.Max is T max)
+			return FeedBuilder.Slider<T>(key.Name, label, (field) => field.SyncWithModConfiguration(Config, key), min, max, range.TextFormat);
 		else
-			return FeedBuilder.ValueField<T>(key.Name, key.Description ?? key.Name, (field) => field.SyncWithModConfiguration(Config, key));
+			return FeedBuilder.ValueField<T>(key.Name, label, (field) => field.SyncWithModConfiguration(Config, key));
 	}
 
 	public DataFeedEnum<T> GenerateDataFeedEnum<T>(ModConfigurationKey key) where T : Enum {
 		AssertChildKey(key);
-		return FeedBuilder.Enum<T>(key.Name, key.Description ?? key.Name, (field) => field.SyncWithModConfiguration(Config, key));
+		string label = (key.InternalAccessOnly ? "[INTERNAL] " : "") + key.Description ?? key.Name;
+		return FeedBuilder.Enum<T>(key.Name, label, (field) => field.SyncWithModConfiguration(Config, key));
 	}
 
 	public DataFeedItem GenerateDataFeedItem(ModConfigurationKey key) {
 		AssertChildKey(key);
+		string label = (key.InternalAccessOnly ? "[INTERNAL] " : "") + key.Description ?? key.Name;
 		Type valueType = key.ValueType();
 		if (valueType == typeof(dummy))
-			return FeedBuilder.Label(key.Name, key.Description ?? key.Name);
+			return FeedBuilder.Label(key.Name, label);
+		else if (valueType == typeof(bool))
+			return FeedBuilder.Toggle(key.Name, label, (field) => field.SyncWithModConfiguration(Config, key));
 		else if (valueType != typeof(string) && valueType != typeof(Uri) && typeof(IEnumerable).IsAssignableFrom(valueType))
-			return FeedBuilder.Category(key.Name, key.Description ?? key.Name);
+			return FeedBuilder.Category(key.Name, label);
 		else if (valueType.InheritsFrom(typeof(Enum)))
 			return (DataFeedItem)typeof(ModConfigurationFeedBuilder).GetMethod(nameof(GenerateDataFeedEnum)).MakeGenericMethod(key.ValueType()).Invoke(this, [key]);
 		else
@@ -142,11 +162,11 @@ public class ModConfigurationFeedBuilder {
 
 	public DataFeedGrid? GenerateSubcategoryButtons(string[] currentPath) {
 		if (!KeyCategories.Any()) return null;
-		IEnumerable<string[]> subCategories = KeyCategories.Keys.Where((subPath) => subPath.Length == currentPath.Length + 1 && AStartsWithB(subPath, currentPath));
+		IEnumerable<string[]> subCategories = KeyCategories.Keys.Where((subPath) => subPath.Length == currentPath.Length + 1 && IsFirstChild(subPath, currentPath));
 		if (subCategories is null || !subCategories.Any()) return null;
 		DataFeedGrid container = FeedBuilder.Grid("SubcategoryButtonsGrid", "");
 		foreach (string[] subCategory in subCategories)
-			container.Subitem(FeedBuilder.Category(subCategory.Last(), subCategory.Last() + " >"));
+			container.AddSubitem(FeedBuilder.Category(subCategory.Last(), subCategory.Last() + " >"));
 		return container;
 	}
 
@@ -173,5 +193,23 @@ public class ModConfigurationFeedBuilder {
 	[SyncMethod(typeof(Action<string>), [])]
 	public static void ResetConfig(string configName) {
 
+	}
+}
+
+internal class StringArrayEqualityComparer : EqualityComparer<string[]> {
+	public override bool Equals(string[] x, string[] y) {
+		Logger.DebugInternal($"Comparing [({x.Length})[{string.Join(", ", x)}]] to [({y.Length})[{string.Join(", ", y)}]]");
+		if (x.Length != y.Length) return false;
+		for (int i = 0; i < x.Length; i++)
+			if (x[i] != y[i]) return false;
+		Logger.DebugInternal("Values equal");
+		return true;
+	}
+
+	public override int GetHashCode(string[] obj) {
+		int hashCode = 699494;
+		foreach (string item in obj)
+			hashCode += item.GetHashCode() - (item.Length + 621) ^ 8;
+		return hashCode;
 	}
 }

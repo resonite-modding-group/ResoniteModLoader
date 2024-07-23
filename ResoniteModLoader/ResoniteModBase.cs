@@ -62,7 +62,9 @@ public abstract class ResoniteModBase {
 	/// <param name="viewData">Passed-through from <see cref="ModConfigurationDataFeed"/>'s Enumerate call.</param>
 	/// <param name="includeInternal">Indicates whether the user has requested that internal configuration keys are included in the returned feed.</param>
 	/// <returns>DataFeedItem's to be directly returned by the calling <see cref="ModConfigurationDataFeed"/>.</returns>
-	internal abstract IAsyncEnumerable<DataFeedItem> BuildConfigurationFeed(IReadOnlyList<string> path, IReadOnlyList<string> groupKeys, string searchPhrase, object viewData, bool includeInternal = false);
+	internal abstract IEnumerable<DataFeedItem> BuildConfigurationFeed(IReadOnlyList<string> path, IReadOnlyList<string> groupKeys, string searchPhrase, object viewData, bool includeInternal = false);
+
+	// Why would anyone need an async config? They depend on Microsoft.Bcl.AsyncInterfaces too
 
 	internal bool FinishedLoading { get; set; }
 }

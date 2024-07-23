@@ -7,7 +7,7 @@ namespace ResoniteModLoader;
 public sealed class AutoRegisterConfigKeyAttribute : Attribute {
 	public readonly string Group;
 
-	public readonly IReadOnlyList<string> Path;
+	public readonly string[] Path;
 
 	public AutoRegisterConfigKeyAttribute() { }
 

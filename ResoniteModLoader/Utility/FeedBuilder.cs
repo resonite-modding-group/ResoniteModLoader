@@ -536,19 +536,23 @@ public static class FeedBuilderExtensions {
 		return item;
 	}
 
-	private static MethodInfo SubItemsSetter = AccessTools.PropertySetter(typeof(DataFeedItem), nameof(DataFeedItem.SubItems));
+	private static PropertyInfo SubItemsSetter = typeof(DataFeedItem).GetProperty(nameof(DataFeedItem.SubItems));
 
-	public static I Subitem<I>(this I item, params DataFeedItem[] subitem) where I : DataFeedItem {
+	public static I AddSubitem<I>(this I item, params DataFeedItem[] subitem) where I : DataFeedItem {
 		if (item.SubItems is null)
-			SubItemsSetter.Invoke(item, [subitem]);
+			SubItemsSetter.SetValue(item, subitem.ToList().AsReadOnly(), null);
 		else
-			SubItemsSetter.Invoke(item, [item.SubItems.Concat(subitem).ToArray()]);
+			SubItemsSetter.SetValue(item, item.SubItems.Concat(subitem).ToList().AsReadOnly(), null);
 		return item;
 	}
 
-	public static I ClearSubitems<I>(this I item, params DataFeedItem[] subitem) where I : DataFeedItem {
-		if (item.SubItems is not null && item.SubItems.Any())
-			SubItemsSetter.Invoke(item, [null]);
+	public static I ReplaceSubitems<I>(this I item, params DataFeedItem[] subitem) where I : DataFeedItem {
+		SubItemsSetter.SetValue(item, subitem.ToList().AsReadOnly(), null);
+		return item;
+	}
+
+	public static I ClearSubitems<I>(this I item) where I : DataFeedItem {
+		SubItemsSetter.SetValue(item, null, null);
 		return item;
 	}
 #pragma warning restore CS8625, CA1715

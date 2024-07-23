@@ -129,7 +129,7 @@ public sealed class Logger {
 		stackTrace = stackTrace ?? new(1);
 		ResoniteMod? source = Util.ExecutingMod(stackTrace);
 		string logTypePrefix = LogTypeTag(logType);
-		_logBuffer.Add(new LogMessage(DateTime.Now, source, logType, message.ToString(), stackTrace));
+		_logBuffer.Add(new(DateTime.Now, source, logType, message.ToString(), stackTrace));
 		if (source == null) {
 			UniLog.Log($"{logTypePrefix}[ResoniteModLoader] {message}", includeTrace);
 		}
@@ -147,6 +147,10 @@ public sealed class Logger {
 				LogInternal(logType, element.ToString(), stackTrace, includeTrace);
 			}
 		}
+	}
+
+	internal static void ProcessException(Exception exception, Assembly? assembly = null) {
+		_exceptionBuffer.Add(new(DateTime.Now, assembly, exception));
 	}
 
 	private static string LogTypeTag(LogType logType) => $"[{Enum.GetName(typeof(LogType), logType)}]";
