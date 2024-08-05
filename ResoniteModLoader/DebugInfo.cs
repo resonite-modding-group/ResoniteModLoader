@@ -3,6 +3,8 @@ using System.Runtime.Versioning;
 namespace ResoniteModLoader;
 
 internal static class DebugInfo {
+	internal static TimeSpan InitializationTime;
+
 	internal static void Log() {
 		Logger.MsgInternal($"ResoniteModLoader v{ModLoader.VERSION} starting up!{(ModLoaderConfiguration.Get().Debug ? " Debug logs will be shown." : "")}");
 		Logger.DebugFuncInternal(() => $"Launched with args: {string.Join(" ", Environment.GetCommandLineArgs())}");

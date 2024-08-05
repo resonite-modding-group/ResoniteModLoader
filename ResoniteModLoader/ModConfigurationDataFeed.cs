@@ -39,7 +39,8 @@ public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed
 					if (string.IsNullOrEmpty(searchPhrase)) {
 						yield return FeedBuilder.Group("ResoniteModLoder", "RML", [
 							FeedBuilder.Label("ResoniteModLoder.Version", $"ResoniteModLoader version {ModLoader.VERSION}"),
-							FeedBuilder.StringIndicator("ResoniteModLoder.LoadedModCount", "Loaded mods:", ModLoader.Mods().Count())
+							FeedBuilder.StringIndicator("ResoniteModLoder.LoadedModCount", "Loaded mods", ModLoader.Mods().Count()),
+							FeedBuilder.StringIndicator("ResoniteModLoder.InitializationTime", "Startup time", DebugInfo.InitializationTime.Milliseconds + "ms")
 						]);
 
 						List<DataFeedCategory> modCategories = new();
@@ -155,7 +156,7 @@ public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed
 	/// <returns>A unique key representing the mod.</returns>
 	/// <seealso cref="ModFromKey"/>
 	/// <seealso cref="TryModFromKey"/>
-	public static string KeyFromMod(ResoniteModBase mod) => Path.GetFileNameWithoutExtension(mod.ModAssembly!.File);
+	internal static string KeyFromMod(ResoniteModBase mod) => Path.GetFileNameWithoutExtension(mod.ModAssembly!.File);
 
 	/// <summary>
 	/// Returns the mod that corresponds to a unique key.
@@ -163,7 +164,7 @@ public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed
 	/// <param name="key">A unique key from <see cref="KeyFromMod"/>.</param>
 	/// <returns>The mod that corresponds with the unique key, or null if one couldn't be found.</returns>
 	/// <seealso cref="TryModFromKey"/>
-	public static ResoniteModBase? ModFromKey(string key) => ModLoader.Mods().First((mod) => KeyFromMod(mod) == key);
+	internal static ResoniteModBase? ModFromKey(string key) => ModLoader.Mods().First((mod) => KeyFromMod(mod) == key);
 
 	/// <summary>
 	/// Tries to get the mod that corresponds to a unique key.
@@ -171,7 +172,7 @@ public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed
 	/// <param name="key">A unique key from <see cref="KeyFromMod"/>.</param>
 	/// <param name="mod">Set if a matching mod is found.</param>
 	/// <returns>True if a matching mod is found, false otherwise.</returns>
-	public static bool TryModFromKey(string key, out ResoniteModBase mod) {
+	internal static bool TryModFromKey(string key, out ResoniteModBase mod) {
 		mod = ModFromKey(key)!;
 		return mod is not null;
 	}
@@ -184,7 +185,7 @@ internal static class ModConfigurationDataFeedExtensions {
 	/// <param name="mod">The target mod</param>
 	/// <param name="standalone">Set to true if this group will be displayed on its own page</param>
 	/// <returns></returns>
-	public static DataFeedGroup GenerateModInfoGroup(this ResoniteModBase mod, bool standalone) {
+	internal static DataFeedGroup GenerateModInfoGroup(this ResoniteModBase mod, bool standalone) {
 		DataFeedGroup modFeedGroup = new();
 		List<DataFeedItem> groupChildren = new();
 		string key = ModConfigurationDataFeed.KeyFromMod(mod);
@@ -194,9 +195,9 @@ internal static class ModConfigurationDataFeedExtensions {
 		groupChildren.Add(FeedBuilder.Indicator(key + ".Version", "Version", mod.Version));
 
 		if (standalone) {
+			groupChildren.Add(FeedBuilder.StringIndicator(key + ".InitializationTime", "Startup impact", mod.InitializationTime.Milliseconds + "ms"));
 			groupChildren.Add(FeedBuilder.Indicator(key + ".AssemblyFile", "Assembly file", Path.GetFileName(mod.ModAssembly!.File)));
 			groupChildren.Add(FeedBuilder.Indicator(key + ".AssemblyHash", "Assembly hash", mod.ModAssembly!.Sha256));
-			// TODO: Add initialization time recording
 		}
 
 		if (Uri.TryCreate(mod.Link, UriKind.Absolute, out var uri)) groupChildren.Add(FeedBuilder.ValueAction<Uri>(key + ".OpenLinkAction", $"Open mod link ({uri.Host})", (action) => action.Target = OpenURI, uri));
@@ -212,7 +213,7 @@ internal static class ModConfigurationDataFeedExtensions {
 		return FeedBuilder.Group(key + ".Group", standalone ? "Mod info" : mod.Name, groupChildren);
 	}
 
-	public static IEnumerable<DataFeedItem> GenerateModConfigurationFeed(this ResoniteModBase mod, IReadOnlyList<string> path, IReadOnlyList<string> groupKeys, string searchPhrase, object viewData, bool includeInternal = false, bool forceDefaultBuilder = false) {
+	internal static IEnumerable<DataFeedItem> GenerateModConfigurationFeed(this ResoniteModBase mod, IReadOnlyList<string> path, IReadOnlyList<string> groupKeys, string searchPhrase, object viewData, bool includeInternal = false, bool forceDefaultBuilder = false) {
 		if (path.FirstOrDefault() == "ResoniteModLoader")
 			Logger.WarnInternal("Call to GenerateModConfigurationFeed may include full DataFeed path, if so expect broken behavior.");
 
@@ -221,27 +222,29 @@ internal static class ModConfigurationDataFeedExtensions {
 			yield break;
 		}
 
-		ModConfigurationFeedBuilder.CachedBuilders.TryGetValue(config, out ModConfigurationFeedBuilder builder);
-		builder = builder ?? new ModConfigurationFeedBuilder(config);
-		IEnumerable<DataFeedItem> items;
+		List<DataFeedItem> items = new();
 
 		if (!forceDefaultBuilder) {
 			try {
-				items = mod.BuildConfigurationFeed(path.Skip(3).ToArray(), groupKeys, searchPhrase, viewData, includeInternal);
+				items = mod.BuildConfigurationFeed(path, groupKeys, searchPhrase, viewData, includeInternal).ToList();
 			}
 			catch (Exception ex) {
 				Logger.ProcessException(ex, mod.ModAssembly!.Assembly);
 				Logger.ErrorInternal($"Exception was thrown while running {mod.Name}'s BuildConfigurationFeed method");
-				items = builder.GeneratePage(path.Skip(3).ToArray(), searchPhrase, includeInternal);
-				items = items.Prepend(FeedBuilder.Label("BuildConfigurationFeedException", "Encountered error while building custom configuration feed!", color.Red));
 			}
 		}
-		else {
-			items = builder.GeneratePage(path.Skip(3).ToArray(), searchPhrase, includeInternal);
+
+		if (!items.Any()) {
+			ModConfigurationFeedBuilder.CachedBuilders.TryGetValue(config, out var builder);
+			builder = builder ?? new ModConfigurationFeedBuilder(config);
+			items = builder.RootPage(searchPhrase, includeInternal).ToList();
 		}
 
-		foreach (DataFeedItem item in items)
+		Logger.DebugInternal($"GenerateModConfigurationFeed output for {mod.Name} @ {string.Join("/", path)}");
+		foreach (DataFeedItem item in items) {
+			Logger.DebugInternal($"\t{item.GetType().Name} : {item.ItemKey}");
 			yield return item;
+		}
 	}
 
 	private static DataFeedItem AsFeedItem(this string text, int index, bool copyable = true) {
@@ -251,7 +254,7 @@ internal static class ModConfigurationDataFeedExtensions {
 			return FeedBuilder.Label(index.ToString(), text);
 	}
 
-	public static IEnumerable<DataFeedItem> GenerateModLogFeed(this ResoniteModBase mod, int last = -1, bool copyable = true, string? filter = null) {
+	internal static IEnumerable<DataFeedItem> GenerateModLogFeed(this ResoniteModBase mod, int last = -1, bool copyable = true, string? filter = null) {
 		List<Logger.LogMessage> modLogs = mod.Logs().ToList();
 		last = last < 0 ? int.MaxValue : last;
 		last = Math.Min(modLogs.Count, last);
@@ -262,7 +265,7 @@ internal static class ModConfigurationDataFeedExtensions {
 			yield return line.ToString().AsFeedItem(line.Time.GetHashCode(), copyable);
 	}
 
-	public static IEnumerable<DataFeedItem> GenerateModExceptionFeed(this ResoniteModBase mod, int last = -1, bool copyable = true, string? filter = null) {
+	internal static IEnumerable<DataFeedItem> GenerateModExceptionFeed(this ResoniteModBase mod, int last = -1, bool copyable = true, string? filter = null) {
 		List<Logger.LogException> modExceptions = mod.Exceptions().ToList();
 		last = last < 0 ? int.MaxValue : last;
 		last = Math.Min(modExceptions.Count, last);
@@ -272,19 +275,15 @@ internal static class ModConfigurationDataFeedExtensions {
 			yield return line.ToString().AsFeedItem(line.Time.GetHashCode(), copyable);
 	}
 
-	/// <summary>
-	/// Spawns the prompt for a user to open a hyperlink.
-	/// </summary>
-	/// <param name="uri">The URI that the user will be prompted to open.</param>
 	[SyncMethod(typeof(Action<Uri>), [])]
-	public static void OpenURI(Uri uri) {
+	private static void OpenURI(Uri uri) {
 		Slot slot = Userspace.UserspaceWorld.AddSlot("Hyperlink");
 		slot.PositionInFrontOfUser(float3.Backward);
 		slot.AttachComponent<HyperlinkOpenDialog>().Setup(uri, "Outgoing hyperlink");
 	}
 
 	[SyncMethod(typeof(Action<string>), [])]
-	public static void CopyText(string text) {
+	private static void CopyText(string text) {
 		Userspace.UserspaceWorld.InputInterface.Clipboard.SetText(text);
 		NotificationMessage.SpawnTextMessage("Copied line", colorX.White);
 	}

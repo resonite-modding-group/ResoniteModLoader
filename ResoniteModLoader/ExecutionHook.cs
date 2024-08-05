@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using FrooxEngine;
 
 namespace ResoniteModLoader;
@@ -18,6 +19,8 @@ internal static class ExecutionHook {
 	static ExecutionHook() {
 		Logger.DebugInternal($"Start of ExecutionHook");
 		try {
+			Stopwatch timer = Stopwatch.StartNew();
+			Logger.RegisterExceptionHook();
 			BindingFlags flags = BindingFlags.Static | BindingFlags.NonPublic;
 			var byName = (Dictionary<string, AssemblyTypeRegistry>)typeof(GlobalTypeRegistry).GetField("_byName", flags).GetValue(null);
 
@@ -39,8 +42,12 @@ internal static class ExecutionHook {
 			LoadProgressIndicator.SetCustom("Initializing");
 			DebugInfo.Log();
 			HarmonyWorker.LoadModsAndHideModAssemblies(initialAssemblies);
+			timer.Stop();
 			LoadProgressIndicator.SetCustom("Loaded");
+			Logger.MsgInternal($"Initialization & mod loading completed in {timer.ElapsedMilliseconds}ms.");
+			DebugInfo.InitializationTime = timer.Elapsed;
 		} catch (Exception e) {
+			Logger.UnregisterExceptionHook();
 			// it's important that this doesn't send exceptions back to Resonite
 			Logger.ErrorInternal($"Exception in execution hook!\n{e}");
 		}

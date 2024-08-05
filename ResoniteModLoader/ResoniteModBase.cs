@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using FrooxEngine;
 
 namespace ResoniteModLoader;
@@ -25,6 +26,8 @@ public abstract class ResoniteModBase {
 	/// Gets an optional hyperlink to the mod's repo or homepage.
 	/// </summary>
 	public virtual string? Link { get; }
+
+	public TimeSpan InitializationTime { get; internal set; }
 
 	/// <summary>
 	/// A reference to the AssemblyFile that this mod was loaded from.
