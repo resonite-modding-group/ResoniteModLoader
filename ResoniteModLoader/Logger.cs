@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Diagnostics;
 
 using Elements.Core;
@@ -5,14 +6,11 @@ using Elements.Core;
 namespace ResoniteModLoader;
 
 public sealed class Logger {
-	// logged for null objects
-	internal const string NULL_STRING = "null";
-
-	public enum LogType { TRACE, DEBUG, INFO, WARN, ERROR }
+	public enum LogLevel { TRACE, DEBUG, INFO, WARN, ERROR }
 
 	public readonly struct LogMessage {
-		public LogMessage(DateTime time, ResoniteModBase? mod, LogType level, string message, StackTrace trace) {
-			Time = time;
+		internal LogMessage(ResoniteModBase? mod, LogLevel level, string message, StackTrace? trace = null) {
+			Time = DateTime.Now;
 			Mod = mod;
 			Level = level;
 			Message = message;
@@ -21,26 +19,46 @@ public sealed class Logger {
 
 		public DateTime Time { get; }
 		public ResoniteModBase? Mod { get; }
-		public LogType Level { get; }
+		public LogLevel Level { get; }
 		public string Message { get; }
-		public StackTrace Trace { get; }
+		public StackTrace? Trace { get; }
 
 		public override string ToString() => $"({Mod?.Name ?? "ResoniteModLoader"} @ {Time}) {LogTypeTag(Level)} {Message}";
 	}
 
 	public readonly struct LogException {
-		public LogException(DateTime time, Assembly? assembly, Exception exception) {
-			Time = time;
-			Assembly = assembly;
+		internal LogException(Exception exception) {
+			Time = DateTime.Now;
 			Exception = exception;
 		}
 
-		public DateTime Time { get; }
-		public Assembly? Assembly { get; }
-		public Exception Exception { get; }
+		internal LogException(Exception exception, Assembly? assembly) {
+			Time = DateTime.Now;
+			Exception = exception;
+			Source = (assembly, null);
+		}
 
-		public override string ToString() => $"({Time}) [{Assembly?.FullName} ?? Unknown assembly] {Exception.Message}\n{Exception.StackTrace}";
+		internal LogException(Exception exception, ResoniteModBase? mod) {
+			Time = DateTime.Now;
+			Exception = exception;
+			Source = (mod?.ModAssembly?.Assembly, mod);
+		}
+
+		internal LogException(Exception exception, Assembly? assembly, ResoniteModBase? mod) {
+			Time = DateTime.Now;
+			Exception = exception;
+			Source = (assembly, mod);
+		}
+
+		public DateTime Time { get; }
+		public Exception Exception { get; }
+		public (Assembly? Assembly, ResoniteModBase? Mod)? Source { get; }
+
+		public override string ToString() => $"({Time}) [{Source?.Assembly?.FullName} ?? Unknown assembly] {Exception.Message}\n{Exception.StackTrace}";
 	}
+
+	// logged for null objects
+	internal const string NULL_STRING = "null";
 
 	private static List<LogMessage> _logBuffer = new();
 
@@ -56,80 +74,80 @@ public sealed class Logger {
 
 	internal static void TraceFuncInternal(Func<string> messageProducer) {
 		if (IsDebugEnabled()) {
-			LogInternal(LogType.TRACE, messageProducer(), null, true);
+			LogInternal(LogLevel.TRACE, messageProducer(), null, true);
 		}
 	}
 
 	internal static void TraceFuncExternal(Func<object> messageProducer) {
 		if (IsDebugEnabled()) {
-			LogInternal(LogType.TRACE, messageProducer(), new(1), true);
+			LogInternal(LogLevel.TRACE, messageProducer(), new(1), true);
 		}
 	}
 
 	internal static void TraceInternal(string message) {
 		if (IsDebugEnabled()) {
-			LogInternal(LogType.TRACE, message, null, true);
+			LogInternal(LogLevel.TRACE, message, null, true);
 		}
 	}
 
 	internal static void TraceExternal(object message) {
 		if (IsDebugEnabled()) {
-			LogInternal(LogType.TRACE, message, new(1), true);
+			LogInternal(LogLevel.TRACE, message, new(1), true);
 		}
 	}
 
 	internal static void TraceListExternal(object[] messages) {
 		if (IsDebugEnabled()) {
-			LogListInternal(LogType.TRACE, messages, new(1), true);
+			LogListInternal(LogLevel.TRACE, messages, new(1), true);
 		}
 	}
 
 	internal static void DebugFuncInternal(Func<string> messageProducer) {
 		if (IsDebugEnabled()) {
-			LogInternal(LogType.DEBUG, messageProducer());
+			LogInternal(LogLevel.DEBUG, messageProducer());
 		}
 	}
 
 	internal static void DebugFuncExternal(Func<object> messageProducer) {
 		if (IsDebugEnabled()) {
-			LogInternal(LogType.DEBUG, messageProducer(), new(1));
+			LogInternal(LogLevel.DEBUG, messageProducer(), new(1));
 		}
 	}
 
 	internal static void DebugInternal(string message) {
 		if (IsDebugEnabled()) {
-			LogInternal(LogType.DEBUG, message);
+			LogInternal(LogLevel.DEBUG, message);
 		}
 	}
 
 	internal static void DebugExternal(object message) {
 		if (IsDebugEnabled()) {
-			LogInternal(LogType.DEBUG, message, new(1));
+			LogInternal(LogLevel.DEBUG, message, new(1));
 		}
 	}
 
 	internal static void DebugListExternal(object[] messages) {
 		if (IsDebugEnabled()) {
-			LogListInternal(LogType.DEBUG, messages, new(1));
+			LogListInternal(LogLevel.DEBUG, messages, new(1));
 		}
 	}
 
-	internal static void MsgInternal(string message) => LogInternal(LogType.INFO, message);
-	internal static void MsgExternal(object message) => LogInternal(LogType.INFO, message, new(1));
-	internal static void MsgListExternal(object[] messages) => LogListInternal(LogType.INFO, messages, new(1));
-	internal static void WarnInternal(string message) => LogInternal(LogType.WARN, message);
-	internal static void WarnExternal(object message) => LogInternal(LogType.WARN, message, new(1));
-	internal static void WarnListExternal(object[] messages) => LogListInternal(LogType.WARN, messages, new(1));
-	internal static void ErrorInternal(string message) => LogInternal(LogType.ERROR, message);
-	internal static void ErrorExternal(object message) => LogInternal(LogType.ERROR, message, new(1));
-	internal static void ErrorListExternal(object[] messages) => LogListInternal(LogType.ERROR, messages, new(1));
+	internal static void MsgInternal(string message) => LogInternal(LogLevel.INFO, message);
+	internal static void MsgExternal(object message) => LogInternal(LogLevel.INFO, message, new(1));
+	internal static void MsgListExternal(object[] messages) => LogListInternal(LogLevel.INFO, messages, new(1));
+	internal static void WarnInternal(string message) => LogInternal(LogLevel.WARN, message);
+	internal static void WarnExternal(object message) => LogInternal(LogLevel.WARN, message, new(1));
+	internal static void WarnListExternal(object[] messages) => LogListInternal(LogLevel.WARN, messages, new(1));
+	internal static void ErrorInternal(string message) => LogInternal(LogLevel.ERROR, message);
+	internal static void ErrorExternal(object message) => LogInternal(LogLevel.ERROR, message, new(1));
+	internal static void ErrorListExternal(object[] messages) => LogListInternal(LogLevel.ERROR, messages, new(1));
 
-	private static void LogInternal(LogType logType, object message, StackTrace? stackTrace = null, bool includeTrace = false) {
+	private static void LogInternal(LogLevel logType, object message, StackTrace? stackTrace = null, bool includeTrace = false) {
 		message ??= NULL_STRING;
 		stackTrace = stackTrace ?? new(1);
 		ResoniteMod? source = Util.ExecutingMod(stackTrace);
 		string logTypePrefix = LogTypeTag(logType);
-		_logBuffer.Add(new(DateTime.Now, source, logType, message.ToString(), stackTrace));
+		_logBuffer.Add(new(source, logType, message.ToString(), stackTrace));
 		if (source == null) {
 			UniLog.Log($"{logTypePrefix}[ResoniteModLoader] {message}", includeTrace);
 		}
@@ -138,7 +156,7 @@ public sealed class Logger {
 		}
 	}
 
-	private static void LogListInternal(LogType logType, object[] messages, StackTrace? stackTrace, bool includeTrace = false) {
+	private static void LogListInternal(LogLevel logType, object[] messages, StackTrace? stackTrace, bool includeTrace = false) {
 		if (messages == null) {
 			LogInternal(logType, NULL_STRING, stackTrace, includeTrace);
 		}
@@ -149,15 +167,35 @@ public sealed class Logger {
 		}
 	}
 
-	internal static void ProcessException(Exception exception, Assembly? assembly = null) {
-		_exceptionBuffer.Add(new(DateTime.Now, assembly, exception));
+	internal static void ProcessException(Exception exception, Assembly? assembly = null, ResoniteModBase? mod = null) => _exceptionBuffer.Add(new(exception, assembly));
+
+	private static string LogTypeTag(LogLevel logType) => $"[{Enum.GetName(typeof(LogLevel), logType)}]";
+
+	internal static void RegisterExceptionHook() {
+		AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionProcessor;
+		DebugInternal("Unhandled exception hook registered");
 	}
 
-	private static string LogTypeTag(LogType logType) => $"[{Enum.GetName(typeof(LogType), logType)}]";
+	internal static void UnregisterExceptionHook() {
+		AppDomain.CurrentDomain.UnhandledException -= UnhandledExceptionProcessor;
+		DebugInternal("Unhandled exception hook unregistered");
+	}
+
+	private static void UnhandledExceptionProcessor(object sender, UnhandledExceptionEventArgs args) {
+		Exception exception = (Exception)args.ExceptionObject;
+		StackTrace trace = new StackTrace(exception);
+		ResoniteModBase? mod = Util.ExecutingMod(trace);
+		Assembly assembly = Assembly.GetAssembly(sender.GetType());
+		// this should handle most uncaught cases in RML and mods
+		if (mod is not null || assembly == Assembly.GetExecutingAssembly()) {
+			if (IsDebugEnabled()) ErrorInternal($"Caught unhandled exception, {exception.Message}. Attributed to {mod?.Name ?? "No mod"} / {assembly.FullName}");
+			ProcessException(exception, assembly, mod);
+		}
+	}
 }
 
-public static class LoggerExtensions {
-	public static IEnumerable<Logger.LogMessage> Logs(this ResoniteModBase mod) => Logger.Logs.Where((line) => line.Mod == mod);
+internal static class LoggerExtensions {
+	internal static IEnumerable<Logger.LogMessage> Logs(this ResoniteModBase mod) => Logger.Logs.Where((line) => line.Mod == mod);
 
-	public static IEnumerable<Logger.LogException> Exceptions(this ResoniteModBase mod) => Logger.Exceptions.Where((line) => line.Assembly == mod.ModAssembly!.Assembly);
+	internal static IEnumerable<Logger.LogException> Exceptions(this ResoniteModBase mod) => Logger.Exceptions.Where((line) => line.Source?.Mod == mod);
 }
