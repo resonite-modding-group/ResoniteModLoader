@@ -52,12 +52,13 @@ public class ModConfigurationFeedBuilder {
 			}
 		}
 
-		foreach (ModConfigurationKey key in config.ConfigurationItemDefinitions) {
-			if (groupedKeys.Any() && !groupedKeys.Contains(key)) {
-				if (!KeyGrouping.ContainsKey("Uncategorized"))
-					KeyGrouping["Uncategorized"] = new();
-				KeyGrouping["Uncategorized"].Add(key);
-			}
+		if (groupedKeys.Any()) {
+			if (!KeyGrouping.ContainsKey("Uncategorized"))
+				KeyGrouping["Uncategorized"] = new();
+
+			foreach (ModConfigurationKey key in config.ConfigurationItemDefinitions)
+				if (!groupedKeys.Contains(key))
+					KeyGrouping["Uncategorized"].Add(key);
 		}
 
 		CachedBuilders[config] = this;
@@ -158,5 +159,12 @@ public class ModConfigurationFeedBuilder {
 	[SyncMethod(typeof(Action<string>), [])]
 	private static void ResetConfig(string configName) {
 
+	}
+}
+
+public static class ModConfigurationFeedBuilderExtensions {
+	public static ModConfigurationFeedBuilder ConfigurationFeedBuilder(this ModConfiguration config) {
+		ModConfigurationFeedBuilder.CachedBuilders.TryGetValue(config, out var builder);
+		return builder ?? new ModConfigurationFeedBuilder(config);
 	}
 }
