@@ -48,27 +48,25 @@ internal static class AssemblyHider {
 	/// <param name="harmony">Our RML harmony instance</param>
 	/// <param name="initialAssemblies">Assemblies that were loaded when RML first started</param>
 	internal static void PatchResonite(Harmony harmony, HashSet<Assembly> initialAssemblies) {
-		//if (ModLoaderConfiguration.Get().HideModTypes) {
-			// initialize the static assembly sets that our patches will need later
-			resoniteAssemblies = GetResoniteAssemblies(initialAssemblies);
-			modAssemblies = GetModAssemblies(resoniteAssemblies);
-			dotNetAssemblies = resoniteAssemblies.Where(LooksLikeDotNetAssembly).ToHashSet();
+		// initialize the static assembly sets that our patches will need later
+		resoniteAssemblies = GetResoniteAssemblies(initialAssemblies);
+		modAssemblies = GetModAssemblies(resoniteAssemblies);
+		dotNetAssemblies = resoniteAssemblies.Where(LooksLikeDotNetAssembly).ToHashSet();
 
-			// TypeHelper.FindType explicitly does a type search
-			MethodInfo findTypeTarget = AccessTools.DeclaredMethod(typeof(TypeHelper), nameof(TypeHelper.FindType), new Type[] { typeof(string) });
-			MethodInfo findTypePatch = AccessTools.DeclaredMethod(typeof(AssemblyHider), nameof(FindTypePostfix));
-			harmony.Patch(findTypeTarget, postfix: new HarmonyMethod(findTypePatch));
+		// TypeHelper.FindType explicitly does a type search
+		MethodInfo findTypeTarget = AccessTools.DeclaredMethod(typeof(TypeHelper), nameof(TypeHelper.FindType), new Type[] { typeof(string) });
+		MethodInfo findTypePatch = AccessTools.DeclaredMethod(typeof(AssemblyHider), nameof(FindTypePostfix));
+		harmony.Patch(findTypeTarget, postfix: new HarmonyMethod(findTypePatch));
 
-			// ReflectionExtensions.IsValidGenericType checks a type for validity, and if it returns `true` it reveals that the type exists
-			MethodInfo isValidGenericTypeTarget = AccessTools.DeclaredMethod(typeof(ReflectionExtensions), nameof(ReflectionExtensions.IsValidGenericType), new Type[] { typeof(Type), typeof(bool) });
-			MethodInfo isValidGenericTypePatch = AccessTools.DeclaredMethod(typeof(AssemblyHider), nameof(IsValidTypePostfix));
-			harmony.Patch(isValidGenericTypeTarget, postfix: new HarmonyMethod(isValidGenericTypePatch));
+		// ReflectionExtensions.IsValidGenericType checks a type for validity, and if it returns `true` it reveals that the type exists
+		MethodInfo isValidGenericTypeTarget = AccessTools.DeclaredMethod(typeof(ReflectionExtensions), nameof(ReflectionExtensions.IsValidGenericType), new Type[] { typeof(Type), typeof(bool) });
+		MethodInfo isValidGenericTypePatch = AccessTools.DeclaredMethod(typeof(AssemblyHider), nameof(IsValidTypePostfix));
+		harmony.Patch(isValidGenericTypeTarget, postfix: new HarmonyMethod(isValidGenericTypePatch));
 
-			// FrooxEngine likes to enumerate all types in all assemblies, which is prone to issues (such as crashing FrooxCode if a type isn't loadable)
-			MethodInfo getAssembliesTarget = AccessTools.DeclaredMethod(typeof(AppDomain), nameof(AppDomain.GetAssemblies), Array.Empty<Type>());
-			MethodInfo getAssembliesPatch = AccessTools.DeclaredMethod(typeof(AssemblyHider), nameof(GetAssembliesPostfix));
-			harmony.Patch(getAssembliesTarget, postfix: new HarmonyMethod(getAssembliesPatch));
-		//}
+		// FrooxEngine likes to enumerate all types in all assemblies, which is prone to issues (such as crashing FrooxCode if a type isn't loadable)
+		MethodInfo getAssembliesTarget = AccessTools.DeclaredMethod(typeof(AppDomain), nameof(AppDomain.GetAssemblies), Array.Empty<Type>());
+		MethodInfo getAssembliesPatch = AccessTools.DeclaredMethod(typeof(AssemblyHider), nameof(GetAssembliesPostfix));
+		harmony.Patch(getAssembliesTarget, postfix: new HarmonyMethod(getAssembliesPatch));
 	}
 
 	private static HashSet<Assembly> GetResoniteAssemblies(HashSet<Assembly> initialAssemblies) {
@@ -88,6 +86,9 @@ internal static class AssemblyHider {
 		// remove assemblies that we know to have come with Resonite
 		assemblies.ExceptWith(resoniteAssemblies);
 
+		// remove ourselves because we technically aren't a mod
+		assemblies.Remove(Assembly.GetExecutingAssembly());
+
 		// what's left are assemblies that magically appeared during the mod loading process. So mods and their dependencies.
 		return assemblies;
 	}
@@ -104,26 +105,24 @@ internal static class AssemblyHider {
 	private static bool IsModAssembly(Assembly assembly, string typeOrAssembly, string name, bool log, bool forceShowLate) {
 		if (resoniteAssemblies!.Contains(assembly)) {
 			return false; // The assembly belongs to Resonite and shouldn't be hidden
-		} else {
-			if (modAssemblies!.Contains(assembly)) {
-				// The assembly belongs to a mod and should be hidden
-				if (log) {
-					Logger.DebugFuncInternal(() => $"Hid {typeOrAssembly} \"{name}\" from Resonite");
-				}
-				return true;
-			} else {
-				// an assembly was in neither resoniteAssemblies nor modAssemblies
-				// this implies someone late-loaded an assembly after RML, and it was later used in-game
-				// this is super weird, and probably shouldn't ever happen... but if it does, I want to know about it.
-				// since this is an edge case users may want to handle in different ways, the HideLateTypes rml config option allows them to choose.
-				//bool hideLate = true;// ModLoaderConfiguration.Get().HideLateTypes;
-				/*if (log) {
-					Logger.WarnInternal($"The \"{name}\" {typeOrAssembly} does not appear to part of Resonite or a mod. It is unclear whether it should be hidden or not. Due to the HideLateTypes config option being {hideLate} it will be {(hideLate ? "Hidden" : "Shown")}");
-				}*/
-				// if forceShowLate == true, then this function will always return `false` for late-loaded types
-				// if forceShowLate == false, then this function will return `true` when hideLate == true
-				return !forceShowLate;
+		} else if (modAssemblies!.Contains(assembly)) {
+			// The assembly belongs to a mod and should be hidden
+			if (log) {
+				Logger.DebugFuncInternal(() => $"Hid {typeOrAssembly} \"{name}\" from Resonite");
 			}
+			return true;
+		} else if (assembly == Assembly.GetExecutingAssembly()) {
+			// we don't want the data feed components getting hidden
+			return false;
+		} else {
+			// an assembly was in neither resoniteAssemblies nor modAssemblies
+			// this implies someone late-loaded an assembly after RML, and it was later used in-game
+			// this is super weird, and probably shouldn't ever happen... but if it does, I want to know about it.
+			if (log) {
+				Logger.WarnInternal($"The \"{name}\" {typeOrAssembly} does not appear to part of Resonite or a mod. It is unclear whether it should be hidden or not. forceShowLate is {forceShowLate}, so it will be {(forceShowLate ? "Shown" : "Hidden")}");
+			}
+			// if forceShowLate == true, then this function will always return `false` for late-loaded types
+			return !forceShowLate;
 		}
 	}
 
