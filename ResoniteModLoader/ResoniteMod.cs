@@ -124,7 +124,7 @@ public abstract class ResoniteMod : ResoniteModBase {
 	}
 
 	/// <inheritdoc/>
-	internal override IEnumerable<DataFeedItem> BuildConfigurationFeed(IReadOnlyList<string> path, IReadOnlyList<string> groupKeys, string searchPhrase, object viewData, bool includeInternal = false) {
+	protected internal override IEnumerable<DataFeedItem> BuildConfigurationFeed(IReadOnlyList<string> path, IReadOnlyList<string> groupKeys, string searchPhrase, object viewData, bool includeInternal = false) {
 		foreach (DataFeedItem item in this.GenerateModConfigurationFeed(path, groupKeys, searchPhrase, viewData, includeInternal, true))
 			yield return item;
 	}

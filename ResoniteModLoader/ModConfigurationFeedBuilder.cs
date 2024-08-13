@@ -5,7 +5,20 @@ using System.Collections;
 
 namespace ResoniteModLoader;
 
+/// <summary>
+/// A utility class that aids in the creation of mod configuration feeds.
+/// </summary>
 public class ModConfigurationFeedBuilder {
+	/// <summary>
+	/// A cache of <see cref="ModConfigurationFeedBuilder"/>, indexed by the <see cref="ModConfiguration"/> they belong to.
+	/// New builders are automatically added to this cache upon instantiation, so you should try to get a cached builder before creating a new one.
+	/// </summary>
+	/// <example>
+	/// <code>
+	/// ModConfigurationFeedBuilder.CachedBuilders.TryGetValue(config, out var builder);
+	/// builder ??= new ModConfigurationFeedBuilder(config);
+	/// </code>
+	/// </example>
 	public readonly static Dictionary<ModConfiguration, ModConfigurationFeedBuilder> CachedBuilders = new();
 
 	private readonly ModConfiguration Config;
@@ -33,6 +46,16 @@ public class ModConfigurationFeedBuilder {
 			throw new InvalidOperationException($"Mod key ({key}) is not owned by {Config.Owner.Name}'s config");
 	}
 
+	private static void AssertMatchingType<T>(ModConfigurationKey key) {
+		if (key.ValueType() != typeof(T))
+			throw new InvalidOperationException($"Type of mod key ({key}) does not match field type {typeof(T)}");
+	}
+
+	/// <summary>
+	/// Instantiates and caches a new builder for a specific <see cref="ModConfiguration"/>.
+	/// Check if a cached builder exists in <see cref="CachedBuilders"/> before creating a new one!
+	/// </summary>
+	/// <param name="config">The mod configuration this builder will generate items for</param>
 	public ModConfigurationFeedBuilder(ModConfiguration config) {
 		Config = config;
 		IEnumerable<FieldInfo> autoConfigKeys = config.Owner.GetType().GetDeclaredFields().Where(HasAutoRegisterAttribute);
@@ -72,15 +95,20 @@ public class ModConfigurationFeedBuilder {
 		}
 	}
 
+	/// <summary>
+	/// Generates a root config page containing all defined config keys.
+	/// </summary>
+	/// <param name="searchPhrase">If set, only show keys whose name or description contains this string</param>
+	/// <param name="includeInternal">If <c>true</c>, also generate items for config keys marked as internal</param>
+	/// <returns>Feed items for all defined config keys, plus buttons to save, discard, and reset the config.</returns>
 	public IEnumerable<DataFeedItem> RootPage(string searchPhrase = "", bool includeInternal = false) {
-
 		if (KeyGrouping.Any()) {
 			foreach (string group in KeyGrouping.Keys) {
 				DataFeedGroup container = FeedBuilder.Group(group, group);
 				foreach (ModConfigurationKey key in Config.ConfigurationItemDefinitions.Where(KeyGrouping[group].Contains)) {
 					if (key.InternalAccessOnly && !includeInternal) continue;
 					if (!string.IsNullOrEmpty(searchPhrase) && string.Join("\n", key.Name, key.Description).IndexOf(searchPhrase, StringComparison.InvariantCultureIgnoreCase) < 0) continue;
-					container.AddSubitem(GenerateDataFeedItem(key));
+					container.AddSubitems(GenerateDataFeedItem(key));
 				}
 				if (container.SubItems?.Any() ?? false) yield return container;
 			}
@@ -96,30 +124,64 @@ public class ModConfigurationFeedBuilder {
 		yield return GenerateSaveControlButtons();
 	}
 
-	public IEnumerable<DataFeedOrderedItem<int>> ListPage(ModConfigurationKey key) {
+	/// <summary>
+	/// (NOT YET IMPLEMENTED) Generates a subpage for an indexed/enumerable config key.
+	/// ie. arrays, lists, dictionaries, sets.
+	/// </summary>
+	/// <param name="key">A key with an enumerable type</param>
+	/// <param name="reorderOnly">If <c>true</c>, items may only be reordered, not added/removed.</param>
+	/// <returns>A ordered feed item for each element in the key's value, plus a group of buttons to add/remove items if set.</returns>
+	private IEnumerable<DataFeedOrderedItem<int>> EnumerablePage(ModConfigurationKey key, bool reorderOnly = false) {
 		AssertChildKey(key);
 		if (!typeof(IEnumerable).IsAssignableFrom(key.ValueType())) yield break;
 		var value = (IEnumerable)Config.GetValue(key);
 		int i = 0;
 		foreach (object item in value)
 			yield return FeedBuilder.OrderedItem<int>(key.Name + i, key.Name, item.ToString(), i++);
+		if (reorderOnly) yield break;
+		// Group that contains input field plus buttons to prepend/append, and remove first/last item
 	}
 
+	// these generate methods need to be cleaned up and more strongly typed
+	// todo: Make all these methods use generic keys
+
+	/// <summary>
+	/// Generates a slider for the defining key if it is a float has a range attribute, otherwise generates a generic value field.
+	/// </summary>
+	/// <typeparam name="T">The value type of the supplied key</typeparam>
+	/// <param name="key">The key to generate the item from</param>
+	/// <returns>A DataFeedSlider if possible, otherwise a DataFeedValueField.</returns>
+	/// <seealso cref="GenerateDataFeedItem"/>
 	public DataFeedValueField<T> GenerateDataFeedField<T>(ModConfigurationKey key) {
 		AssertChildKey(key);
+		AssertMatchingType<T>(key);
 		string label = (key.InternalAccessOnly ? "[INTERNAL] " : "") + key.Description ?? key.Name;
 		if (typeof(T).IsAssignableFrom(typeof(float)) && KeyFields.TryGetValue(key, out FieldInfo field) && TryGetRangeAttribute(field, out RangeAttribute range) && range.Min is T min && range.Max is T max)
 			return FeedBuilder.Slider<T>(key.Name, label, (field) => field.SyncWithModConfiguration(Config, key), min, max, range.TextFormat);
+		// If range attribute wasn't limited to floats, we could also make ClampedValueField's
 		else
 			return FeedBuilder.ValueField<T>(key.Name, label, (field) => field.SyncWithModConfiguration(Config, key));
 	}
 
-	public DataFeedEnum<T> GenerateDataFeedEnum<T>(ModConfigurationKey key) where T : Enum {
+	/// <summary>
+	/// Generates an enum field for a specific configuration key.
+	/// </summary>
+	/// <typeparam name="E">The enum type of the supplied key</typeparam>
+	/// <param name="key">The key to generate the item from</param>
+	/// <returns>A physical mango if it is opposite day.</returns>
+	/// <seealso cref="GenerateDataFeedItem"/>
+	public DataFeedEnum<E> GenerateDataFeedEnum<E>(ModConfigurationKey key) where E : Enum {
 		AssertChildKey(key);
+		AssertMatchingType<E>(key);
 		string label = (key.InternalAccessOnly ? "[INTERNAL] " : "") + key.Description ?? key.Name;
-		return FeedBuilder.Enum<T>(key.Name, label, (field) => field.SyncWithModConfiguration(Config, key));
+		return FeedBuilder.Enum<E>(key.Name, label, (field) => field.SyncWithModConfiguration(Config, key));
 	}
 
+	/// <summary>
+	/// Generates the appropriate DataFeedItem for any config key type.
+	/// </summary>
+	/// <param name="key">The key to generate the item from</param>
+	/// <returns>Automatically picks the best item type for the config key type.</returns>
 	public DataFeedItem GenerateDataFeedItem(ModConfigurationKey key) {
 		AssertChildKey(key);
 		string label = (key.InternalAccessOnly ? "[INTERNAL] " : "") + key.Description ?? key.Name;
@@ -136,6 +198,10 @@ public class ModConfigurationFeedBuilder {
 			return (DataFeedItem)typeof(ModConfigurationFeedBuilder).GetMethod(nameof(GenerateDataFeedField)).MakeGenericMethod(key.ValueType()).Invoke(this, [key]);
 	}
 
+	/// <summary>
+	/// Generates buttons to save/discard changes, or reset all config keys to their defaults.
+	/// </summary>
+	/// <returns>A group with the aforementioned options.</returns>
 	public DataFeedGrid GenerateSaveControlButtons() {
 		string configName = Path.GetFileNameWithoutExtension(Config.Owner.ModAssembly!.File);
 		DataFeedGrid container = FeedBuilder.Grid("SaveControlButtonsGrid", "", [
@@ -162,7 +228,15 @@ public class ModConfigurationFeedBuilder {
 	}
 }
 
+/// <summary>
+/// Extentions that work with <see cref="ModConfigurationFeedBuilder"/>'s
+/// </summary>
 public static class ModConfigurationFeedBuilderExtensions {
+	/// <summary>
+	/// Returns a cached <see cref="ModConfigurationFeedBuilder"/>, or creates a new one.
+	/// </summary>
+	/// <param name="config">The <see cref="ModConfiguration"/> the builder belongs to</param>
+	/// <returns>A cached or new builder.</returns>
 	public static ModConfigurationFeedBuilder ConfigurationFeedBuilder(this ModConfiguration config) {
 		ModConfigurationFeedBuilder.CachedBuilders.TryGetValue(config, out var builder);
 		return builder ?? new ModConfigurationFeedBuilder(config);

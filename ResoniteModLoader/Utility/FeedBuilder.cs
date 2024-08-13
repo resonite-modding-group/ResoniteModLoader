@@ -538,16 +538,16 @@ public static class FeedBuilderExtensions {
 
 	private static PropertyInfo SubItemsSetter = typeof(DataFeedItem).GetProperty(nameof(DataFeedItem.SubItems));
 
-	public static I AddSubitem<I>(this I item, params DataFeedItem[] subitem) where I : DataFeedItem {
+	public static I AddSubitems<I>(this I item, params DataFeedItem[] subitems) where I : DataFeedItem {
 		if (item.SubItems is null)
-			SubItemsSetter.SetValue(item, subitem.ToList().AsReadOnly(), null);
+			SubItemsSetter.SetValue(item, subitems.ToList().AsReadOnly(), null);
 		else
-			SubItemsSetter.SetValue(item, item.SubItems.Concat(subitem).ToList().AsReadOnly(), null);
+			SubItemsSetter.SetValue(item, item.SubItems.Concat(subitems).ToList().AsReadOnly(), null);
 		return item;
 	}
 
-	public static I ReplaceSubitems<I>(this I item, params DataFeedItem[] subitem) where I : DataFeedItem {
-		SubItemsSetter.SetValue(item, subitem.ToList().AsReadOnly(), null);
+	public static I ReplaceSubitems<I>(this I item, params DataFeedItem[] subitems) where I : DataFeedItem {
+		SubItemsSetter.SetValue(item, subitems.ToList().AsReadOnly(), null);
 		return item;
 	}
 

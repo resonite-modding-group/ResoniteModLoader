@@ -35,7 +35,7 @@ internal sealed class DashScreenInjector {
 		Logger.DebugInternal("Injecting dash screen");
 
 		RadiantDash dash = __instance.Slot.GetComponentInParents<RadiantDash>();
-		InjectedScreen = dash.AttachScreen("Mods", RadiantUI_Constants.MidLight.ORANGE, OfficialAssets.Graphics.Icons.General.BoxClosed); // Replace with RML icon later
+		InjectedScreen = dash.AttachScreen("Mods", RadiantUI_Constants.Neutrals.LIGHT, OfficialAssets.Graphics.Icons.Dash.Tools);
 
 		InjectedScreen.Slot.OrderOffset = 128;
 		InjectedScreen.Slot.PersistentSelf = false;

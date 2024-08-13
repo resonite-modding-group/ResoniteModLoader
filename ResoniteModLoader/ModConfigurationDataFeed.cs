@@ -5,9 +5,9 @@ using System.Collections;
 namespace ResoniteModLoader;
 
 /// <summary>
-/// A custom data feed that can be used to show information about loaded mods, and alter their configuration. Path must start with "ResoniteModLoder"
+/// A custom data feed that can be used to show information about loaded mods, and alter their configuration. Path must start with "ResoniteModLoader"
 /// </summary>
-[Category(["ResoniteModLoder"])]
+[Category(["ResoniteModLoader"])]
 public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed, IWorldElement {
 #pragma warning disable CS1591
 	public override bool UserspaceOnly => true;
@@ -37,10 +37,10 @@ public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed
 					if (path[0] != "ResoniteModLoader") yield break;
 
 					if (string.IsNullOrEmpty(searchPhrase)) {
-						yield return FeedBuilder.Group("ResoniteModLoder", "RML", [
-							FeedBuilder.Label("ResoniteModLoder.Version", $"ResoniteModLoader version {ModLoader.VERSION}"),
-							FeedBuilder.StringIndicator("ResoniteModLoder.LoadedModCount", "Loaded mods", ModLoader.Mods().Count()),
-							FeedBuilder.StringIndicator("ResoniteModLoder.InitializationTime", "Startup time", DebugInfo.InitializationTime.Milliseconds + "ms")
+						yield return FeedBuilder.Group("ResoniteModLoader", "RML", [
+							FeedBuilder.Label("ResoniteModLoader.Version", $"ResoniteModLoader version {ModLoader.VERSION}"),
+							FeedBuilder.StringIndicator("ResoniteModLoader.LoadedModCount", "Loaded mods", ModLoader.Mods().Count()),
+							FeedBuilder.StringIndicator("ResoniteModLoader.InitializationTime", "Startup time", DebugInfo.InitializationTime.Milliseconds + "ms")
 						]);
 
 						List<DataFeedCategory> modCategories = new();
@@ -65,13 +65,13 @@ public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed
 					string key = KeyFromMod(mod);
 					yield return mod.GenerateModInfoGroup(true);
 
-					IEnumerable<Logger.LogMessage> modLogs = mod.Logs();
+					IEnumerable<Logger.MessageItem> modLogs = mod.Logs();
 					if (modLogs.Any()) {
 						IReadOnlyList<DataFeedItem> latestLogs = mod.GenerateModLogFeed(5, false).Append(FeedBuilder.Category("Logs", $"View full log ({modLogs.Count()})")).ToList().AsReadOnly();
 						yield return FeedBuilder.Group(key + ".Logs", "Recent mod logs", latestLogs);
 					}
 
-					IEnumerable<Logger.LogException> modExceptions = mod.Exceptions();
+					IEnumerable<Logger.ExceptionItem> modExceptions = mod.Exceptions();
 					if (modExceptions.Any()) {
 						IReadOnlyList<DataFeedItem> latestException = mod.GenerateModExceptionFeed(1, false).Append(FeedBuilder.Category("Exceptions", $"View all exceptions ({modExceptions.Count()})")).ToList().AsReadOnly();
 						yield return FeedBuilder.Group(key + ".Exceptions", "Latest mod exception", latestException);
@@ -171,7 +171,7 @@ public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed
 	/// </summary>
 	/// <param name="key">A unique key from <see cref="KeyFromMod"/>.</param>
 	/// <param name="mod">Set if a matching mod is found.</param>
-	/// <returns>True if a matching mod is found, false otherwise.</returns>
+	/// <returns><c>true</c> if a matching mod is found, <c>false</c> otherwise.</returns>
 	internal static bool TryModFromKey(string key, out ResoniteModBase mod) {
 		mod = ModFromKey(key)!;
 		return mod is not null;
@@ -183,8 +183,8 @@ internal static class ModConfigurationDataFeedExtensions {
 	/// Generates a DataFeedGroup that displays basic information about a mod.
 	/// </summary>
 	/// <param name="mod">The target mod</param>
-	/// <param name="standalone">Set to true if this group will be displayed on its own page</param>
-	/// <returns></returns>
+	/// <param name="standalone">Set to <c>true</c> if this group will be displayed on its own page</param>
+	/// <returns>A group containing indicators for the mod's info, as well as categories to view its config/logs/exceptions.</returns>
 	internal static DataFeedGroup GenerateModInfoGroup(this ResoniteModBase mod, bool standalone) {
 		DataFeedGroup modFeedGroup = new();
 		List<DataFeedItem> groupChildren = new();
@@ -204,8 +204,8 @@ internal static class ModConfigurationDataFeedExtensions {
 		if (mod.GetConfiguration() is not null) groupChildren.Add(FeedBuilder.Category(key + ".ConfigurationCategory", "Mod configuration", standalone ? ["Configuration"] : [key, "Configuration"]));
 
 		if (!standalone) {
-			IEnumerable<Logger.LogMessage> modLogs = mod.Logs();
-			IEnumerable<Logger.LogException> modExceptions = mod.Exceptions();
+			IEnumerable<Logger.MessageItem> modLogs = mod.Logs();
+			IEnumerable<Logger.ExceptionItem> modExceptions = mod.Exceptions();
 			if (modLogs.Any()) groupChildren.Add(FeedBuilder.Category(key + ".LogsCategory", $"Mod logs ({modLogs.Count()})", [key, "Logs"]));
 			if (modExceptions.Any()) groupChildren.Add(FeedBuilder.Category(key + ".ExceptionsCategory", $"Mod exceptions ({modExceptions.Count()})", [key, "Exceptions"]));
 		}
@@ -236,7 +236,7 @@ internal static class ModConfigurationDataFeedExtensions {
 
 		if (!items.Any()) {
 			ModConfigurationFeedBuilder.CachedBuilders.TryGetValue(config, out var builder);
-			builder = builder ?? new ModConfigurationFeedBuilder(config);
+			builder ??= new ModConfigurationFeedBuilder(config);
 			items = builder.RootPage(searchPhrase, includeInternal).ToList();
 		}
 
@@ -255,23 +255,23 @@ internal static class ModConfigurationDataFeedExtensions {
 	}
 
 	internal static IEnumerable<DataFeedItem> GenerateModLogFeed(this ResoniteModBase mod, int last = -1, bool copyable = true, string? filter = null) {
-		List<Logger.LogMessage> modLogs = mod.Logs().ToList();
+		List<Logger.MessageItem> modLogs = mod.Logs().ToList();
 		last = last < 0 ? int.MaxValue : last;
 		last = Math.Min(modLogs.Count, last);
 		modLogs = modLogs.GetRange(modLogs.Count - last, last);
 		if (!string.IsNullOrEmpty(filter))
 			modLogs = modLogs.Where((line) => line.Message.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase) >= 0).ToList();
-		foreach (Logger.LogMessage line in modLogs)
+		foreach (Logger.MessageItem line in modLogs)
 			yield return line.ToString().AsFeedItem(line.Time.GetHashCode(), copyable);
 	}
 
 	internal static IEnumerable<DataFeedItem> GenerateModExceptionFeed(this ResoniteModBase mod, int last = -1, bool copyable = true, string? filter = null) {
-		List<Logger.LogException> modExceptions = mod.Exceptions().ToList();
+		List<Logger.ExceptionItem> modExceptions = mod.Exceptions().ToList();
 		last = last < 0 ? int.MaxValue : last;
 		last = Math.Min(modExceptions.Count, last);
 		if (!string.IsNullOrEmpty(filter))
 			modExceptions = modExceptions.Where((line) => line.Exception.ToString().IndexOf(filter, StringComparison.InvariantCultureIgnoreCase) >= 0).ToList();
-		foreach (Logger.LogException line in modExceptions)
+		foreach (Logger.ExceptionItem line in modExceptions)
 			yield return line.ToString().AsFeedItem(line.Time.GetHashCode(), copyable);
 	}
 
