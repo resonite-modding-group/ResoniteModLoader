@@ -51,6 +51,20 @@ public class ModConfigurationFeedBuilder {
 			throw new InvalidOperationException($"Type of mod key ({key}) does not match field type {typeof(T)}");
 	}
 
+	private string GetKeyLabel(ModConfigurationKey key)
+		=> (key.InternalAccessOnly ? "[INTERNAL] " : "")
+		+ (PreferDescriptionLabels ? (key.Description ?? key.Name) : key.Name);
+
+	private string GetKeyDescription(ModConfigurationKey key)
+		=> PreferDescriptionLabels ? $"Key name: {key.Name}" : (key.Description ?? "(No description)");
+
+	/// <summary>
+	/// If <c>true</c>, configuration key descriptions will be used as the DataFeedItem's label if they exist.
+	/// If <c>false</c>, the configuration key name will be used as the label.
+	/// In both cases, the description will be the opposite field of the label.
+	/// </summary>
+	public bool PreferDescriptionLabels { get; set; } = true;
+
 	/// <summary>
 	/// Instantiates and caches a new builder for a specific <see cref="ModConfiguration"/>.
 	/// Check if a cached builder exists in <see cref="CachedBuilders"/> before creating a new one!
@@ -155,12 +169,13 @@ public class ModConfigurationFeedBuilder {
 	public DataFeedValueField<T> GenerateDataFeedField<T>(ModConfigurationKey key) {
 		AssertChildKey(key);
 		AssertMatchingType<T>(key);
-		string label = (key.InternalAccessOnly ? "[INTERNAL] " : "") + key.Description ?? key.Name;
+		string label = GetKeyLabel(key);
+		string description = GetKeyDescription(key);
 		if (typeof(T).IsAssignableFrom(typeof(float)) && KeyFields.TryGetValue(key, out FieldInfo field) && TryGetRangeAttribute(field, out RangeAttribute range) && range.Min is T min && range.Max is T max)
-			return FeedBuilder.Slider<T>(key.Name, label, (field) => field.SyncWithModConfiguration(Config, key), min, max, range.TextFormat);
+			return FeedBuilder.Slider<T>(key.Name, label, description, (field) => field.SyncWithModConfiguration(Config, key), min, max, range.TextFormat);
 		// If range attribute wasn't limited to floats, we could also make ClampedValueField's
 		else
-			return FeedBuilder.ValueField<T>(key.Name, label, (field) => field.SyncWithModConfiguration(Config, key));
+			return FeedBuilder.ValueField<T>(key.Name, label, description, (field) => field.SyncWithModConfiguration(Config, key));
 	}
 
 	/// <summary>
@@ -173,8 +188,9 @@ public class ModConfigurationFeedBuilder {
 	public DataFeedEnum<E> GenerateDataFeedEnum<E>(ModConfigurationKey key) where E : Enum {
 		AssertChildKey(key);
 		AssertMatchingType<E>(key);
-		string label = (key.InternalAccessOnly ? "[INTERNAL] " : "") + key.Description ?? key.Name;
-		return FeedBuilder.Enum<E>(key.Name, label, (field) => field.SyncWithModConfiguration(Config, key));
+		string label = GetKeyLabel(key);
+		string description = GetKeyDescription(key);
+		return FeedBuilder.Enum<E>(key.Name, label, description, (field) => field.SyncWithModConfiguration(Config, key));
 	}
 
 	/// <summary>
@@ -184,14 +200,15 @@ public class ModConfigurationFeedBuilder {
 	/// <returns>Automatically picks the best item type for the config key type.</returns>
 	public DataFeedItem GenerateDataFeedItem(ModConfigurationKey key) {
 		AssertChildKey(key);
-		string label = (key.InternalAccessOnly ? "[INTERNAL] " : "") + key.Description ?? key.Name;
+		string label = GetKeyLabel(key);
+		string description = GetKeyDescription(key);
 		Type valueType = key.ValueType();
 		if (valueType == typeof(dummy))
-			return FeedBuilder.Label(key.Name, label);
+			return FeedBuilder.Label(key.Name, label, description);
 		else if (valueType == typeof(bool))
-			return FeedBuilder.Toggle(key.Name, label, (field) => field.SyncWithModConfiguration(Config, key));
+			return FeedBuilder.Toggle(key.Name, label, description, (field) => field.SyncWithModConfiguration(Config, key));
 		else if (valueType != typeof(string) && valueType != typeof(Uri) && typeof(IEnumerable).IsAssignableFrom(valueType))
-			return FeedBuilder.Category(key.Name, label);
+			return FeedBuilder.Category(key.Name, label, description);
 		else if (valueType.InheritsFrom(typeof(Enum)))
 			return (DataFeedItem)typeof(ModConfigurationFeedBuilder).GetMethod(nameof(GenerateDataFeedEnum)).MakeGenericMethod(key.ValueType()).Invoke(this, [key]);
 		else
@@ -214,17 +231,51 @@ public class ModConfigurationFeedBuilder {
 
 	[SyncMethod(typeof(Action<string>), [])]
 	private static void SaveConfig(string configName) {
-
+		if (ModConfiguration.configNameMap.TryGetValue(configName, out var config)) {
+			config.SaveQueue(false, true);
+			NotificationMessage.SpawnTextMessage("Saved successfully", colorX.White);
+		} else
+			NotificationMessage.SpawnTextMessage("Failed to save!", colorX.Red);
 	}
 
 	[SyncMethod(typeof(Action<string>), [])]
 	private static void DiscardConfig(string configName) {
-
+		Userspace.OpenContextMenu(
+			Userspace.UserspaceWorld.GetGloballyRegisteredComponent<UserspaceRadiantDash>().Slot,
+			new ContextMenuOptions { disableFlick = true },
+			async (menu) => {
+				menu.AddItem(
+					"Really discard changes",
+					OfficialAssets.Graphics.Icons.Inspector.DestroyPreservingAssets,
+					colorX.Red
+				).Button.LocalPressed += (_, _) => {
+					NotificationMessage.SpawnTextMessage("Not implemented", colorX.Yellow);
+					menu.Close();
+				};
+				menu.AddItem("Cancel", (Uri)null!, colorX.White)
+				.Button.LocalPressed += (_, _) => menu.Close();
+			}
+		);
 	}
 
 	[SyncMethod(typeof(Action<string>), [])]
 	private static void ResetConfig(string configName) {
-
+		Userspace.OpenContextMenu(
+			Userspace.UserspaceWorld.GetGloballyRegisteredComponent<UserspaceRadiantDash>().Slot,
+			new ContextMenuOptions { disableFlick = true },
+			async (menu) => {
+				menu.AddItem(
+					"Really reset configuration",
+					OfficialAssets.Graphics.Icons.Inspector.Destroy,
+					colorX.Red
+				).Button.LocalPressed += (_, _) => {
+					NotificationMessage.SpawnTextMessage("Not implemented", colorX.Yellow);
+					menu.Close();
+				};
+				menu.AddItem("Cancel", (Uri)null!, colorX.White)
+				.Button.LocalPressed += (_, _) => menu.Close();
+			}
+		);
 	}
 }
 
