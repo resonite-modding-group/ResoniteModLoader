@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 
 namespace ResoniteModLoader;
@@ -9,6 +10,7 @@ internal static class DebugInfo {
 		Logger.MsgInternal($"CLR v{Environment.Version}");
 		Logger.DebugFuncInternal(() => $"Using .NET Framework: \"{AppDomain.CurrentDomain.SetupInformation.TargetFrameworkName}\"");
 		Logger.DebugFuncInternal(() => $"Using .NET Core: \"{Assembly.GetEntryAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName}\"");
+		Logger.MsgInternal($".NET Runtime: {RuntimeInformation.FrameworkDescription}");
 		Logger.MsgInternal($"Using Harmony v{GetAssemblyVersion(typeof(HarmonyLib.Harmony))}");
 		Logger.MsgInternal($"Using Elements.Core v{GetAssemblyVersion(typeof(Elements.Core.floatQ))}");
 		Logger.MsgInternal($"Using FrooxEngine v{GetAssemblyVersion(typeof(FrooxEngine.IComponent))}");
