@@ -1,3 +1,5 @@
+using FrooxEngine;
+
 namespace ResoniteModLoader;
 
 /// <summary>
@@ -11,7 +13,28 @@ public abstract class ResoniteMod : ResoniteModBase {
 	public static bool IsDebugEnabled() => Logger.IsDebugEnabled();
 
 	/// <summary>
-	/// Logs an object as a line in the log based on the value produced by the given function if debug logging is enabled..
+	/// Logs an object as a line in the log with a stack trace based on the value produced by the given function if debug logging is enabled.
+	/// <para/>
+	/// This is more efficient than passing an <see cref="object"/> or a <see cref="string"/> directly,
+	/// as it won't be generated if debug logging is disabled.
+	/// </summary>
+	/// <param name="messageProducer">The function generating the object to log.</param>
+	public static void TraceFunc(Func<object> messageProducer) => Logger.TraceFuncExternal(messageProducer);
+
+	/// <summary>
+	/// Logs the given object as a line in the log if debug logging is enabled.
+	/// </summary>
+	/// <param name="message">The object to log.</param>
+	public static void Trace(object message) => Logger.TraceExternal(message);
+
+	/// <summary>
+	/// Logs the given objects as lines in the log with a stack trace if debug logging is enabled.
+	/// </summary>
+	/// <param name="messages">The objects to log.</param>
+	public static void Trace(params object[] messages) => Logger.TraceListExternal(messages);
+
+	/// <summary>
+	/// Logs an object as a line in the log with a stack trace based on the value produced by the given function if debug logging is enabled.
 	/// <para/>
 	/// This is more efficient than passing an <see cref="object"/> or a <see cref="string"/> directly,
 	/// as it won't be generated if debug logging is disabled.
@@ -98,5 +121,11 @@ public abstract class ResoniteMod : ResoniteModBase {
 	/// <returns></returns>
 	public virtual IncompatibleConfigurationHandlingOption HandleIncompatibleConfigurationVersions(Version serializedVersion, Version definedVersion) {
 		return IncompatibleConfigurationHandlingOption.ERROR;
+	}
+
+	/// <inheritdoc/>
+	protected internal override IEnumerable<DataFeedItem> BuildConfigurationFeed(IReadOnlyList<string> path, IReadOnlyList<string> groupKeys, string searchPhrase, object viewData, bool includeInternal = false) {
+		foreach (DataFeedItem item in this.GenerateModConfigurationFeed(path, groupKeys, searchPhrase, viewData, includeInternal, true))
+			yield return item;
 	}
 }

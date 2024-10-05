@@ -1,3 +1,7 @@
+using System.Diagnostics;
+using System.Runtime.Remoting.Messaging;
+using FrooxEngine;
+
 namespace ResoniteModLoader;
 
 /// <summary>
@@ -24,6 +28,8 @@ public abstract class ResoniteModBase {
 	/// </summary>
 	public virtual string? Link { get; }
 
+	public TimeSpan InitializationTime { get; internal set; }
+
 	/// <summary>
 	/// A reference to the AssemblyFile that this mod was loaded from.
 	/// The reference is set once the mod is successfully loaded, and is null before that.
@@ -45,6 +51,35 @@ public abstract class ResoniteModBase {
 		}
 		return ModConfiguration;
 	}
+
+	/// <summary>
+	/// Returns whether or not this mod has a configuration, and set an out param if it does.
+	/// </summary>
+	/// <param name="configuration">The variable that is set to this mods configuration if it has one</param>
+	/// <returns><c>true</c> if the out param was set, <c>false</c> if the mod has no configuration.</returns>
+	public bool TryGetConfiguration(out ModConfiguration configuration) {
+		configuration = ModConfiguration!;
+		return configuration is not null;
+	}
+
+	/// <summary>
+	/// Checks if this mod has defined a configuration.
+	/// </summary>
+	/// <returns><c>true</c> if there is a config, <c>false</c> if there is not.</returns>
+	public bool HasConfiguration() => ModConfiguration is not null;
+
+	/// <summary>
+	/// Define a custom configuration DataFeed for this mod.
+	/// </summary>
+	/// <param name="path">Starts empty at the root of the configuration category, allows sub-categories to be used.</param>
+	/// <param name="groupKeys">Passed-through from <see cref="ModConfigurationDataFeed"/>'s Enumerate call.</param>
+	/// <param name="searchPhrase">A phrase by which configuration items should be filtered. Passed-through from <see cref="ModConfigurationDataFeed"/>'s Enumerate call</param>
+	/// <param name="viewData">Passed-through from <see cref="ModConfigurationDataFeed"/>'s Enumerate call.</param>
+	/// <param name="includeInternal">Indicates whether the user has requested that internal configuration keys are included in the returned feed.</param>
+	/// <returns>DataFeedItem's to be directly returned by the calling <see cref="ModConfigurationDataFeed"/>.</returns>
+	protected internal abstract IEnumerable<DataFeedItem> BuildConfigurationFeed(IReadOnlyList<string> path, IReadOnlyList<string> groupKeys, string searchPhrase, object viewData, bool includeInternal = false);
+
+	// Why would anyone need an async config? They depend on Microsoft.Bcl.AsyncInterfaces too
 
 	internal bool FinishedLoading { get; set; }
 }

@@ -12,14 +12,12 @@ internal sealed class ModLoaderConfiguration {
 			_configuration = new ModLoaderConfiguration();
 
 			Dictionary<string, Action<string>> keyActions = new() {
-				//{ "unsafe", (value) => _configuration.Unsafe = bool.Parse(value) },
 				{ "debug", (value) => _configuration.Debug = bool.Parse(value) },
 				{ "hidevisuals", (value) => _configuration.HideVisuals = bool.Parse(value) },
 				{ "nomods", (value) => _configuration.NoMods = bool.Parse(value) },
 				{ "advertiseversion", (value) => _configuration.AdvertiseVersion = bool.Parse(value) },
 				{ "logconflicts", (value) => _configuration.LogConflicts = bool.Parse(value) },
-				//{ "hidemodtypes", (value) => _configuration.HideModTypes = bool.Parse(value) },
-				//{ "hidelatetypes", (value) => _configuration.HideLateTypes = bool.Parse(value) }
+				{ "nodashscreen", (value) => _configuration.NoDashScreen = bool.Parse(value) },
 			};
 
 			// .NET's ConfigurationManager is some hot trash to the point where I'm just done with it.
@@ -62,13 +60,11 @@ internal sealed class ModLoaderConfiguration {
 	}
 
 #pragma warning disable CA1805
-	//public bool Unsafe { get; private set; } = false;
 	public bool Debug { get; private set; } = false;
 	public bool NoMods { get; private set; } = false;
 	public bool HideVisuals { get; private set; } = false;
 	public bool AdvertiseVersion { get; private set; } = false;
 	public bool LogConflicts { get; private set; } = true;
-	//public bool HideModTypes { get; private set; } = true;
-	//public bool HideLateTypes { get; private set; } = true;
+	public bool NoDashScreen { get; private set; } = false;
 #pragma warning restore CA1805
 }

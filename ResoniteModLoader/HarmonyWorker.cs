@@ -9,5 +9,6 @@ internal sealed class HarmonyWorker {
 		ModLoader.LoadMods();
 		ModConfiguration.RegisterShutdownHook(harmony);
 		AssemblyHider.PatchResonite(harmony, initialAssemblies);
+		DashScreenInjector.PatchScreenManager(harmony);
 	}
 }
