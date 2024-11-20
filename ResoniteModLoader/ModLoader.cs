@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using HarmonyLib;
 
 namespace ResoniteModLoader;
@@ -16,6 +17,7 @@ public sealed class ModLoader {
 	internal static readonly Dictionary<Assembly, ResoniteMod> AssemblyLookupMap = new(); // used for logging
 	private static readonly Dictionary<string, ResoniteMod> ModNameLookupMap = new(); // used for duplicate mod checking
 
+	private static readonly Stopwatch InitTimer = new(); // used to measure mod hooking duration
 
 	/// <summary>
 	/// Returns <c>true</c> if ResoniteModLoader was loaded by a headless
@@ -189,9 +191,15 @@ public sealed class ModLoader {
 		LoadProgressIndicator.SetCustom($"Starting mod [{mod.Name}/{mod.Version}]");
 		Logger.DebugFuncInternal(() => $"calling OnEngineInit() for [{mod.Name}/{mod.Version}]");
 		try {
+			InitTimer.Start();
 			mod.OnEngineInit();
 		} catch (Exception e) {
 			Logger.ErrorInternal($"Mod {mod.Name} from {mod.ModAssembly?.File ?? "Unknown Assembly"} threw error from OnEngineInit():\n{e}");
+		}
+		finally {
+			InitTimer.Stop();
+			mod.InitializationTime = InitTimer.Elapsed;
+			InitTimer.Reset();
 		}
 	}
 }

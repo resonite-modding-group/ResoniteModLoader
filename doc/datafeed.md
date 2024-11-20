@@ -1,0 +1,9 @@
+# Configuration feeds & you
+
+FeedBuilder
+Logger
+ModConfigurationDataFeed
+ModConfigurationFeedBuilder
+ModConfigurationValueSync
+ResoniteMod.BuildConfigurationFeed
+AutoRegisterConfigKeyAttribute.Group

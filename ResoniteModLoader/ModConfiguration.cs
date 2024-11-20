@@ -134,6 +134,9 @@ public class ModConfiguration : IModConfigurationDefinition {
 	// The naughty list is global, while the actual debouncing is per-configuration.
 	private static HashSet<string> naughtySavers = new HashSet<string>();
 
+	// maps configs by their filename sans extensions
+	internal static Dictionary<string, ModConfiguration> configNameMap = new Dictionary<string, ModConfiguration>();
+
 	// used to keep track of the debouncers for this configuration.
 	private Dictionary<string, Action<bool>> saveActionForCallee = new();
 
@@ -160,6 +163,8 @@ public class ModConfiguration : IModConfigurationDefinition {
 
 	private ModConfiguration(ModConfigurationDefinition definition) {
 		Definition = definition;
+		configNameMap[Path.GetFileNameWithoutExtension(Owner.ModAssembly!.File)] = this;
+		// thank goodness ModAssembly is set literally right before this is created
 	}
 
 	internal static void EnsureDirectoryExists() {

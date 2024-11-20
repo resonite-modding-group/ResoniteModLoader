@@ -5,7 +5,7 @@
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<TargetFramework>net472</TargetFramework>
 		<FileAlignment>512</FileAlignment>
-		<LangVersion>10.0</LangVersion>
+		<LangVersion>12</LangVersion>
 		<Nullable>enable</Nullable>
 		<Deterministic>true</Deterministic>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
@@ -26,12 +26,25 @@
 
 	<ItemGroup>
 		<PackageReference Include="Lib.Harmony" Version="2.3.3" />
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />
 		<Reference Include="Elements.Core">
 			<HintPath>$(ResonitePath)Resonite_Data\Managed\Elements.Core.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
+		<Reference Include="Elements.Quantity">
+			<HintPath>$(ResonitePath)Resonite_Data\Managed\Elements.Quantity.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
 		<Reference Include="FrooxEngine">
 			<HintPath>$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="SkyFrost.Base">
+			<HintPath>$(ResonitePath)Resonite_Data\Managed\SkyFrost.Base.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="SkyFrost.Base.Models">
+			<HintPath>$(ResonitePath)Resonite_Data\Managed\SkyFrost.Base.Models.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="Newtonsoft.Json">
@@ -52,6 +65,10 @@
 
 	<ItemGroup>
 		<Using Remove="System.Net.Http" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Resources\ConfigurationItemMapper.brson" />
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(CopyToLibraries)'=='true'">
