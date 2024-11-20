@@ -55,9 +55,8 @@ public class ModConfigurationDefinitionBuilder {
 	}
 
 	internal void ProcessAttributes() {
-		var fields = AccessTools.GetDeclaredFields(Owner.GetType());
-		fields
-			.Where(field => Attribute.GetCustomAttribute(field, typeof(AutoRegisterConfigKeyAttribute)) != null)
+		AccessTools.GetDeclaredFields(Owner.GetType())
+			.Where(field => field.GetCustomAttribute<AutoRegisterConfigKeyAttribute>() is not null)
 			.Do(ProcessField);
 	}
 
