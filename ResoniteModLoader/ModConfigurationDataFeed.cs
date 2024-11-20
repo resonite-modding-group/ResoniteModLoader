@@ -223,18 +223,20 @@ internal static class ModConfigurationDataFeedExtensions {
 		}
 
 		List<DataFeedItem> items = new();
+		bool failed = false;
 
 		if (!forceDefaultBuilder) {
 			try {
 				items = mod.BuildConfigurationFeed(path, groupKeys, searchPhrase, viewData, includeInternal).ToList();
 			}
 			catch (Exception ex) {
+				failed = true;
 				Logger.ProcessException(ex, mod.ModAssembly!.Assembly);
 				Logger.ErrorInternal($"Exception was thrown while running {mod.Name}'s BuildConfigurationFeed method");
 			}
 		}
 
-		if (!items.Any()) {
+		if (failed || !items.Any()) {
 			ModConfigurationFeedBuilder.CachedBuilders.TryGetValue(config, out var builder);
 			builder ??= new ModConfigurationFeedBuilder(config);
 			items = builder.RootPage(searchPhrase, includeInternal).ToList();

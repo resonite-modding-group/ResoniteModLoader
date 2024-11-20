@@ -20,7 +20,7 @@ public sealed class Logger {
 	/// <summary>
 	/// Represents a single log entry.
 	/// </summary>
-	public readonly struct MessageItem {
+	public class MessageItem {
 		internal MessageItem(ResoniteModBase? mod, LogLevel level, string message, StackTrace? trace = null) {
 			Time = DateTime.Now;
 			Mod = mod;
@@ -50,7 +50,7 @@ public sealed class Logger {
 	/// <summary>
 	/// Represents an exception that was caught or passed for logging.
 	/// </summary>
-	public readonly struct ExceptionItem {
+	public class ExceptionItem {
 		internal ExceptionItem(System.Exception exception) {
 			Time = DateTime.Now;
 			Exception = exception;

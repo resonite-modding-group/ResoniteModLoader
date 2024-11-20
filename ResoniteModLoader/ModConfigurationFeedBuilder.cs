@@ -109,6 +109,14 @@ public class ModConfigurationFeedBuilder {
 		}
 	}
 
+	public IEnumerable<DataFeedItem> Page(IReadOnlyList<string> path, string searchPhrase = "", bool includeInternal = false)
+	{
+		if (path is null || !path.Any())
+			foreach (DataFeedItem item in RootPage(searchPhrase, includeInternal))
+				yield return item;
+
+	}
+
 	/// <summary>
 	/// Generates a root config page containing all defined config keys.
 	/// </summary>
