@@ -9,6 +9,9 @@ internal sealed class Logger {
 	internal const string NULL_STRING = "null";
 
 	internal static bool IsDebugEnabled() {
+#if DEBUG
+		return true;
+#endif
 		return ModLoaderConfiguration.Get().Debug;
 	}
 
