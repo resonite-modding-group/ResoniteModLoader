@@ -33,7 +33,7 @@ internal static class ExecutionHook {
 			// note that harmony may not be loaded until this point, so this class cannot directly import HarmonyLib.
 
 			if (loadedAssemblies.Length != 0) {
-				string loadedAssemblyList = string.Join("\n", loadedAssemblies.Select(a => a.Assembly.FullName + " Sha256=" + a.Sha256));
+				string loadedAssemblyList = string.Join("\n", loadedAssemblies.Select(a => a.Name + ", Version=" + a.Version + ", Sha256=" + a.Sha256));
 				Logger.MsgInternal($"Loaded libraries from rml_libs:\n{loadedAssemblyList}");
 			}
 			LoadProgressIndicator.SetCustom("Initializing");

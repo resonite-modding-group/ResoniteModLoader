@@ -7,6 +7,8 @@ internal sealed class AssemblyFile {
 		File = file;
 		Assembly = assembly;
 	}
+	internal string Name => Assembly.GetName().Name;
+	internal string Version => Assembly.GetName().Version.ToString();
 	private string? sha256;
 	internal string Sha256 {
 		get {
