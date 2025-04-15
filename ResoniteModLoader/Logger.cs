@@ -51,31 +51,31 @@ public sealed class Logger {
 	/// Represents an exception that was caught or passed for logging.
 	/// </summary>
 	public class ExceptionItem {
-		internal ExceptionItem(System.Exception exception) {
+		internal ExceptionItem(Exception exception) {
 			Time = DateTime.Now;
 			Exception = exception;
 		}
 
-		internal ExceptionItem(System.Exception exception, Assembly? assembly) {
+		internal ExceptionItem(Exception exception, Assembly? assembly) {
 			Time = DateTime.Now;
 			Exception = exception;
 			Source = (assembly, null);
 		}
 
-		internal ExceptionItem(System.Exception exception, ResoniteModBase? mod) {
+		internal ExceptionItem(Exception exception, ResoniteModBase? mod) {
 			Time = DateTime.Now;
 			Exception = exception;
 			Source = (mod?.ModAssembly?.Assembly, mod);
 		}
 
-		internal ExceptionItem(System.Exception exception, Assembly? assembly, ResoniteModBase? mod) {
+		internal ExceptionItem(Exception exception, Assembly? assembly, ResoniteModBase? mod) {
 			Time = DateTime.Now;
 			Exception = exception;
 			Source = (assembly, mod);
 		}
 
 		public DateTime Time { get; }
-		public System.Exception Exception { get; }
+		public Exception Exception { get; }
 
 		/// <summary>
 		/// The (possible) source of the exception. Note the assembly and mod may be unrelated if both set!
@@ -225,7 +225,7 @@ public sealed class Logger {
 	/// <param name="exception">The exception to be recorded</param>
 	/// <param name="assembly">The assembly responsible for causing the exception, if known</param>
 	/// <param name="mod">The mod where the exception occurred, if known</param>
-	public static void ProcessException(System.Exception exception, Assembly? assembly = null, ResoniteModBase? mod = null) {
+	public static void ProcessException(Exception exception, Assembly? assembly = null, ResoniteModBase? mod = null) {
 		ExceptionItem item = new(exception, assembly, mod);
 		_exceptionBuffer.Add(item);
 		OnExceptionPosted?.SafeInvoke(item);
@@ -251,7 +251,7 @@ public sealed class Logger {
 	}
 
 	private static void UnhandledExceptionProcessor(object sender, UnhandledExceptionEventArgs args) {
-		System.Exception exception = (System.Exception)args.ExceptionObject;
+		Exception exception = (Exception)args.ExceptionObject;
 		StackTrace trace = new StackTrace(exception);
 		ResoniteModBase? mod = Util.ExecutingMod(trace);
 		Assembly assembly = Assembly.GetAssembly(sender.GetType());

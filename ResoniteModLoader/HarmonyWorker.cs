@@ -6,6 +6,7 @@ namespace ResoniteModLoader;
 internal sealed class HarmonyWorker {
 	internal static void LoadModsAndHideModAssemblies(HashSet<Assembly> initialAssemblies) {
 		Harmony harmony = new("com.resonitemodloader.ResoniteModLoader");
+		ExceptionHook.RegisterExceptionHook(harmony);
 		ModLoader.LoadMods();
 		ModConfiguration.RegisterShutdownHook(harmony);
 		AssemblyHider.PatchResonite(harmony, initialAssemblies);

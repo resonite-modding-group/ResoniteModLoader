@@ -65,15 +65,15 @@ public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed
 					string key = KeyFromMod(mod);
 					yield return mod.GenerateModInfoGroup(true);
 
-					IEnumerable<Logger.MessageItem> modLogs = mod.Logs();
+					List<Logger.MessageItem> modLogs = mod.Logs().ToList();
 					if (modLogs.Any()) {
-						IReadOnlyList<DataFeedItem> latestLogs = mod.GenerateModLogFeed(5, false).Append(FeedBuilder.Category("Logs", $"View full log ({modLogs.Count()})")).ToList().AsReadOnly();
+						IReadOnlyList<DataFeedItem> latestLogs = mod.GenerateModLogFeed(5, false).Append(FeedBuilder.Category("Logs", $"View full log ({modLogs.Count})")).ToList().AsReadOnly();
 						yield return FeedBuilder.Group(key + ".Logs", "Recent mod logs", latestLogs);
 					}
 
-					IEnumerable<Logger.ExceptionItem> modExceptions = mod.Exceptions();
+					List<Logger.ExceptionItem> modExceptions = mod.Exceptions().ToList();
 					if (modExceptions.Any()) {
-						IReadOnlyList<DataFeedItem> latestException = mod.GenerateModExceptionFeed(1, false).Append(FeedBuilder.Category("Exceptions", $"View all exceptions ({modExceptions.Count()})")).ToList().AsReadOnly();
+						IReadOnlyList<DataFeedItem> latestException = mod.GenerateModExceptionFeed(1, false).Append(FeedBuilder.Category("Exceptions", $"View all exceptions ({modExceptions.Count})")).ToList().AsReadOnly();
 						yield return FeedBuilder.Group(key + ".Exceptions", "Latest mod exception", latestException);
 					}
 				}

@@ -26,7 +26,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Lib.Harmony" Version="2.3.3" />
-		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="9.0.0" />
 		<Reference Include="Elements.Core">
 			<HintPath>$(ResonitePath)Resonite_Data\Managed\Elements.Core.dll</HintPath>
 			<Private>False</Private>
@@ -37,6 +37,10 @@
 		</Reference>
 		<Reference Include="FrooxEngine">
 			<HintPath>$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="FrooxEngine.Store">
+			<HintPath>$(ResonitePath)Resonite_Data\Managed\FrooxEngine.Store.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="SkyFrost.Base">

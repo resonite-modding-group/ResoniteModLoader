@@ -1,6 +1,8 @@
+using Elements.Core;
 using FrooxEngine;
 using FrooxEngine.UIX;
 using HarmonyLib;
+using Stream = System.IO.Stream;
 
 namespace ResoniteModLoader;
 
@@ -32,6 +34,10 @@ internal sealed class DashScreenInjector {
 			return;
 		}
 
+		string? overrideTemplatePath = Directory.EnumerateFiles(ModLoaderConfiguration.GetAssemblyDirectory(), "DashScreenTemplate.*").FirstOrDefault();
+		Stream screenFileStream = File.Exists(overrideTemplatePath) ? File.OpenRead(overrideTemplatePath) : Assembly.GetExecutingAssembly().GetManifestResourceStream("Resources\\ConfigurationItemMapper.brson");
+		DataTreeDictionary screenDict = DataTreeConverter.LoadAuto(screenFileStream);
+
 		Logger.DebugInternal("Injecting dash screen");
 
 		RadiantDash dash = __instance.Slot.GetComponentInParents<RadiantDash>();
@@ -40,6 +46,9 @@ internal sealed class DashScreenInjector {
 		InjectedScreen.Slot.OrderOffset = 128;
 		InjectedScreen.Slot.PersistentSelf = false;
 
+		InjectedScreen.ScreenRoot.LoadObject(screenDict, null!);
+
+		/*
 		SingleFeedView view = InjectedScreen.ScreenRoot.AttachComponent<SingleFeedView>();
 		ModConfigurationDataFeed feed = InjectedScreen.ScreenRoot.AttachComponent<ModConfigurationDataFeed>();
 
@@ -73,9 +82,11 @@ internal sealed class DashScreenInjector {
 			return;
 		}
 
-		InjectedScreen.ScreenCanvas.Slot.AttachComponent<Image>().Tint.Value = UserspaceRadiantDash.DEFAULT_BACKGROUND;
 		view.Feed.Target = feed;
 		view.SetCategoryPath(["ResoniteModLoader"]);
+		*/
+
+		InjectedScreen.ScreenCanvas.Slot.AttachComponent<Image>().Tint.Value = UserspaceRadiantDash.DEFAULT_BACKGROUND;
 
 		Logger.DebugInternal("Dash screen should be injected!");
 	}
