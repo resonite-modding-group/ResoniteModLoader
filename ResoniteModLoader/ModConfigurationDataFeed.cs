@@ -10,7 +10,9 @@ namespace ResoniteModLoader;
 [Category(["ResoniteModLoader"])]
 public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed, IWorldElement {
 #pragma warning disable CS1591
+#if !DEBUG
 	public override bool UserspaceOnly => true;
+#endif
 
 	public bool SupportsBackgroundQuerying => true;
 #pragma warning restore CS1591
@@ -29,7 +31,9 @@ public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed
 	public async IAsyncEnumerable<DataFeedItem> Enumerate(IReadOnlyList<string> path, IReadOnlyList<string> groupKeys, string searchPhrase, object viewData) {
 		switch (path.Count) {
 			case 0: {
-					yield return FeedBuilder.Category("ResoniteModLoader", "Open ResoniteModLoader category");
+					yield return FeedBuilder.Category("ResoniteModLoader", "Home page");
+					foreach (ResoniteModBase mod in ModLoader.Mods())
+						yield return FeedBuilder.Category(KeyFromMod(mod), mod.Name, ["ResoniteModLoader", KeyFromMod(mod)]);
 				}
 				yield break;
 
@@ -138,7 +142,7 @@ public class ModConfigurationDataFeed : Component, IDataFeedComponent, IDataFeed
 
 	public object RegisterViewData() {
 		Logger.DebugInternal($"ModConfigurationDataFeed.RegisterViewData called\n{Environment.StackTrace}");
-		return null!;
+		return this;
 	}
 
 	public void UnregisterListener(IReadOnlyList<string> path, IReadOnlyList<string> groupKeys, string searchPhrase, DataFeedUpdateHandler handler) {

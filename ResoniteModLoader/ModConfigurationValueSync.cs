@@ -10,7 +10,9 @@ namespace ResoniteModLoader;
 [Category(["ResoniteModLoader"])]
 public class ModConfigurationValueSync<T> : Component {
 #pragma warning disable CS1591
+#if !DEBUG
 	public override bool UserspaceOnly => true;
+#endif
 #pragma warning restore CS1591
 #pragma warning disable CS8618, CA1051
 	public readonly Sync<string> DefiningModAssembly;

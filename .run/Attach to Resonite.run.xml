@@ -1,0 +1,10 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Attach to Resonite" type="UnityPlayer" factoryName="UnityAttachToPlayer">
+    <option name="host" value="127.0.0.1" />
+    <option name="playerId" value="CustomPlayer(127.0.0.1:10000)" />
+    <option name="playerInstanceId" value="Custom" />
+    <option name="port" value="10000" />
+    <option name="projectName" value="Custom" />
+    <method v="2" />
+  </configuration>
+</component>
