@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Diagnostics;
-
+using System.Runtime.ExceptionServices;
 using Elements.Core;
 
 namespace ResoniteModLoader;
@@ -241,12 +241,14 @@ public sealed class Logger {
 	private static string LogTypeTag(LogLevel logType) => $"[{Enum.GetName(typeof(LogLevel), logType)}]";
 
 	internal static void RegisterExceptionHook() {
-		AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionProcessor;
+		// AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionProcessor;
+		AppDomain.CurrentDomain.FirstChanceException += FirstChanceExceptionProcessor;
 		DebugInternal("Unhandled exception hook registered");
 	}
 
 	internal static void UnregisterExceptionHook() {
-		AppDomain.CurrentDomain.UnhandledException -= UnhandledExceptionProcessor;
+		// AppDomain.CurrentDomain.UnhandledException -= UnhandledExceptionProcessor;
+		AppDomain.CurrentDomain.FirstChanceException -= FirstChanceExceptionProcessor;
 		DebugInternal("Unhandled exception hook unregistered");
 	}
 
@@ -258,6 +260,17 @@ public sealed class Logger {
 		// this should handle most uncaught cases in RML and mods
 		if (mod is not null || assembly == Assembly.GetExecutingAssembly()) {
 			if (IsDebugEnabled()) ErrorInternal($"Caught unhandled exception, {exception.Message}. Attributed to {mod?.Name ?? "No mod"} / {assembly.FullName}");
+			ProcessException(exception, assembly, mod);
+		}
+
+	}	private static void FirstChanceExceptionProcessor(object sender, FirstChanceExceptionEventArgs args) {
+		Exception exception = args.Exception;
+		StackTrace trace = new StackTrace(exception);
+		ResoniteModBase? mod = Util.ExecutingMod(trace);
+		Assembly assembly = Assembly.GetAssembly(sender.GetType());
+		// this should handle most uncaught cases in RML and mods
+		if (mod is not null || assembly == Assembly.GetExecutingAssembly()) {
+			if (IsDebugEnabled()) ErrorInternal($"Caught mod-related exception, {exception.Message}. Attributed to {mod?.Name ?? "No mod"} / {assembly.FullName}");
 			ProcessException(exception, assembly, mod);
 		}
 	}
