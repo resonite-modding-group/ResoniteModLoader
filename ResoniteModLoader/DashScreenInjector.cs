@@ -36,7 +36,6 @@ internal sealed class DashScreenInjector {
 
 		string? overrideTemplatePath = Directory.EnumerateFiles(ModLoaderConfiguration.GetAssemblyDirectory(), "DashScreenTemplate.*").FirstOrDefault();
 		Stream screenFileStream = File.Exists(overrideTemplatePath) ? File.OpenRead(overrideTemplatePath) : Assembly.GetExecutingAssembly().GetManifestResourceStream("Resources\\ConfigurationItemMapper.brson");
-		DataTreeDictionary screenDict = DataTreeConverter.LoadAuto(screenFileStream);
 
 		Logger.DebugInternal("Injecting dash screen");
 
@@ -46,45 +45,54 @@ internal sealed class DashScreenInjector {
 		InjectedScreen.Slot.OrderOffset = 128;
 		InjectedScreen.Slot.PersistentSelf = false;
 
-		InjectedScreen.ScreenRoot.LoadObject(screenDict, null!);
-
-		/*
-		SingleFeedView view = InjectedScreen.ScreenRoot.AttachComponent<SingleFeedView>();
-		ModConfigurationDataFeed feed = InjectedScreen.ScreenRoot.AttachComponent<ModConfigurationDataFeed>();
-
-		Slot templates = InjectedScreen.ScreenRoot.AddSlot("Template");
-		templates.ActiveSelf = false;
-
-		if (await templates.LoadObjectAsync(__instance.Cloud.Platform.GetSpawnObjectUri("Settings"), skipHolder: true)) {
-			// we do a little bit of thievery
-			RootCategoryView rootCategoryView = templates.GetComponentInChildren<RootCategoryView>();
-			rootCategoryView.Slot.GetComponentInChildren<BreadcrumbManager>().Path.Target = view.Path;
-			rootCategoryView.CategoryManager.ContainerRoot.Target.ActiveSelf = false;
-			rootCategoryView.Slot.Children.First().Parent = InjectedScreen.ScreenCanvas.Slot;
-			view.ItemsManager.TemplateMapper.Target = rootCategoryView.ItemsManager.TemplateMapper.Target;
-			view.ItemsManager.ContainerRoot.Target = rootCategoryView.ItemsManager.ContainerRoot.Target;
-			rootCategoryView.Destroy();
-			templates.GetComponentInChildren<BreadcrumbInterface>().NameConverter.Target = view.PathSegmentName;
+		try {
+			DataTreeDictionary screenDict = DataTreeConverter.LoadAuto(screenFileStream);
+			Slot DashScreenTemplate = InjectedScreen.ScreenRoot.AddSlot("DashScreenTemplate");
+			DashScreenTemplate.LoadObject(screenDict, null!);
+			Canvas DashScreenCanvas = DashScreenTemplate.GetComponentInChildren<Canvas>();
+			InjectedScreen.ScreenCanvas.Slot.AttachComponent<NestedCanvas>().TargetCanvas.Target = DashScreenCanvas;
 		}
-		else if (config.Debug) {
-			Logger.ErrorInternal("Failed to load SettingsItemMappers for dash screen, falling back to template.");
-			DataFeedItemMapper itemMapper = templates.AttachComponent<DataFeedItemMapper>();
-			Canvas tempCanvas = templates.AttachComponent<Canvas>(); // Needed for next method to work
-			itemMapper.SetupTemplate();
-			tempCanvas.Destroy();
-			view.ItemsManager.TemplateMapper.Target = itemMapper;
-			view.ItemsManager.ContainerRoot.Target = InjectedScreen.ScreenCanvas.Slot;
-			InjectedScreen.ScreenCanvas.Slot.AttachComponent<VerticalLayout>(); // just for debugging
-		}
-		else {
-			Logger.ErrorInternal("Failed to load SettingsItemMappers for dash screen, aborting and cleaning up.");
-			InjectedScreen.Slot.Destroy();
-			return;
-		}
+		catch (ArgumentNullException e) {
+			Logger.WarnInternal(
+				"Failed to load DashScreenTemplate for dash screen, falling back to platform settings.");
+			Logger.DebugInternal($"Exception message: {e.Message}");
 
-		view.Feed.Target = feed;
-		view.SetCategoryPath(["ResoniteModLoader"]);
-		*/
+			SingleFeedView view = InjectedScreen.ScreenRoot.AttachComponent<SingleFeedView>();
+			ModConfigurationDataFeed feed = InjectedScreen.ScreenRoot.AttachComponent<ModConfigurationDataFeed>();
+
+			Slot templates = InjectedScreen.ScreenRoot.AddSlot("Template");
+			templates.ActiveSelf = false;
+
+			if (await templates.LoadObjectAsync(__instance.Cloud.Platform.GetSpawnObjectUri("Settings"), skipHolder: true)) {
+				// we do a little bit of thievery
+				RootCategoryView rootCategoryView = templates.GetComponentInChildren<RootCategoryView>();
+				rootCategoryView.Slot.GetComponentInChildren<BreadcrumbManager>().Path.Target = view.Path;
+				rootCategoryView.CategoryManager.ContainerRoot.Target.ActiveSelf = false;
+				rootCategoryView.Slot.Children.First().Parent = InjectedScreen.ScreenCanvas.Slot;
+				view.ItemsManager.TemplateMapper.Target = rootCategoryView.ItemsManager.TemplateMapper.Target;
+				view.ItemsManager.ContainerRoot.Target = rootCategoryView.ItemsManager.ContainerRoot.Target;
+				rootCategoryView.Destroy();
+				templates.GetComponentInChildren<BreadcrumbInterface>().NameConverter.Target = view.PathSegmentName;
+			}
+			else if (config.Debug) {
+				Logger.ErrorInternal("Failed to load SettingsItemMappers for dash screen, falling back to template.");
+				DataFeedItemMapper itemMapper = templates.AttachComponent<DataFeedItemMapper>();
+				Canvas tempCanvas = templates.AttachComponent<Canvas>(); // Needed for next method to work
+				itemMapper.SetupTemplate();
+				tempCanvas.Destroy();
+				view.ItemsManager.TemplateMapper.Target = itemMapper;
+				view.ItemsManager.ContainerRoot.Target = InjectedScreen.ScreenCanvas.Slot;
+				InjectedScreen.ScreenCanvas.Slot.AttachComponent<VerticalLayout>(); // just for debugging
+			}
+			else {
+				Logger.ErrorInternal("Failed to load SettingsItemMappers for dash screen, aborting and cleaning up.");
+				InjectedScreen.Slot.Destroy();
+				return;
+			}
+
+			view.Feed.Target = feed;
+			view.SetCategoryPath(["ResoniteModLoader"]);
+		}
 
 		InjectedScreen.ScreenCanvas.Slot.AttachComponent<Image>().Tint.Value = UserspaceRadiantDash.DEFAULT_BACKGROUND;
 
