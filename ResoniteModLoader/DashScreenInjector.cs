@@ -35,7 +35,7 @@ internal sealed class DashScreenInjector {
 		}
 
 		string? overrideTemplatePath = Directory.EnumerateFiles(ModLoaderConfiguration.GetAssemblyDirectory(), "DashScreenTemplate.*").FirstOrDefault();
-		Stream screenFileStream = File.Exists(overrideTemplatePath) ? File.OpenRead(overrideTemplatePath) : Assembly.GetExecutingAssembly().GetManifestResourceStream("Resources\\ConfigurationItemMapper.brson");
+		Stream screenFileStream = File.Exists(overrideTemplatePath) ? File.OpenRead(overrideTemplatePath) : Assembly.GetExecutingAssembly().GetManifestResourceStream("Resources\\DashScreenTemplate.bson");
 
 		Logger.DebugInternal("Injecting dash screen");
 
