@@ -11,7 +11,7 @@
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<EnableNETAnalyzers>True</EnableNETAnalyzers>
-		<AnalysisLevel>7.0-Recommended</AnalysisLevel>
+		<AnalysisLevel>9.0-Recommended</AnalysisLevel>
 		<!-- Change CopyToLibraries to true if you'd like builds to be moved into the Libraries folder automatically-->
 		<CopyToLibraries Condition="'$(CopyToLibraries)'==''">false</CopyToLibraries>
 		<DebugType Condition="'$(Configuration)'=='Debug'">embedded</DebugType>
