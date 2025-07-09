@@ -26,6 +26,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="Lib.Harmony" Version="2.3.6" />
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="9.0.6" />
+		<!--For some reason, doesn't like the included copy, won't be needed in net9 anyway-->
 		<Reference Include="FrooxEngine">
 			<HintPath>$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll</HintPath>
 			<Private>False</Private>
@@ -40,10 +42,6 @@
 		</Reference>
 		<Reference Include="Elements.Quantity">
 			<HintPath>$(ResonitePath)Resonite_Data\Managed\Elements.Quantity.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Microsoft.Bcl.AsyncInterfaces">
-			<HintPath>$(ResonitePath)Resonite_Data\Managed\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="Newtonsoft.Json">
