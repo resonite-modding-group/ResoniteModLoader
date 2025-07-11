@@ -3,9 +3,9 @@
 		<RootNamespace>ResoniteModLoader</RootNamespace>
 		<AssemblyName>ResoniteModLoader</AssemblyName>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<TargetFramework>net472</TargetFramework>
+		<TargetFramework>net9.0</TargetFramework>
 		<FileAlignment>512</FileAlignment>
-		<LangVersion>11.0</LangVersion>
+		<LangVersion>12.0</LangVersion>
 		<Nullable>enable</Nullable>
 		<Deterministic>true</Deterministic>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
@@ -13,7 +13,7 @@
 		<EnableNETAnalyzers>True</EnableNETAnalyzers>
 		<AnalysisLevel>9.0-Recommended</AnalysisLevel>
 		<!-- Change CopyToLibraries to true if you'd like builds to be moved into the Libraries folder automatically-->
-		<CopyToLibraries Condition="'$(CopyToLibraries)'==''">false</CopyToLibraries>
+		<CopyToLibraries Condition="'$(CopyToLibraries)'==''">true</CopyToLibraries>
 		<DebugType Condition="'$(Configuration)'=='Debug'">embedded</DebugType>
 	</PropertyGroup>
 
@@ -25,17 +25,29 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Lib.Harmony" Version="2.3.3" />
-		<Reference Include="Elements.Core">
-			<HintPath>$(ResonitePath)Resonite_Data\Managed\Elements.Core.dll</HintPath>
+		<PackageReference Include="Lib.Harmony" Version="2.3.6" />
+		<Reference Include="FrooxEngine">
+			<HintPath>$(ResonitePath)FrooxEngine.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
-		<Reference Include="FrooxEngine">
-			<HintPath>$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll</HintPath>
+		<Reference Include="Elements.Assets">
+			<HintPath>$(ResonitePath)Elements.Assets.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Elements.Core">
+			<HintPath>$(ResonitePath)Elements.Core.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Elements.Quantity">
+			<HintPath>$(ResonitePath)Elements.Quantity.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+			<Reference Include="Elements.Data">
+			<HintPath>$(ResonitePath)Elements.Data.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="Newtonsoft.Json">
-			<HintPath>$(ResonitePath)Resonite_Data\Managed\Newtonsoft.Json.dll</HintPath>
+			<HintPath>$(ResonitePath)Newtonsoft.Json.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<!-- Provides EngineLoadProgress-->
