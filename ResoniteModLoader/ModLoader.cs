@@ -29,7 +29,15 @@ public sealed class ModLoader {
 				} catch (ReflectionTypeLoadException e) {
 					types = e.Types;
 				}
-				return types.Any(t => t != null && t.Namespace == "FrooxEngine.Headless");
+				return types.Any(t => {
+					try {
+						return t != null && t.Namespace == "FrooxEngine.Headless";
+					}
+					catch {
+						return false;
+					}
+				}
+				);
 			});
 		}
 	}
