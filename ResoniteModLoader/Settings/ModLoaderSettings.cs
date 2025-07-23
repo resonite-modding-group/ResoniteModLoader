@@ -18,8 +18,14 @@ public sealed class ModLoaderSettings : SettingComponent<ModLoaderSettings> {
 	public override void ResetToDefault() {
 		DebugMode.Value = false;
 	}
+
 	protected override void OnChanges() {
 		base.OnChanges();
 		ModLoaderConfiguration.Get().Debug = DebugMode.Value;
+	}
+	protected override void OnStart() {
+		base.OnStart();
+		ModLoaderVersion.Value = ModLoader.VERSION;
+		LoadedMods.Value = ModLoader.Mods().Count().ToString();
 	}
 }
