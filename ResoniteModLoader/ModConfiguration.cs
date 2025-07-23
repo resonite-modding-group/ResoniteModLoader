@@ -167,7 +167,9 @@ public class ModConfiguration : IModConfigurationDefinition {
 	}
 
 	private static string GetModConfigPath(ResoniteModBase mod) {
-		if (mod.ModAssembly is null) throw new ArgumentException("Cannot get the config path of a mod that has not been fully loaded");
+		if (mod.ModAssembly is null) {
+			throw new ArgumentException("Cannot get the config path of a mod that has not been fully loaded");
+		}
 
 		string filename = Path.ChangeExtension(Path.GetFileName(mod.ModAssembly.File), ".json");
 		return Path.Combine(ConfigDirectory, filename);
