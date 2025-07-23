@@ -8,6 +8,7 @@ internal class ModLoaderInit {
 
 	internal static void Initialize() {
 		Logger.DebugInternal($"Start of ModLoader Initialization");
+		Stopwatch initializationTimer = Stopwatch.StartNew();
 
 		try {
 			HashSet<Assembly> initialAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToHashSet();
@@ -28,6 +29,8 @@ internal class ModLoaderInit {
 			// it's important that this doesn't send exceptions back to Resonite
 			Logger.ErrorInternal($"Exception during initialization!\n{e}");
 		}
+		initializationTimer.Stop();
+		Logger.MsgInternal($"Initialization completed in {initializationTimer.ElapsedMilliseconds}ms");
 	}
 
 }
