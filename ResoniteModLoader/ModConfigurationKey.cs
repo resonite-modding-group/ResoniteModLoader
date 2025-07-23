@@ -63,8 +63,7 @@ public abstract class ModConfigurationKey {
 	/// <param name="obj">The other object to compare against.</param>
 	/// <returns><c>true</c> if the other object is equal to this.</returns>
 	public override bool Equals(object obj) {
-		return obj is ModConfigurationKey key &&
-			   Name == key.Name;
+		return obj is ModConfigurationKey key && Name == key.Name;
 	}
 
 	/// <inheritdoc/>
@@ -78,6 +77,9 @@ public abstract class ModConfigurationKey {
 	}
 
 	private object? Value;
+	/// <summary>
+	/// Set if this key has had a value assigned.
+	/// </summary>
 	internal bool HasValue;
 
 	/// <summary>

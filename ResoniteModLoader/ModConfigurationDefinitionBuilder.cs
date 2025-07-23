@@ -62,7 +62,6 @@ public class ModConfigurationDefinitionBuilder {
 
 	private void ProcessField(FieldInfo field) {
 		if (!typeof(ModConfigurationKey).IsAssignableFrom(field.FieldType)) {
-			// wrong type
 			Logger.WarnInternal($"{Owner.Name} had an [AutoRegisterConfigKey] field of the wrong type: {field}");
 			return;
 		}
