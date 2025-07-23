@@ -50,16 +50,6 @@
 			<HintPath>$(ResonitePath)Newtonsoft.Json.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
-		<!-- Provides EngineLoadProgress-->
-		<Reference Include="Assembly-CSharp">
-			<HintPath>$(ResonitePath)Resonite_Data\Managed\Assembly-CSharp.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<!--Monobehaviour in loading indicator-->
-		<Reference Include="UnityEngine.CoreModule">
-			<HintPath>$(ResonitePath)Resonite_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
 	</ItemGroup>
 
 	<ItemGroup>
