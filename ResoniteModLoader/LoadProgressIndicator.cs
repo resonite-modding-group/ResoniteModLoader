@@ -19,7 +19,7 @@ internal static class LoadProgressIndicator {
 			Engine.Current.InitProgress.SetSubphase(text, true);
 			return true;
 		} catch (Exception ex) {
-			Logger.ErrorInternal(ex);
+			Logger.ErrorInternal($"Error setting progress indicator subphase: {ex}");
 			return false;
 		}
 		
