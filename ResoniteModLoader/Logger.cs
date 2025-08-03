@@ -11,8 +11,9 @@ internal sealed class Logger {
 	internal static bool IsDebugEnabled() {
 #if DEBUG
 		return true;
-#endif
+#else
 		return ModLoaderConfiguration.Get().Debug;
+#endif
 	}
 
 	internal static void DebugFuncInternal(Func<string> messageProducer) {
