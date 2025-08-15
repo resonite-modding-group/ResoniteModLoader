@@ -1,0 +1,18 @@
+name: Feature Request
+description: Request a feature to be added.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: request
+    attributes:
+      label: Describe your request
+      description: Clearly describe what you would like added.
+    validations:
+      required: true
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context about why you are requesting this feature here.
+    validations:
+      required: false
