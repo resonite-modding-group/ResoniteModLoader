@@ -36,7 +36,7 @@ public class ExecutionHook : IPlatformConnector {
 	}
 #pragma warning restore CA2255
 	static ExecutionHook() {
-		Logger.DebugInternal($"Start of ExecutionHook");
+		Logger.DebugInternal("Start of ExecutionHook");
 		ModLoaderInit.Initialize();
 	}
 }

@@ -28,7 +28,7 @@ internal sealed class Logger {
 		}
 	}
 
-	internal static void DebugInternal(string message) {
+	internal static void DebugInternal(object message) {
 		if (IsDebugEnabled()) {
 			LogInternal(LogType.DEBUG, message);
 		}
@@ -46,13 +46,13 @@ internal sealed class Logger {
 		}
 	}
 
-	internal static void MsgInternal(string message) => LogInternal(LogType.INFO, message);
+	internal static void MsgInternal(object message) => LogInternal(LogType.INFO, message);
 	internal static void MsgExternal(object message) => LogInternal(LogType.INFO, message, SourceFromStackTrace(new(1)));
 	internal static void MsgListExternal(object[] messages) => LogListInternal(LogType.INFO, messages, SourceFromStackTrace(new(1)));
-	internal static void WarnInternal(string message) => LogInternal(LogType.WARN, message);
+	internal static void WarnInternal(object message) => LogInternal(LogType.WARN, message);
 	internal static void WarnExternal(object message) => LogInternal(LogType.WARN, message, SourceFromStackTrace(new(1)));
 	internal static void WarnListExternal(object[] messages) => LogListInternal(LogType.WARN, messages, SourceFromStackTrace(new(1)));
-	internal static void ErrorInternal(string message) => LogInternal(LogType.ERROR, message);
+	internal static void ErrorInternal(object message) => LogInternal(LogType.ERROR, message);
 	internal static void ErrorExternal(object message) => LogInternal(LogType.ERROR, message, SourceFromStackTrace(new(1)));
 	internal static void ErrorListExternal(object[] messages) => LogListInternal(LogType.ERROR, messages, SourceFromStackTrace(new(1)));
 
@@ -70,7 +70,7 @@ internal sealed class Logger {
 			LogInternal(logTypePrefix, NULL_STRING, source);
 		} else {
 			foreach (object element in messages) {
-				LogInternal(logTypePrefix, element.ToString(), source);
+				LogInternal(logTypePrefix, element, source);
 			}
 		}
 	}
