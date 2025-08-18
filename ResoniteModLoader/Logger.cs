@@ -56,18 +56,18 @@ internal sealed class Logger {
 	internal static void ErrorExternal(object message) => LogInternal(LogType.ERROR, message, SourceFromStackTrace(new(1)));
 	internal static void ErrorListExternal(object[] messages) => LogListInternal(LogType.ERROR, messages, SourceFromStackTrace(new(1)));
 
-	private static void LogInternal(string logTypePrefix, object message, string? source = null) {
+	private static void LogInternal(string logLevelPrefix, object message, string? source = null) {
 		message ??= NULL_STRING;
 		if (source == null) {
-			UniLog.Log($"{logTypePrefix}[ResoniteModLoader] {message}");
+			UniLog.Log($"{logLevelPrefix}[ResoniteModLoader] {message}");
 		} else {
-			UniLog.Log($"{logTypePrefix}[ResoniteModLoader/{source}] {message}");
+			UniLog.Log($"{logLevelPrefix}[ResoniteModLoader/{source}] {message}");
 		}
 	}
 
-	private static void LogListInternal(string logTypePrefix, object[] messages, string? source) {
+	private static void LogListInternal(string logLevelPrefix, object[] messages, string? source) {
 		if (messages == null) {
-			LogInternal(logTypePrefix, NULL_STRING, source);
+			LogInternal(logLevelPrefix, NULL_STRING, source);
 		} else {
 			foreach (object element in messages) {
 				LogInternal(logTypePrefix, element, source);
