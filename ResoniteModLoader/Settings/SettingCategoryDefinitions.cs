@@ -1,8 +1,9 @@
-using Elements.Core;
+using Elements.Data;
 
 using FrooxEngine;
 
 using ResoniteModLoader.Assets;
+
 [DataModelType]
 public static class SettingCategoryDefinitions {
 	[SettingCategory("ResoniteModLoader")]
