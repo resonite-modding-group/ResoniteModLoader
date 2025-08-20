@@ -60,8 +60,7 @@ internal static class Util {
 	internal static string GenerateSHA256(string filepath) {
 		using var hasher = SHA256.Create();
 		using var stream = File.OpenRead(filepath);
-		var hash = hasher.ComputeHash(stream);
-		return BitConverter.ToString(hash).Replace("-", "");
+		return Convert.ToHexString(hasher.ComputeHash(stream));
 	}
 
 	internal static HashSet<T> ToHashSet<T>(this IEnumerable<T> source, IEqualityComparer<T>? comparer = null) {
