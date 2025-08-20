@@ -15,14 +15,14 @@ internal sealed class ResonitePrimitiveConverter : JsonConverter {
 	public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer) {
 		if (reader.Value is string serialized) {
 			// use Resonite's built-in decoding if the value was serialized as a string
-			return typeof(Coder<>).MakeGenericType(objectType).GetMethod("DecodeFromString").Invoke(null, new object[] { serialized });
+			return typeof(Coder<>).MakeGenericType(objectType).GetMethod("DecodeFromString").Invoke(null, [serialized]);
 		}
 
 		throw new ArgumentException($"Could not deserialize a Core Element type: {objectType} from a {reader?.Value?.GetType()}");
 	}
 
 	public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer) {
-		string serialized = (string)typeof(Coder<>).MakeGenericType(value!.GetType()).GetMethod("EncodeToString").Invoke(null, new object[] { value });
+		string serialized = (string)typeof(Coder<>).MakeGenericType(value!.GetType()).GetMethod("EncodeToString").Invoke(null, [value]);
 		writer.WriteValue(serialized);
 	}
 }

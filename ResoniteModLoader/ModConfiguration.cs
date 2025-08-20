@@ -132,10 +132,10 @@ public class ModConfiguration : IModConfigurationDefinition {
 	// any mod that calls Save() for the ModConfiguration within debounceMilliseconds of the previous call to the same ModConfiguration
 	// will be put into Ultimate Punishment Mode, and ALL their Save() calls, regardless of ModConfiguration, will be debounced.
 	// The naughty list is global, while the actual debouncing is per-configuration.
-	private static HashSet<string> naughtySavers = new HashSet<string>();
+	private static HashSet<string> naughtySavers = [];
 
 	// used to keep track of the debouncers for this configuration.
-	private Dictionary<string, Action<bool>> saveActionForCallee = new();
+	private Dictionary<string, Action<bool>> saveActionForCallee = [];
 
 	private static readonly JsonSerializer jsonSerializer = CreateJsonSerializer();
 
@@ -146,7 +146,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 			DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate,
 			Formatting = Formatting.Indented
 		};
-		List<JsonConverter> converters = new();
+		List<JsonConverter> converters = [];
 		IList<JsonConverter> defaultConverters = settings.Converters;
 		if (defaultConverters != null && defaultConverters.Count != 0) {
 			Logger.DebugFuncInternal(() => $"Using {defaultConverters.Count} default json converters");
@@ -501,7 +501,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 			[VERSION_JSON_KEY] = JToken.FromObject(Definition.Version.ToString(), jsonSerializer)
 		};
 
-		JObject valueMap = new();
+		JObject valueMap = [];
 		foreach (ModConfigurationKey key in ConfigurationItemDefinitions) {
 			if (key.TryGetValue(out object? value)) {
 				valueMap[key.Name] = value == null ? null : JToken.FromObject(value, jsonSerializer);

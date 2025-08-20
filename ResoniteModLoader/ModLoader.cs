@@ -12,9 +12,9 @@ public sealed class ModLoader {
 	/// </summary>
 	public static readonly string VERSION = VERSION_CONSTANT;
 	private static readonly Type RESONITE_MOD_TYPE = typeof(ResoniteMod);
-	private static readonly List<ResoniteMod> LoadedMods = new(); // used for mod enumeration
-	internal static readonly Dictionary<Assembly, ResoniteMod> AssemblyLookupMap = new(); // used for logging
-	private static readonly Dictionary<string, ResoniteMod> ModNameLookupMap = new(); // used for duplicate mod checking
+	private static readonly List<ResoniteMod> LoadedMods = []; // used for mod enumeration
+	internal static readonly Dictionary<Assembly, ResoniteMod> AssemblyLookupMap = []; // used for logging
+	private static readonly Dictionary<string, ResoniteMod> ModNameLookupMap = []; // used for duplicate mod checking
 
 
 	/// <summary>
@@ -111,7 +111,7 @@ public sealed class ModLoader {
 			IEnumerable<MethodBase> patchedMethods = Harmony.GetAllPatchedMethods();
 			foreach (MethodBase patchedMethod in patchedMethods) {
 				Patches patches = Harmony.GetPatchInfo(patchedMethod);
-				HashSet<string> owners = new(patches.Owners);
+				HashSet<string> owners = [.. patches.Owners];
 				if (owners.Count > 1) {
 					Logger.WarnInternal($"Method \"{patchedMethod.FullDescription()}\" has been patched by the following:");
 					foreach (string owner in owners) {
@@ -164,7 +164,7 @@ public sealed class ModLoader {
 			return null;
 		}
 
-		Type[] modClasses = mod.Assembly.GetLoadableTypes(t => t.IsClass && !t.IsAbstract && RESONITE_MOD_TYPE.IsAssignableFrom(t)).ToArray();
+		Type[] modClasses = [.. mod.Assembly.GetLoadableTypes(t => t.IsClass && !t.IsAbstract && RESONITE_MOD_TYPE.IsAssignableFrom(t))];
 		if (modClasses.Length == 0) {
 			Logger.ErrorInternal($"No loadable mod found in {mod.File}");
 			return null;

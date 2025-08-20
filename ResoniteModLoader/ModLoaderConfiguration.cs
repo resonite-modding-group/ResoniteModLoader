@@ -29,8 +29,8 @@ internal sealed class ModLoaderConfiguration {
 				foreach (var line in lines) {
 					int splitIdx = line.IndexOf('=');
 					if (splitIdx != -1) {
-						string key = line.Substring(0, splitIdx);
-						string value = line.Substring(splitIdx + 1);
+						string key = line[..splitIdx];
+						string value = line[(splitIdx + 1)..];
 
 						if (keyActions.TryGetValue(key, out Action<string> action)) {
 							try {
