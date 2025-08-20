@@ -1,3 +1,5 @@
+using System.Globalization;
+
 using FrooxEngine;
 
 namespace ResoniteModLoader;
@@ -5,6 +7,7 @@ namespace ResoniteModLoader;
 [AutoRegisterSetting]
 [SettingCategory("ResoniteModLoader")]
 public sealed class ModLoaderSettings : SettingComponent<ModLoaderSettings> {
+	/// <inheritdoc/>
 	public override bool UserspaceOnly => true;
 
 	[SettingIndicatorProperty]
@@ -15,17 +18,30 @@ public sealed class ModLoaderSettings : SettingComponent<ModLoaderSettings> {
 	[SettingProperty("Debug Mode")]
 	public readonly Sync<bool> DebugMode;
 
+	[SettingProperty("Hide ModLoader progress during startup")]
+	public readonly Sync<bool> HideVisuals;
+
+	/// <inheritdoc/>
 	public override void ResetToDefault() {
 		DebugMode.Value = false;
+		HideVisuals.Value = false;
 	}
 
+	/// <inheritdoc/>
 	protected override void OnChanges() {
 		base.OnChanges();
 		ModLoaderConfiguration.Get().Debug = DebugMode.Value;
+		Logger.DebugInternal($"Setting changed, changed debug values {ModLoaderConfiguration.Get().Debug}");
+
+		ModLoaderVersion.Value = ModLoader.VERSION;
+		LoadedMods.Value = ModLoader.Mods().Count().ToString(CultureInfo.InvariantCulture);
 	}
 	protected override void OnStart() {
 		base.OnStart();
 		ModLoaderVersion.Value = ModLoader.VERSION;
-		LoadedMods.Value = ModLoader.Mods().Count().ToString();
+		LoadedMods.Value = ModLoader.Mods().Count().ToString(CultureInfo.InvariantCulture);
+		Logger.MsgInternal("OnStart in ModLoaderSettings");
+		DebugMode.Value = ModLoaderConfiguration.Get().Debug;
+		HideVisuals.Value = ModLoaderConfiguration.Get().HideVisuals;
 	}
 }
