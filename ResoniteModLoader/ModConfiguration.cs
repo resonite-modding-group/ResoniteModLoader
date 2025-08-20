@@ -382,7 +382,11 @@ public class ModConfiguration : IModConfigurationDefinition {
 			using StreamReader file = File.OpenText(configFile);
 			using JsonTextReader reader = new(file);
 			JObject json = JObject.Load(reader);
-			Version version = new(json[VERSION_JSON_KEY]!.ToObject<string>(jsonSerializer));
+			string? versionString = json[VERSION_JSON_KEY]?.ToObject<string>(jsonSerializer);
+			if (versionString == null) {
+				throw new ModConfigurationException($"Missing version in config for {mod.Name}");
+			}
+			Version version = new(versionString);
 			if (!AreVersionsCompatible(version, definition.Version)) {
 				var handlingMode = mod.HandleIncompatibleConfigurationVersions(definition.Version, version);
 				switch (handlingMode) {
