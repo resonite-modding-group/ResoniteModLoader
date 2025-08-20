@@ -11,7 +11,7 @@ internal static class LoadProgressIndicator {
 	/// </summary>
 	/// <param name="text">The message to display on the indicator</param>
 	/// <returns>
-	/// <c>true</c> if the indicator was set successfully or if visuals are hidden with <see cref="ModLoaderConfiguration.Get().HideVisuals"/> otherwise <c>false</c>.
+	/// <c>true</c> if the indicator was set successfully or if visuals are hidden with <see cref="ModLoaderConfiguration.HideVisuals"/> otherwise <c>false</c>.
 	/// </returns>
 	internal static bool SetSubphase(string text) {
 		if (ModLoaderConfiguration.Get().HideVisuals) { return true; }
@@ -22,7 +22,6 @@ internal static class LoadProgressIndicator {
 			Logger.ErrorInternal(ex);
 			return false;
 		}
-		
 	}
 }
 

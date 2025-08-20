@@ -70,7 +70,7 @@ internal sealed class Logger {
 			LogInternal(logLevelPrefix, NULL_STRING, source);
 		} else {
 			foreach (object element in messages) {
-				LogInternal(logTypePrefix, element, source);
+				LogInternal(logLevelPrefix, element, source);
 			}
 		}
 	}

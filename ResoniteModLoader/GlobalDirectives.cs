@@ -11,3 +11,4 @@ global using global::System.Threading.Tasks;
 */
 global using System.Reflection;
 global using System.Text;
+global using System.Diagnostics.CodeAnalysis;

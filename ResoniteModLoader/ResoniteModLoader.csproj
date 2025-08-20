@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<RootNamespace>ResoniteModLoader</RootNamespace>
 		<AssemblyName>ResoniteModLoader</AssemblyName>
@@ -50,10 +50,6 @@
 			<HintPath>$(ResonitePath)Newtonsoft.Json.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
-	</ItemGroup>
-
-	<ItemGroup>
-		<Using Remove="System.Net.Http" />
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(CopyToLibraries)'=='true'">
