@@ -144,6 +144,24 @@ public class ModConfigurationKey<T> : ModConfigurationKey {
 	private readonly Func<T>? ComputeDefault;
 	private readonly Predicate<T?>? IsValueValid;
 
+
+	/// <summary>
+	/// Gets or sets the value of this configuration key.
+	/// <para>
+	/// When getting, attempts to retrieve the current value assigned to this key, or <c>default(T)</c> if none is set.
+	/// When setting, assigns the provided value to this key and notifies any <see cref="OnChanged"/> subscribers.
+	/// </para>
+	/// </summary>
+	public T? Value {
+		get {
+			TryGetValue(out var value);
+			return (T?)value;
+		}
+		set {
+			Set(value);
+		}
+	}
+
 	/// <inheritdoc/>
 	public override Type ValueType() => typeof(T);
 

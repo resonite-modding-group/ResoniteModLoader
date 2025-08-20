@@ -1,7 +1,6 @@
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-using Elements.Core;
+using Elements.Data;
 
 [assembly: AssemblyTitle("ResoniteModLoader")]
 [assembly: AssemblyProduct("ResoniteModLoader")]

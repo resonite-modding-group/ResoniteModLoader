@@ -6,15 +6,15 @@ namespace ResoniteModLoader;
 /// Contains the actual mod loader.
 /// </summary>
 public sealed class ModLoader {
-	internal const string VERSION_CONSTANT = "3.1.0";
+	internal const string VERSION_CONSTANT = "4.0.0";
 	/// <summary>
 	/// ResoniteModLoader's version
 	/// </summary>
 	public static readonly string VERSION = VERSION_CONSTANT;
 	private static readonly Type RESONITE_MOD_TYPE = typeof(ResoniteMod);
-	private static readonly List<ResoniteMod> LoadedMods = new(); // used for mod enumeration
-	internal static readonly Dictionary<Assembly, ResoniteMod> AssemblyLookupMap = new(); // used for logging
-	private static readonly Dictionary<string, ResoniteMod> ModNameLookupMap = new(); // used for duplicate mod checking
+	private static readonly List<ResoniteMod> LoadedMods = []; // used for mod enumeration
+	internal static readonly Dictionary<Assembly, ResoniteMod> AssemblyLookupMap = []; // used for logging
+	private static readonly Dictionary<string, ResoniteMod> ModNameLookupMap = []; // used for duplicate mod checking
 
 
 	/// <summary>
@@ -29,7 +29,15 @@ public sealed class ModLoader {
 				} catch (ReflectionTypeLoadException e) {
 					types = e.Types;
 				}
-				return types.Any(t => t != null && t.Namespace == "FrooxEngine.Headless");
+				return types.Any(t => {
+					try {
+						return t != null && t.Namespace == "FrooxEngine.Headless";
+					}
+					catch {
+						return false;
+					}
+				}
+				);
 			});
 		}
 	}
@@ -51,7 +59,7 @@ public sealed class ModLoader {
 			Logger.DebugInternal("Mods will not be loaded due to configuration file");
 			return;
 		}
-		LoadProgressIndicator.SetCustom("Gathering mods");
+		LoadProgressIndicator.SetSubphase("Gathering mods");
 		// generate list of assemblies to load
 		AssemblyFile[] modsToLoad;
 		if (AssemblyLoader.LoadAssembliesFromDir("rml_mods") is AssemblyFile[] arr) {
@@ -99,11 +107,11 @@ public sealed class ModLoader {
 
 		// Log potential conflicts
 		if (config.LogConflicts) {
-			LoadProgressIndicator.SetCustom("Looking for conflicts");
+			LoadProgressIndicator.SetSubphase("Looking for conflicts");
 			IEnumerable<MethodBase> patchedMethods = Harmony.GetAllPatchedMethods();
 			foreach (MethodBase patchedMethod in patchedMethods) {
 				Patches patches = Harmony.GetPatchInfo(patchedMethod);
-				HashSet<string> owners = new(patches.Owners);
+				HashSet<string> owners = [.. patches.Owners];
 				if (owners.Count > 1) {
 					Logger.WarnInternal($"Method \"{patchedMethod.FullDescription()}\" has been patched by the following:");
 					foreach (string owner in owners) {
@@ -156,7 +164,7 @@ public sealed class ModLoader {
 			return null;
 		}
 
-		Type[] modClasses = mod.Assembly.GetLoadableTypes(t => t.IsClass && !t.IsAbstract && RESONITE_MOD_TYPE.IsAssignableFrom(t)).ToArray();
+		Type[] modClasses = [.. mod.Assembly.GetLoadableTypes(t => t.IsClass && !t.IsAbstract && RESONITE_MOD_TYPE.IsAssignableFrom(t))];
 		if (modClasses.Length == 0) {
 			Logger.ErrorInternal($"No loadable mod found in {mod.File}");
 			return null;
@@ -177,16 +185,16 @@ public sealed class ModLoader {
 				return null;
 			}
 
-			LoadProgressIndicator.SetCustom($"Loading configuration for [{resoniteMod.Name}/{resoniteMod.Version}]");
 			resoniteMod.ModAssembly = mod;
 			Logger.MsgInternal($"Loaded mod [{resoniteMod.Name}/{resoniteMod.Version}] ({Path.GetFileName(mod.File)}) by {resoniteMod.Author} with Sha256: {mod.Sha256}");
+			LoadProgressIndicator.SetSubphase($"Loading configuration for [{resoniteMod.Name}/{resoniteMod.Version}]");
 			resoniteMod.ModConfiguration = ModConfiguration.LoadConfigForMod(resoniteMod);
 			return resoniteMod;
 		}
 	}
 
 	private static void HookMod(ResoniteMod mod) {
-		LoadProgressIndicator.SetCustom($"Starting mod [{mod.Name}/{mod.Version}]");
+		LoadProgressIndicator.SetSubphase($"Starting mod [{mod.Name}/{mod.Version}]");
 		Logger.DebugFuncInternal(() => $"calling OnEngineInit() for [{mod.Name}/{mod.Version}]");
 		try {
 			mod.OnEngineInit();

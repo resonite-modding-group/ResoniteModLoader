@@ -7,7 +7,7 @@ namespace ResoniteModLoader;
 public class ModConfigurationDefinitionBuilder {
 	private readonly ResoniteModBase Owner;
 	private Version ConfigVersion = new(1, 0, 0);
-	private readonly HashSet<ModConfigurationKey> Keys = new();
+	private readonly HashSet<ModConfigurationKey> Keys = [];
 	private bool AutoSaveConfig = true;
 
 	internal ModConfigurationDefinitionBuilder(ResoniteModBase owner) {

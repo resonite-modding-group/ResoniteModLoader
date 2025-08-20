@@ -7,8 +7,8 @@ internal sealed class AssemblyFile {
 		File = file;
 		Assembly = assembly;
 	}
-	internal string Name => Assembly.GetName().Name;
-	internal string Version => Assembly.GetName().Version.ToString();
+	internal string Name => Assembly.GetName().Name ?? "Unknown";
+	internal string Version => Assembly.GetName().Version?.ToString() ?? "Unknown";
 	private string? sha256;
 	internal string Sha256 {
 		get {
@@ -17,7 +17,7 @@ internal sealed class AssemblyFile {
 					sha256 = Util.GenerateSHA256(File);
 				} catch (Exception e) {
 					Logger.ErrorInternal($"Exception calculating sha256 hash for {File}:\n{e}");
-					sha256 = "failed to generate hash";
+					sha256 = "Failed to generate hash";
 				}
 			}
 			return sha256;

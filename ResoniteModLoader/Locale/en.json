@@ -1,0 +1,14 @@
+{
+    "localeCode": "en",
+    "authors": ["Delta"],
+    "messages": {
+        "Settings.Category.ResoniteModLoader": "ResoniteModLoader",
+        "Settings.ModLoaderSettings": "ResoniteModLoader Settings",
+        "Settings.ModSettings": "Mod Settings",
+        "Settings.ModLoaderSettings.DebugMode.Description": "Enables Debug Mode in the modloader, can also be set via config file",
+        "Settings.ModLoaderSettings.LoadedMods": "Loaded Mods",
+        "Settings.ModLoaderSettings.ModloaderVersion": "Version",
+
+        "Dummy": "Dummy"
+    }
+}

@@ -12,14 +12,11 @@ internal sealed class ModLoaderConfiguration {
 			_configuration = new ModLoaderConfiguration();
 
 			Dictionary<string, Action<string>> keyActions = new() {
-				//{ "unsafe", (value) => _configuration.Unsafe = bool.Parse(value) },
 				{ "debug", (value) => _configuration.Debug = bool.Parse(value) },
 				{ "hidevisuals", (value) => _configuration.HideVisuals = bool.Parse(value) },
 				{ "nomods", (value) => _configuration.NoMods = bool.Parse(value) },
 				{ "advertiseversion", (value) => _configuration.AdvertiseVersion = bool.Parse(value) },
 				{ "logconflicts", (value) => _configuration.LogConflicts = bool.Parse(value) },
-				//{ "hidemodtypes", (value) => _configuration.HideModTypes = bool.Parse(value) },
-				//{ "hidelatetypes", (value) => _configuration.HideLateTypes = bool.Parse(value) }
 			};
 
 			// .NET's ConfigurationManager is some hot trash to the point where I'm just done with it.
@@ -29,8 +26,8 @@ internal sealed class ModLoaderConfiguration {
 				foreach (var line in lines) {
 					int splitIdx = line.IndexOf('=');
 					if (splitIdx != -1) {
-						string key = line.Substring(0, splitIdx);
-						string value = line.Substring(splitIdx + 1);
+						string key = line[..splitIdx];
+						string value = line[(splitIdx + 1)..];
 
 						if (keyActions.TryGetValue(key, out Action<string> action)) {
 							try {
@@ -55,20 +52,13 @@ internal sealed class ModLoaderConfiguration {
 	}
 
 	private static string GetAssemblyDirectory() {
-		string codeBase = Assembly.GetExecutingAssembly().CodeBase;
-		UriBuilder uri = new(codeBase);
-		string path = Uri.UnescapeDataString(uri.Path);
+		string path = Assembly.GetExecutingAssembly().Location;
 		return Path.GetDirectoryName(path);
 	}
 
-#pragma warning disable CA1805
-	//public bool Unsafe { get; private set; } = false;
-	public bool Debug { get; private set; } = false;
-	public bool NoMods { get; private set; } = false;
-	public bool HideVisuals { get; private set; } = false;
-	public bool AdvertiseVersion { get; private set; } = false;
-	public bool LogConflicts { get; private set; } = true;
-	//public bool HideModTypes { get; private set; } = true;
-	//public bool HideLateTypes { get; private set; } = true;
-#pragma warning restore CA1805
+	public bool Debug { get; internal set; }
+	public bool NoMods { get; internal set; }
+	public bool HideVisuals { get; internal set; }
+	public bool AdvertiseVersion { get; internal set; }
+	public bool LogConflicts { get; internal set; } = true;
 }

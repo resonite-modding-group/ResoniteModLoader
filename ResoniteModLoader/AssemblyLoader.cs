@@ -31,7 +31,7 @@ internal static class AssemblyLoader {
 
 	private static Assembly? LoadAssembly(string filepath) {
 		string filename = Path.GetFileName(filepath);
-		LoadProgressIndicator.SetCustom($"Loading file: {filename}");
+		LoadProgressIndicator.SetSubphase($"Loading file: {filename}");
 		Assembly assembly;
 		try {
 			Logger.DebugFuncInternal(() => $"Load assembly {filename}");
