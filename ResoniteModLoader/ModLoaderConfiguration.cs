@@ -55,9 +55,7 @@ internal sealed class ModLoaderConfiguration {
 	}
 
 	private static string GetAssemblyDirectory() {
-		string codeBase = Assembly.GetExecutingAssembly().CodeBase;
-		UriBuilder uri = new(codeBase);
-		string path = Uri.UnescapeDataString(uri.Path);
+		string path = Assembly.GetExecutingAssembly().Location;
 		return Path.GetDirectoryName(path);
 	}
 
