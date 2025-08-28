@@ -49,7 +49,7 @@ If you aren't sure if you can trust a mod and you have some level of ability to 
 
 The regular Resonite logs: `C:\Program Files (x86)\Steam\steamapps\common\Resonite\Logs`.
 
-If you are experiencing issues, check our [troubleshooting page](doc/troubleshooting.md).
+If you are experiencing issues, check our [troubleshooting page](troubleshooting.md).
 
 
 ## Is ResoniteModLoader compatible with other mod loaders?
