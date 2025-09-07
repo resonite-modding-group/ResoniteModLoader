@@ -1,0 +1,14 @@
+{
+    "localeCode": "en",
+    "authors": ["Meow Wei 魏喵"],
+    "messages": {
+        "Settings.Category.ResoniteModLoader": "ResoniteModLoader",
+        "Settings.ModLoaderSettings": "ResoniteModLoader 設定",
+        "Settings.ModSettings": "Mod 設定",
+        "Settings.ModLoaderSettings.DebugMode.Description": "在 modloader 開啟除錯模式，也能經由設定檔變更設定",
+        "Settings.ModLoaderSettings.LoadedMods": "已載入的 Mod",
+        "Settings.ModLoaderSettings.ModLoaderVersion": "版本",
+
+        "Dummy": "Dummy"
+    }
+}
