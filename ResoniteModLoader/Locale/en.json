@@ -1,14 +1,25 @@
 {
     "localeCode": "en",
     "authors": ["Delta"],
-    "messages": {
-        "Settings.Category.ResoniteModLoader": "ResoniteModLoader",
-        "Settings.ModLoaderSettings": "ResoniteModLoader Settings",
-        "Settings.ModSettings": "Mod Settings",
-        "Settings.ModLoaderSettings.DebugMode.Description": "Enables Debug Mode in the modloader, can also be set via config file",
-        "Settings.ModLoaderSettings.LoadedMods": "Loaded Mods",
-        "Settings.ModLoaderSettings.ModLoaderVersion": "Version",
+	"messages": {
+		"Settings.Category.ResoniteModLoader": "ResoniteModLoader",
+		"Settings.ModLoaderSettings": "ResoniteModLoader Settings",
 
-        "Dummy": "Dummy"
-    }
+		"Settings.ModLoaderSettings.DebugMode": "Enable Debug",
+		"Settings.ModLoaderSettings.DebugMode.Description": "Enables Debug Logging",
+		"Settings.ModLoaderSettings.HideVisuals": "Hide Visuals",
+		"Settings.ModLoaderSettings.HideVisuals.Description": "Hides Modloader progress indicator when launching",
+		"Settings.ModLoaderSettings.LoadedMods": "Loaded Mods",
+		"Settings.ModLoaderSettings.ModLoaderVersion": "Version",
+
+		"Settings.ModLoaderDebugSettings": "Debugging Settings",
+		"Settings.ModLoaderDebugSettings.RefreshLocale": "Refresh Locale",
+		"Settings.ModLoaderDebugSettings.LocaleCount": "Count Locale Keys",
+		"Settings.ModLoaderDebugSettings.LocaleKeyCount": "Locale Key Count",
+		"Settings.ModLoaderDebugSettings.ForceAssetUpdate": "Force Asset Update",
+
+		"Settings.ModSettings": "Mod Settings",
+
+		"Dummy": "Dummy"
+	}
 }
