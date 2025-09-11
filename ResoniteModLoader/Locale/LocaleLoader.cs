@@ -23,7 +23,7 @@ internal class LocaleLoader {
 			return;
 		}
 		Logger.DebugInternal($"Updating locale to {targetLocale}");
-		Logger.DebugInternal($"Before apply: {Userspace.Current.GetCoreLocale()?.Asset?.Data.MessageCount}");
+		Logger.DebugInternal($"Before apply: {Userspace.Current.GetCoreLocale()?.Asset?.Data.MessageCount} Keys");
 		try {
 			if (targetLocale != "en") {
 				await LoadLocaleResource(targetLocale);
@@ -49,7 +49,7 @@ internal class LocaleLoader {
 
 		Logger.DebugInternal($"Applying embedded locale: {resName}");
 		Userspace.Current.GetCoreLocale()?.Asset?.Data?.LoadDataAdditively(localeJson);
-		Logger.DebugInternal($"After apply {localeCode}: {Userspace.Current.GetCoreLocale()?.Asset?.Data.MessageCount}");
+		Logger.DebugInternal($"After apply {localeCode}: {Userspace.Current.GetCoreLocale()?.Asset?.Data.MessageCount} Keys");
 	}
 
 	internal static void ReloadCurrentLocale() {
