@@ -44,16 +44,11 @@ internal static class Util {
 			// schedule a new call
 			Task.Delay(milliseconds, cancelTokenSource.Token)
 				.ContinueWith(t => {
-					if (t.IsCompletedSuccessfully()) {
+					if (t.IsCompletedSuccessfully) {
 						Task.Run(() => func(arg));
 					}
 				}, TaskScheduler.Default);
 		};
-	}
-
-	// Shim because this doesn't exist in .NET 4.6
-	private static bool IsCompletedSuccessfully(this Task t) {
-		return t.IsCompleted && !t.IsFaulted && !t.IsCanceled;
 	}
 
 	// credit to Delta for this method https://github.com/XDelta/
