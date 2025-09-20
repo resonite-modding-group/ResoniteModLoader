@@ -52,8 +52,7 @@ internal sealed class ModLoaderConfiguration {
 	}
 
 	private static string GetAssemblyDirectory() {
-		string path = Assembly.GetExecutingAssembly().Location;
-		return Path.GetDirectoryName(path);
+		return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 	}
 
 	public bool Debug { get; internal set; }
