@@ -51,7 +51,11 @@
 			<Private>False</Private>
 		</Reference>
 	</ItemGroup>
-
+	
+	<ItemGroup>
+		<EmbeddedResource Include="Locale\*.json" />
+	</ItemGroup>
+	
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(CopyToLibraries)'=='true'">
 		<Message Text="Attempting to copy $(TargetFileName) to $(ResonitePath)Libraries" Importance="high" />
 		<Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(ResonitePath)Libraries" ContinueOnError="true" />

@@ -15,10 +15,10 @@ public sealed class ModLoaderSettings : SettingComponent<ModLoaderSettings> {
 	[SettingIndicatorProperty]
 	public readonly Sync<string> ModLoaderVersion;
 
-	[SettingProperty("Debug Mode")]
+	[SettingProperty()]
 	public readonly Sync<bool> DebugMode;
 
-	[SettingProperty("Hide ModLoader progress during startup")]
+	[SettingProperty()]
 	public readonly Sync<bool> HideVisuals;
 
 	/// <inheritdoc/>
