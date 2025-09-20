@@ -40,7 +40,7 @@ public sealed class ModLoaderSettings : SettingComponent<ModLoaderSettings> {
 		base.OnStart();
 		ModLoaderVersion.Value = ModLoader.VERSION;
 		LoadedMods.Value = ModLoader.Mods().Count().ToString(CultureInfo.InvariantCulture);
-		Logger.MsgInternal("OnStart in ModLoaderSettings");
+		Logger.DebugInternal("OnStart in ModLoaderSettings");
 		DebugMode.Value = ModLoaderConfiguration.Get().Debug;
 		HideVisuals.Value = ModLoaderConfiguration.Get().HideVisuals;
 	}
