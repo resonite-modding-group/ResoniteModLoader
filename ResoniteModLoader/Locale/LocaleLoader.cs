@@ -7,7 +7,7 @@ internal class LocaleLoader {
 		Settings.RegisterValueChanges<LocaleSettings>(LocaleChanged); //When the User changes locale in settings
 	}
 	private static void LocaleChanged(LocaleSettings setting) {
-		Logger.DebugInternal($"Locale setting changed to: {setting.ActiveLocaleCode}");
+		Logger.DebugInternal($"Locale setting changed to '{setting.ActiveLocaleCode}'");
 		DelayedLocaleUpdate();
 	}
 
@@ -16,52 +16,56 @@ internal class LocaleLoader {
 	}
 
 	internal static async void UpdateLocale() {
-		string targetLocale = Settings.GetActiveSetting<LocaleSettings>()!.ActiveLocaleCode;
-
-		if (string.IsNullOrWhiteSpace(targetLocale)) {
-			Logger.WarnInternal("Locale code empty or null"); 
-			return;
+		string? targetLocale = null;
+		try {
+			targetLocale = Settings.GetActiveSetting<LocaleSettings>()!.ActiveLocaleCode;
+			if (string.IsNullOrWhiteSpace(targetLocale)) {
+				Logger.WarnInternal("Locale code empty or null when reading from LocaleSettings"); 
+				return;
+			}
+			Logger.MsgInternal($"Updating locale to '{targetLocale}'");
+		} catch (Exception) {
+			Logger.ErrorInternal("Could not find ActiveLocaleCode from LocaleSettings");
 		}
-		Logger.DebugInternal($"Updating locale to {targetLocale}");
+
 		Logger.DebugInternal($"Before apply: {Userspace.Current.GetCoreLocale()?.Asset?.Data.MessageCount} Keys");
 		try {
-			if (targetLocale != "en") {
-				await LoadLocaleResource(targetLocale);
+			var assembly = Assembly.GetExecutingAssembly();
+			var resName = assembly.GetManifestResourceNames().FirstOrDefault(r => r.EndsWith($"{targetLocale}.json", StringComparison.Ordinal));
+			if (resName == null) {
+				Logger.WarnInternal($"Embeded locale resource for '{targetLocale}' not found. falling back to 'en'");
+				//For now, just load english if the target locale isn't found
+				resName = assembly.GetManifestResourceNames().FirstOrDefault(r => r.EndsWith($"en.json", StringComparison.Ordinal));
 			}
-			await LoadLocaleResource("en");
+
+			using var stream = assembly.GetManifestResourceStream(resName);
+			using var reader = new StreamReader(stream);
+			string localeJson = await reader.ReadToEndAsync();
+
+			Userspace.Current.GetCoreLocale()?.Asset?.Data?.LoadDataAdditively(localeJson);
+			Logger.DebugInternal($"After apply: {Userspace.Current.GetCoreLocale()?.Asset?.Data.MessageCount} Keys");
+
 			ReloadCurrentLocale();
 		} catch (Exception ex) {
 			Logger.ErrorInternal($"Failed to update locale: {ex}");
 		}
 	}
 
-	private static async Task LoadLocaleResource(string localeCode) {
-		var assembly = Assembly.GetExecutingAssembly();
-		var resName = assembly.GetManifestResourceNames().FirstOrDefault(r => r.EndsWith($"{localeCode}.json", StringComparison.Ordinal));
-		if (resName == null) {
-			Logger.WarnInternal($"Locale resource for {localeCode} not found.");
-			return;
-		}
-
-		await using var stream = assembly.GetManifestResourceStream(resName);
-		using var reader = new StreamReader(stream);
-		string localeJson = await reader.ReadToEndAsync();
-
-		Logger.DebugInternal($"Applying embedded locale: {resName}");
-		Userspace.Current.GetCoreLocale()?.Asset?.Data?.LoadDataAdditively(localeJson);
-		Logger.DebugInternal($"After apply {localeCode}: {Userspace.Current.GetCoreLocale()?.Asset?.Data.MessageCount} Keys");
-	}
-
 	internal static void ReloadCurrentLocale() {
 		var localeProvider = Userspace.UserspaceWorld.GetCoreLocale();
-
-		// force asset update for locale provider
-		if (localeProvider?.Asset?.Data != null && localeProvider.OverrideLocale.Value != "-") {
-			var lastOverrideLocale = localeProvider.OverrideLocale.Value;
-			localeProvider.OverrideLocale.Value = "-";
-			Userspace.UserspaceWorld.RunInUpdates(1, () => {
-				localeProvider.OverrideLocale.Value = lastOverrideLocale;
-			});
+		if (localeProvider?.Asset?.Data != null) {
+			var lastOverrideLocale = "";
+			if (localeProvider.OverrideLocale.Value != "-") {
+				lastOverrideLocale = localeProvider.OverrideLocale.Value;
+				localeProvider.OverrideLocale.Value = "-";
+				Userspace.UserspaceWorld.RunInUpdates(1, () => {
+					localeProvider.OverrideLocale.Value = lastOverrideLocale;
+				});
+			}
 		}
 	}
+
+
+
+
 }
