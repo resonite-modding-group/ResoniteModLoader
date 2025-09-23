@@ -557,6 +557,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 
 	private static void ShutdownHook() {
 		int count = 0;
+		Stopwatch stopwatch = Stopwatch.StartNew();
 		ModLoader.Mods()
 			.Select(mod => mod.GetConfiguration())
 			.Where(config => config != null)
@@ -571,7 +572,8 @@ public class ModConfiguration : IModConfigurationDefinition {
 				}
 				count += 1;
 			});
-		Logger.MsgInternal($"Configs saved for {count} mods.");
+		stopwatch.Stop();
+		Logger.MsgInternal($"Configs saved for {count} mods in {stopwatch.ElapsedMilliseconds}ms.");
 	}
 }
 
