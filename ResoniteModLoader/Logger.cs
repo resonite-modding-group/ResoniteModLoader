@@ -16,7 +16,7 @@ internal sealed class Logger {
 #endif
 	}
 
-	internal static void DebugFuncInternal(Func<string> messageProducer) {
+	internal static void DebugFuncInternal(Func<object> messageProducer) {
 		if (IsDebugEnabled()) {
 			LogInternal(LogType.DEBUG, messageProducer());
 		}
