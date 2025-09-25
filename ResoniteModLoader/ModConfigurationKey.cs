@@ -149,7 +149,7 @@ public class ModConfigurationKey<T> : ModConfigurationKey {
 	/// Gets or sets the value of this configuration key.
 	/// <para>
 	/// When getting, attempts to retrieve the current value assigned to this key, or <c>default(T)</c> if none is set.
-	/// When setting, assigns the provided value to this key and notifies any <see cref="OnChanged"/> subscribers.
+	/// When setting, assigns the provided value to this key and notifies any <see cref="ModConfigurationKey.OnChanged"/> subscribers.
 	/// </para>
 	/// </summary>
 	public T? Value {
