@@ -1,18 +1,15 @@
 using System.Diagnostics;
-using FrooxEngine;
+
+using ResoniteModLoader.Locale;
 
 namespace ResoniteModLoader;
 internal class ModLoaderInit {
-
-	internal static HashSet<string>? initialAssembliesString;
 
 	internal static void Initialize() {
 		Logger.DebugInternal($"Start of ModLoader Initialization");
 		Stopwatch initializationTimer = Stopwatch.StartNew();
 
 		try {
-			HashSet<Assembly> initialAssemblies = [.. AppDomain.CurrentDomain.GetAssemblies()];
-			initialAssembliesString = [.. initialAssemblies.Select(a => a.FullName)];
 			LoadProgressIndicator.SetSubphase("Loading Libraries");
 			AssemblyFile[] loadedAssemblies = AssemblyLoader.LoadAssembliesFromDir("rml_libs");
 			// note that harmony may not be loaded until this point, so this class cannot directly import HarmonyLib.
@@ -23,7 +20,7 @@ internal class ModLoaderInit {
 			}
 			LoadProgressIndicator.SetSubphase("Initializing");
 			DebugInfo.Log();
-			HarmonyWorker.LoadModsAndHideModAssemblies(initialAssemblies);
+			HarmonyWorker.Init();
 			LoadProgressIndicator.SetSubphase("Loaded");
 		} catch (Exception e) {
 			// it's important that this doesn't send exceptions back to Resonite
@@ -32,5 +29,4 @@ internal class ModLoaderInit {
 		initializationTimer.Stop();
 		Logger.MsgInternal($"Initialization completed in {initializationTimer.ElapsedMilliseconds}ms");
 	}
-
 }
