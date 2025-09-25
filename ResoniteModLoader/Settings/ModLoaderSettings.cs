@@ -12,14 +12,19 @@ public sealed class ModLoaderSettings : SettingComponent<ModLoaderSettings> {
 
 	[SettingIndicatorProperty]
 	public readonly Sync<string> LoadedMods;
+
 	[SettingIndicatorProperty]
 	public readonly Sync<string> ModLoaderVersion;
 
-	[SettingProperty()]
+	[SettingProperty]
 	public readonly Sync<bool> DebugMode;
 
-	[SettingProperty()]
+	[SettingProperty]
 	public readonly Sync<bool> HideVisuals;
+
+	//TODO make clickable link in UI
+	[SettingIndicatorProperty]
+	public readonly Sync<string> Link;
 
 	/// <inheritdoc/>
 	public override void ResetToDefault() {
@@ -40,8 +45,8 @@ public sealed class ModLoaderSettings : SettingComponent<ModLoaderSettings> {
 		base.OnStart();
 		ModLoaderVersion.Value = ModLoader.VERSION;
 		LoadedMods.Value = ModLoader.Mods().Count().ToString(CultureInfo.InvariantCulture);
-		Logger.DebugInternal("OnStart in ModLoaderSettings");
 		DebugMode.Value = ModLoaderConfiguration.Get().Debug;
 		HideVisuals.Value = ModLoaderConfiguration.Get().HideVisuals;
+		Link.Value = "https://github.com/resonite-modding-group/ResoniteModLoader";
 	}
 }
