@@ -2,12 +2,11 @@ using FrooxEngine;
 
 namespace ResoniteModLoader.Locale;
 internal class LocaleLoader {
-	internal static async Task InitLocales() {
+	internal static void InitLocales() {
 		Engine.Current.LocalesUpdated += DelayedLocaleUpdate; //When Vanilla locales are updated on the filesystem
 		Settings.RegisterValueChanges<LocaleSettings>(LocaleChanged); //When the User changes locale in settings
 	}
 	private static void LocaleChanged(LocaleSettings setting) {
-		Logger.DebugInternal($"Locale setting changed to '{setting.ActiveLocaleCode}'");
 		DelayedLocaleUpdate();
 	}
 
@@ -20,7 +19,7 @@ internal class LocaleLoader {
 		try {
 			targetLocale = Settings.GetActiveSetting<LocaleSettings>()!.ActiveLocaleCode;
 			if (string.IsNullOrWhiteSpace(targetLocale)) {
-				Logger.WarnInternal("Locale code empty or null when reading from LocaleSettings"); 
+				Logger.WarnInternal("Locale code empty or null when reading from LocaleSettings");
 				return;
 			}
 			Logger.MsgInternal($"Updating locale to '{targetLocale}'");

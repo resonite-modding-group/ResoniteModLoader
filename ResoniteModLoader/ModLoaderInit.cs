@@ -20,6 +20,7 @@ internal class ModLoaderInit {
 			}
 			LoadProgressIndicator.SetSubphase("Initializing");
 			DebugInfo.Log();
+			LocaleLoader.InitLocales();
 			HarmonyWorker.Init();
 			LoadProgressIndicator.SetSubphase("Loaded");
 		} catch (Exception e) {

@@ -10,7 +10,6 @@ namespace ResoniteModLoader;
 internal sealed class HarmonyWorker {
 	internal static void Init() {
 		Harmony harmony = new("com.resonitemodloader.ResoniteModLoader");
-		LocaleLoader.InitLocales();
 		ModLoader.LoadMods();
 		ModConfiguration.RegisterShutdownHook(harmony);
 	}
