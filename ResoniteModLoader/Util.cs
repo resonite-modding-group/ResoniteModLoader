@@ -76,7 +76,11 @@ internal static class Util {
 		try {
 			return assembly.GetTypes().Where(type => CheckType(type, predicate));
 		} catch (ReflectionTypeLoadException e) {
+			Logger.ErrorInternal(e);
 			return e.Types.Where(type => CheckType(type, predicate));
+		} catch (Exception e) {
+			Logger.ErrorInternal($"Unhandled exception when processing loadable types: {e}");
+			return [];
 		}
 	}
 
