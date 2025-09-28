@@ -11,6 +11,7 @@
 		"Settings.ModLoaderSettings.HideVisuals.Description": "Hides Modloader progress indicator when launching",
 		"Settings.ModLoaderSettings.LoadedMods": "Loaded Mods",
 		"Settings.ModLoaderSettings.ModLoaderVersion": "Version",
+		"Settings.ModLoaderSettings.ProjectLink": "Github Repo",
 
 		"Settings.ModLoaderDebugSettings": "Debugging Settings",
 		"Settings.ModLoaderDebugSettings.RefreshLocale": "Refresh Locale",

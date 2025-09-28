@@ -11,6 +11,7 @@
         "Settings.ModLoaderSettings.HideVisuals.Description": "Kaŝas la progresa indikilo de la modŝargilo dum lanĉo",
         "Settings.ModLoaderSettings.LoadedMods": "Ŝargitaj Modoj",
         "Settings.ModLoaderSettings.ModLoaderVersion": "Versio",
+        "Settings.ModLoaderSettings.ProjectLink": "Github-Deponejo",
 
         "Settings.ModLoaderDebugSettings": "Sencimigaj Agordoj",
         "Settings.ModLoaderDebugSettings.RefreshLocale": "Refreŝigi Lokalon",
