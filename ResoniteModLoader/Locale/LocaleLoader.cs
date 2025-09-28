@@ -31,9 +31,9 @@ internal class LocaleLoader {
 		try {
 			var assembly = Assembly.GetExecutingAssembly();
 			var targetRes = assembly.GetManifestResourceNames()
-				.FirstOrDefault(r => r.EndsWith($"{targetLocale}.json", StringComparison.Ordinal));
+				.FirstOrDefault(r => r.EndsWith($"{targetLocale}.json", StringComparison.OrdinalIgnoreCase));
 			//Load target locale if not en
-			if (!targetLocale.Equals("en")) {
+			if (!targetLocale.Equals("en", StringComparison.OrdinalIgnoreCase)) {
 				if (targetRes is not null) {
 					using var s = assembly.GetManifestResourceStream(targetRes);
 					using var r = new StreamReader(s);
@@ -46,7 +46,7 @@ internal class LocaleLoader {
 
 			//Always load fallback locale
 			var fallbackRes = assembly.GetManifestResourceNames()
-				.FirstOrDefault(r => r.EndsWith("en.json", StringComparison.Ordinal));
+				.FirstOrDefault(r => r.EndsWith("en.json", StringComparison.OrdinalIgnoreCase));
 
 			if (fallbackRes is not null) {
 				using var s = assembly.GetManifestResourceStream(fallbackRes);
