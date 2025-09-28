@@ -1,24 +1,24 @@
 {
-    "localeCode": "eo",
-    "authors": ["Delta"],
-    "messages": {
-        "Settings.Category.ResoniteModLoader": "ResoniteModLoader",
-        "Settings.ModLoaderSettings": "Agordoj de ResoniteModLoader",
+	"localeCode": "eo",
+	"authors": ["Delta"],
+	"messages": {
+		"Settings.Category.ResoniteModLoader": "ResoniteModLoader",
+		"Settings.ModLoaderSettings": "Agordoj de ResoniteModLoader",
 
-        "Settings.ModLoaderSettings.DebugMode": "Ebligi Sencimigon",
-        "Settings.ModLoaderSettings.DebugMode.Description": "Ebligu Sencimigan Protokolon",
-        "Settings.ModLoaderSettings.HideVisuals": "Kaŝi Vidaĵojn",
-        "Settings.ModLoaderSettings.HideVisuals.Description": "Kaŝas la progresa indikilo de la modŝargilo dum lanĉo",
-        "Settings.ModLoaderSettings.LoadedMods": "Ŝargitaj Modoj",
-        "Settings.ModLoaderSettings.ModLoaderVersion": "Versio",
-        "Settings.ModLoaderSettings.ProjectLink": "Github-Deponejo",
+		"Settings.ModLoaderSettings.DebugMode": "Ebligi Sencimigon",
+		"Settings.ModLoaderSettings.DebugMode.Description": "Ebligu Sencimigan Protokolon",
+		"Settings.ModLoaderSettings.HideVisuals": "Kaŝi Vidaĵojn",
+		"Settings.ModLoaderSettings.HideVisuals.Description": "Kaŝas la progresa indikilo de la modŝargilo dum lanĉo",
+		"Settings.ModLoaderSettings.LoadedMods": "Ŝargitaj Modoj",
+		"Settings.ModLoaderSettings.ModLoaderVersion": "Versio",
+		"Settings.ModLoaderSettings.ProjectLink": "Github-Deponejo",
 
-        "Settings.ModLoaderDebugSettings": "Sencimigaj Agordoj",
-        "Settings.ModLoaderDebugSettings.RefreshLocale": "Refreŝigi Lokalon",
-        "Settings.ModLoaderDebugSettings.LocaleCount": "Nombri Lokajn Ŝlosilojn",
-        "Settings.ModLoaderDebugSettings.LocaleKeyCount": "Nombri Lokajn Ŝlosilojn",
-        "Settings.ModLoaderDebugSettings.ForceAssetUpdate": "Devigi Asetan Ĝisdatigon",
+		"Settings.ModLoaderDebugSettings": "Sencimigaj Agordoj",
+		"Settings.ModLoaderDebugSettings.RefreshLocale": "Refreŝigi Lokalon",
+		"Settings.ModLoaderDebugSettings.LocaleCount": "Nombri Lokajn Ŝlosilojn",
+		"Settings.ModLoaderDebugSettings.LocaleKeyCount": "Nombri Lokajn Ŝlosilojn",
+		"Settings.ModLoaderDebugSettings.ForceAssetUpdate": "Devigi Asetan Ĝisdatigon",
 
-        "Dummy": "Dummy"
-    }
+		"Dummy": "Dummy"
+	}
 }

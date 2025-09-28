@@ -1,6 +1,6 @@
 {
-    "localeCode": "ja",
-    "authors": ["kazu"],
+	"localeCode": "ja",
+	"authors": ["kazu"],
 	"messages": {
 		"Settings.Category.ResoniteModLoader": "ResoniteModLoader",
 		"Settings.ModLoaderSettings": "ResoniteModLoader 設定",
@@ -17,8 +17,6 @@
 		"Settings.ModLoaderDebugSettings.LocaleCount": "ロケールキーを数える",
 		"Settings.ModLoaderDebugSettings.LocaleKeyCount": "ロケールの個数",
 		"Settings.ModLoaderDebugSettings.ForceAssetUpdate": "アセットを強制的に更新",
-
-		"Settings.ModSettings": "Mod Settings",
 
 		"Dummy": "Dummy"
 	}

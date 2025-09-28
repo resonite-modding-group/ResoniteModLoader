@@ -1,6 +1,6 @@
 {
-    "localeCode": "en",
-    "authors": ["Delta"],
+	"localeCode": "en",
+	"authors": ["Delta"],
 	"messages": {
 		"Settings.Category.ResoniteModLoader": "ResoniteModLoader",
 		"Settings.ModLoaderSettings": "ResoniteModLoader Settings",
