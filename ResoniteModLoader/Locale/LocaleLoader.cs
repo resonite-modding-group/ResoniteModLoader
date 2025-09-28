@@ -30,18 +30,33 @@ internal class LocaleLoader {
 		Logger.DebugInternal($"Before apply: {Userspace.Current.GetCoreLocale()?.Asset?.Data.MessageCount} Keys");
 		try {
 			var assembly = Assembly.GetExecutingAssembly();
-			var resName = assembly.GetManifestResourceNames().FirstOrDefault(r => r.EndsWith($"{targetLocale}.json", StringComparison.Ordinal));
-			if (resName == null) {
-				Logger.WarnInternal($"Embeded locale resource for '{targetLocale}' not found. falling back to 'en'");
-				//For now, just load english if the target locale isn't found
-				resName = assembly.GetManifestResourceNames().FirstOrDefault(r => r.EndsWith($"en.json", StringComparison.Ordinal));
+			var targetRes = assembly.GetManifestResourceNames()
+				.FirstOrDefault(r => r.EndsWith($"{targetLocale}.json", StringComparison.Ordinal));
+			//Load target locale if not en
+			if (!targetLocale.Equals("en")) {
+				if (targetRes is not null) {
+					using var s = assembly.GetManifestResourceStream(targetRes);
+					using var r = new StreamReader(s);
+					string localeJson = await r.ReadToEndAsync();
+					Userspace.Current.GetCoreLocale()?.Asset?.Data?.LoadDataAdditively(localeJson);
+				} else {
+					Logger.WarnInternal($"Embedded locale resource for '{targetLocale}' not found. Using fallback.");
+				}
 			}
 
-			using var stream = assembly.GetManifestResourceStream(resName);
-			using var reader = new StreamReader(stream);
-			string localeJson = await reader.ReadToEndAsync();
+			//Always load fallback locale
+			var fallbackRes = assembly.GetManifestResourceNames()
+				.FirstOrDefault(r => r.EndsWith("en.json", StringComparison.Ordinal));
 
-			Userspace.Current.GetCoreLocale()?.Asset?.Data?.LoadDataAdditively(localeJson);
+			if (fallbackRes is not null) {
+				using var s = assembly.GetManifestResourceStream(fallbackRes);
+				using var r = new StreamReader(s);
+				string fallbackLocale = await r.ReadToEndAsync();
+				Userspace.Current.GetCoreLocale()?.Asset?.Data?.LoadDataAdditively(fallbackLocale);
+			} else {
+				Logger.WarnInternal("Embedded locale resource for fallback 'en' not found.");
+			}
+
 			Logger.DebugInternal($"After apply: {Userspace.Current.GetCoreLocale()?.Asset?.Data.MessageCount} Keys");
 
 			ReloadCurrentLocale();
