@@ -24,7 +24,7 @@ public sealed class ModLoaderSettings : SettingComponent<ModLoaderSettings> {
 
 	//TODO make clickable link in UI
 	[SettingIndicatorProperty]
-	public readonly Sync<string> Link;
+	public readonly Sync<string> ProjectLink;
 
 	/// <inheritdoc/>
 	public override void ResetToDefault() {
@@ -47,6 +47,6 @@ public sealed class ModLoaderSettings : SettingComponent<ModLoaderSettings> {
 		LoadedMods.Value = ModLoader.Mods().Count().ToString(CultureInfo.InvariantCulture);
 		DebugMode.Value = ModLoaderConfiguration.Get().Debug;
 		HideVisuals.Value = ModLoaderConfiguration.Get().HideVisuals;
-		Link.Value = "https://github.com/resonite-modding-group/ResoniteModLoader";
+		ProjectLink.Value = "https://github.com/resonite-modding-group/ResoniteModLoader";
 	}
 }
