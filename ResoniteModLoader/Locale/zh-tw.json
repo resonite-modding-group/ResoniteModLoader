@@ -27,7 +27,7 @@
 		"Settings.ModSettings.ShowInternal": "顯示內部用設定",
 		"Settings.ModSettings.ShowInternal.Description": "內部用設定通常不是設計給使用者調整的選項，調整可能會導致非預期的效果。",
 		"Settings.ModSettings.ShowAll": "顯示所有 Mod",
-		"Settings.ModSettings.ShowAll.Description": "在列比中顯示所有 Mod，包含沒有提供設定在內的 Mod。",
+		"Settings.ModSettings.ShowAll.Description": "在列表中顯示所有 Mod，包含沒有提供設定在內的 Mod。",
 
 		"Dummy": "Dummy"
 	}
