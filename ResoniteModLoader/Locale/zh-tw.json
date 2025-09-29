@@ -2,7 +2,7 @@
 	"localeCode": "zh-tw",
 	"authors": ["Meow Wei 魏喵"],
 	"messages": {
-		"Settings.Category.ResoniteModLoader": "ResoniteModLoader",
+		"Settings.Category.ResoniteModLoader": "RML",
 		"Settings.ModLoaderSettings": "ResoniteModLoader 設定",
 
 		"Settings.ModLoaderSettings.DebugMode": "啟用除錯模式",
