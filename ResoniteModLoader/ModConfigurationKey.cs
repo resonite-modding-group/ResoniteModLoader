@@ -32,7 +32,7 @@ public abstract class ModConfigurationKey {
 	public delegate void OnChangedHandler(object? newValue);
 
 	/// <summary>
-	/// Called if this <see cref="ModConfigurationKey"/> changed. 
+	/// Called if this <see cref="ModConfigurationKey"/> changed.
 	/// </summary>
 	public event OnChangedHandler? OnChanged;
 
@@ -147,15 +147,23 @@ public class ModConfigurationKey<T> : ModConfigurationKey {
 
 	/// <summary>
 	/// Gets or sets the value of this configuration key.
-	/// <para>
-	/// When getting, attempts to retrieve the current value assigned to this key, or <c>default(T)</c> if none is set.
-	/// When setting, assigns the provided value to this key and notifies any <see cref="ModConfigurationKey.OnChanged"/> subscribers.
-	/// </para>
+	/// <value>
+	/// <para><b>Get:</b> Attempts to retrieve the current value assigned to this key.
+	/// If no value is set, uses <see cref="TryComputeDefaultTyped"/> if that fails, returns <c>default(T?)</c>.</para>
+	/// <para><b>Set:</b> Assigns the provided value to this key and notifies any <see cref="ModConfigurationKey.OnChanged"/> subscribers.</para>
+	/// </value>
 	/// </summary>
 	public T? Value {
 		get {
-			TryGetValue(out var value);
-			return (T?)value;
+			if (TryGetValue(out object? value)) {
+				return (T?)value;
+			}
+
+			if (TryComputeDefaultTyped(out T? defaultValue)) {
+				return defaultValue;
+			}
+
+			return default;
 		}
 		set {
 			Set(value);
