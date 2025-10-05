@@ -2,14 +2,32 @@
 	"localeCode": "zh-tw",
 	"authors": ["Meow Wei 魏喵"],
 	"messages": {
-		"Settings.Category.ResoniteModLoader": "ResoniteModLoader",
+		"Settings.Category.ResoniteModLoader": "RML",
 		"Settings.ModLoaderSettings": "ResoniteModLoader 設定",
 
-		"Settings.ModLoaderSettings.DebugMode.Description": "在 modloader 開啟除錯模式，也能經由設定檔變更設定",
-		"Settings.ModLoaderSettings.LoadedMods": "已載入的 Mod",
+		"Settings.ModLoaderSettings.DebugMode": "啟用除錯模式",
+		"Settings.ModLoaderSettings.DebugMode.Description": "本選項會啟用除錯記錄檔。",
+		"Settings.ModLoaderSettings.HideVisuals": "隱藏 Mod 載入顯示",
+		"Settings.ModLoaderSettings.HideVisuals.Description": "本選項啟動時，會隱藏 Mod 載入狀態的顯示。",
+		"Settings.ModLoaderSettings.LoadedMods": "已載入的 Mod 數量",
 		"Settings.ModLoaderSettings.ModLoaderVersion": "版本",
+		"Settings.ModLoaderSettings.ProjectLink": "GitHub 專案網址",
+
+		"Settings.ModLoaderDebugSettings": "除錯設定",
+		"Settings.ModLoaderDebugSettings.RefreshLocale": "更新語系檔",
+		"Settings.ModLoaderDebugSettings.LocaleCount": "統計語系鍵",
+		"Settings.ModLoaderDebugSettings.LocaleKeyCount": "語系鍵數量",
+		"Settings.ModLoaderDebugSettings.ForceAssetUpdate": "強制更新資產",
 
 		"Settings.ModSettings": "Mod 設定",
+		"Settings.ModSettings.ModList": "變更 Mod 設定",
+		"Settings.ModSettings.ModList.Breadcrumb": "Mod 設定",
+		"Settings.ModSettings.NoMods": "未載入任何 Mod",
+		"Settings.ModSettings.NoConfigs": "目前選擇的 Mod 沒有提供任何設定。",
+		"Settings.ModSettings.ShowInternal": "顯示內部用設定",
+		"Settings.ModSettings.ShowInternal.Description": "內部用設定通常不是設計給使用者調整的選項，調整可能會導致非預期的效果。",
+		"Settings.ModSettings.ShowAll": "顯示所有 Mod",
+		"Settings.ModSettings.ShowAll.Description": "在列表中顯示所有 Mod，包含沒有提供設定在內的 Mod。",
 
 		"Dummy": "Dummy"
 	}
