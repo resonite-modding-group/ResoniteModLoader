@@ -555,7 +555,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 		}
 	}
 
-	private static void ShutdownHook() {
+	internal static void ShutdownHook() {
 		int count = 0;
 		Stopwatch stopwatch = Stopwatch.StartNew();
 		ModLoader.Mods()
