@@ -20,7 +20,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Lib.Harmony" Version="2.4.0" />
+		<PackageReference Include="Lib.Harmony" Version="2.4.2" />
 		<Reference Include="FrooxEngine">
 			<HintPath>$(ResonitePath)FrooxEngine.dll</HintPath>
 			<Private>False</Private>
