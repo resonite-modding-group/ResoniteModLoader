@@ -26,6 +26,15 @@ public sealed class ModLoaderSettings : SettingComponent<ModLoaderSettings> {
 	[SettingIndicatorProperty]
 	public readonly Sync<string> ProjectLink;
 
+	[SettingProperty("Open Github Repo", "")]
+	[SyncMethod(typeof(Action), [])]
+	public void OpenGithubRepo() {
+		Userspace.UserspaceWorld.RunSynchronously(delegate {
+			Slot slot = Userspace.UserspaceWorld.AddSlot("Hyperlink", false);
+			slot.PositionInFrontOfUser(new float3?(float3.Backward));
+			slot.AttachComponent<HyperlinkOpenDialog>().Setup(new(ProjectLink.Value), "");
+		});
+	}
 	/// <inheritdoc/>
 	public override void ResetToDefault() {
 		DebugMode.Value = false;
