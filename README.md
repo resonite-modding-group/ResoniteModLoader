@@ -1,44 +1,39 @@
-# ResoniteModLoader
+<p align="center">
+	<img width="256" height="256" alt="RML_Logomark_256" src="https://github.com/user-attachments/assets/abfadf82-1f7a-45fb-a1f7-9128db06896d" />
+</p>
+<h1 align="center">ResoniteModLoader</h1>
 
-A mod loader for [Resonite](https://resonite.com/). Consider joining our community on [Discord][Resonite Modding Discord] for support, updates, and more.
+A mod loader for [Resonite](https://resonite.com/) utilizing the built-in plugin system. Consider joining our community on [Discord][Resonite Modding Discord] for support, updates, and more.
 
 ## Installation
 
 1. Download [ResoniteModLoader.dll](https://github.com/resonite-modding-group/ResoniteModLoader/releases/latest/download/ResoniteModLoader.dll) to Resonite's `Libraries` folder (`C:\Program Files (x86)\Steam\steamapps\common\Resonite\Libraries`). You may need to create this folder if it's missing. 
 2. Place [0Harmony.dll](https://github.com/resonite-modding-group/ResoniteModLoader/releases/latest/download/0Harmony.dll) into a `rml_libs` folder under your Resonite install directory (`C:\Program Files (x86)\Steam\steamapps\common\Resonite\rml_libs`). You will need to create this folder.
-3. Add the following to Resonite's [launch options](https://github.com/resonite-modding-group/ResoniteModLoader/wiki/Launch-Options): `-LoadAssembly Libraries/ResoniteModLoader.dll`. If you put `ResoniteModLoader.dll` somewhere else you will need to change the path. 
-4. Optionally add mod DLL files to a `rml_mods` folder under your Resonite install directory (`C:\Program Files (x86)\Steam\steamapps\common\Resonite\rml_mods`). You can create the folder if it's missing, or launch Resonite once with ResoniteModLoader installed and it will be created automatically.
+3. Add the following to Resonite's [launch options](https://github.com/resonite-modding-group/ResoniteModLoader/wiki/Launch-Options): `-LoadAssembly Libraries/ResoniteModLoader.dll`. If you put `ResoniteModLoader.dll` somewhere else you will need to change the path.
+4. Optionally, add mod DLL files to a `rml_mods` folder under your Resonite install directory (`C:\Program Files (x86)\Steam\steamapps\common\Resonite\rml_mods`). You can create this folder yourself or launch Resonite once with ResoniteModLoader installed and it will be created automatically.
 5. Start the game. If you want to verify that ResoniteModLoader is working you can check the Resonite logs. (`C:\Program Files (x86)\Steam\steamapps\common\Resonite\Logs`). The modloader adds some very obvious logs on startup, and if they're missing something has gone wrong. Here is an [example log file](https://github.com/resonite-modding-group/ResoniteModLoader/wiki/Example-Log) where everything worked correctly.
 
 If ResoniteModLoader isn't working after following these steps, take a look at our [troubleshooting page](doc/troubleshooting.md).
 
 ### Example Directory Structure
 
-Your Resonite directory should now look similar to the following. Files not related to modding are not shown.
+Your Resonite directory should now include the following folder structure (rml_config and rml_mods will be created automatically on first launch). Files not related to modding are not shown.
 
 ```
 <Resonite Install Directory>
 │   Resonite.exe
-│
-├───Logs
+├───/Libraries
+|       ResoniteModLoader.dll
+├───/Logs
 │       <Log files will generate here>
-│
-├───rml_mods
-│       <Mods go here>
-│
-├───rml_libs
+├───/rml_config
+│       <Mod configs are created here>
+├───/rml_libs
 │       0Harmony.dll
-│       <More mod libraries go here>
-│
-├───rml_config
-│       <Mod config files here>
-│
-└───Libraries
-        ResoniteModLoader.dll
+│       <Addition libraries for mods here>
+└───/rml_mods
+        <Add mods here>
 ```
-
-Note that additional libraries (rml_libs) can also be in the root of the Resonite install directory if you prefer, but the loading of those happens outside of RML itself.
-
 ## Finding Mods
 
 For an easy way to find and manage mods, check out [Resolute](https://github.com/Gawdl3y/Resolute). It simplifies the installation and updating for verified mods from the [mod manifest](https://github.com/resonite-modding-group/resonite-mod-manifest).
