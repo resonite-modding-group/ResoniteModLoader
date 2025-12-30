@@ -28,7 +28,7 @@
 		"Settings.ModSettings.ShowInternal": "显示内部可用配置",
 		"Settings.ModSettings.ShowInternal.Description": "内部配置通常不打算由用户直接更改。可能会导致意外行为。",
 		"Settings.ModSettings.ShowAll": "展示所有模组",
-		"Settings.ModSettings.ShowAll.Description": "显示模组的所有条目，包括没有设置的。",
+		"Settings.ModSettings.ShowAll.Description": "显示模组的所有内容，包括没有设置的。",
 
 		"Dummy": "Dummy"
 	}
