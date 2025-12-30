@@ -1,0 +1,35 @@
+{
+	"localeCode": "zh-cn",
+	"authors": ["modimobeikete"],
+	"messages": {
+		"Settings.Category.ResoniteModLoader": "Resonite模组加载器",
+		"Settings.ModLoaderSettings": "Resonite模组加载器设置",
+
+		"Settings.ModLoaderSettings.DebugMode": "开启调试模式",
+		"Settings.ModLoaderSettings.DebugMode.Description": "开启调试日志",
+		"Settings.ModLoaderSettings.HideVisuals": "Hide Visuals",
+		"Settings.ModLoaderSettings.HideVisuals.Description": "启动时隐藏模组加载器进度条",
+		"Settings.ModLoaderSettings.LoadedMods": "已加载的模组",
+		"Settings.ModLoaderSettings.ModLoaderVersion": "版本",
+		"Settings.ModLoaderSettings.ProjectLink": "Github仓库",
+
+		"Settings.ModLoaderDebugSettings": "调试设置",
+		"Settings.ModLoaderDebugSettings.RefreshLocale": "刷新语言",
+		"Settings.ModLoaderDebugSettings.LocaleCount": "计算语言文本",
+		"Settings.ModLoaderDebugSettings.LocaleKeyCount": "语言文本数",
+		"Settings.ModLoaderDebugSettings.ForceAssetUpdate": "资产强制更新",
+
+		"Settings.ModSettings": "模组设置",
+		"Settings.ModSettings.ModList": "编辑模组设置",
+		"Settings.ModSettings.ModList.Breadcrumb": "模组设置",
+		"Settings.ModSettings.NoMods": "没有加载的模组",
+		"Settings.ModSettings.NoModsWithConfig": "模组内没有可显示的配置",
+		"Settings.ModSettings.NoConfigs": "该模组没有可用的设置",
+		"Settings.ModSettings.ShowInternal": "显示内部可用配置",
+		"Settings.ModSettings.ShowInternal.Description": "内部配置通常不打算由用户直接更改。可能会导致意外行为。",
+		"Settings.ModSettings.ShowAll": "展示所有模组",
+		"Settings.ModSettings.ShowAll.Description": "显示模组的所有条目，包括没有设置的。",
+
+		"Dummy": "Dummy"
+	}
+}
