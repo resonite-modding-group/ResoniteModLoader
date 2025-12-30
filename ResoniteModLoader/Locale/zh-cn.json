@@ -7,7 +7,7 @@
 
 		"Settings.ModLoaderSettings.DebugMode": "开启调试模式",
 		"Settings.ModLoaderSettings.DebugMode.Description": "开启调试日志",
-		"Settings.ModLoaderSettings.HideVisuals": "Hide Visuals",
+		"Settings.ModLoaderSettings.HideVisuals": "隐藏模组加载器进度条",
 		"Settings.ModLoaderSettings.HideVisuals.Description": "启动时隐藏模组加载器进度条",
 		"Settings.ModLoaderSettings.LoadedMods": "已加载的模组",
 		"Settings.ModLoaderSettings.ModLoaderVersion": "版本",
