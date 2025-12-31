@@ -1,6 +1,10 @@
+using System.Globalization;
 using FrooxEngine;
+using LocaleResource = Elements.Assets.LocaleResource;
+using Stream = System.IO.Stream;
 
 namespace ResoniteModLoader.Locale;
+
 internal class LocaleLoader {
 	internal static void InitLocales() {
 		Engine.Current.LocalesUpdated += DelayedLocaleUpdate; //When Vanilla locales are updated on the filesystem
@@ -15,54 +19,103 @@ internal class LocaleLoader {
 	}
 
 	internal static async void UpdateLocale() {
-		string? targetLocale = null;
+		var res = Userspace.Current.GetCoreLocale()?.Asset?.Data;
+		if (res == null) {
+			Logger.WarnInternal("Userspace core locale asset is not loaded.");
+			return;
+		}
+
+		CultureInfo? targetLocale = null;
 		try {
-			targetLocale = Settings.GetActiveSetting<LocaleSettings>()!.ActiveLocaleCode;
-			if (string.IsNullOrWhiteSpace(targetLocale)) {
+			var targetLocaleString = Settings.GetActiveSetting<LocaleSettings>()!.ActiveLocaleCode;
+			if (string.IsNullOrWhiteSpace(targetLocaleString)) {
 				Logger.WarnInternal("Locale code empty or null when reading from LocaleSettings");
 				return;
 			}
-			Logger.MsgInternal($"Updating locale to '{targetLocale}'");
-		} catch (Exception) {
+			targetLocale = new CultureInfo(targetLocaleString);
+			Logger.MsgInternal($"Updating locale to '{targetLocale.Name}'");
+		}
+		catch (Exception) {
 			Logger.ErrorInternal("Could not find ActiveLocaleCode from LocaleSettings");
 		}
 
+		// Has the locale been modified?
+		bool success = false;
+
 		Logger.DebugInternal($"Before apply: {Userspace.Current.GetCoreLocale()?.Asset?.Data.MessageCount} Keys");
 		try {
-			var assembly = Assembly.GetExecutingAssembly();
-			var targetRes = assembly.GetManifestResourceNames()
-				.FirstOrDefault(r => r.EndsWith($"{targetLocale}.json", StringComparison.OrdinalIgnoreCase));
-			//Load target locale if not en
-			if (!targetLocale.Equals("en", StringComparison.OrdinalIgnoreCase)) {
-				if (targetRes is not null) {
-					using var s = assembly.GetManifestResourceStream(targetRes);
-					using var r = new StreamReader(s);
-					string localeJson = await r.ReadToEndAsync();
-					Userspace.Current.GetCoreLocale()?.Asset?.Data?.LoadDataAdditively(localeJson);
-				} else {
-					Logger.WarnInternal($"Embedded locale resource for '{targetLocale}' not found. Using fallback.");
-				}
+			await LoadLocaleData(res, targetLocale, Assembly.GetExecutingAssembly(), typeof(LocaleLoader).Namespace!, "ResoniteModLoader");
+			success = true;
+		}
+		catch (Exception ex) {
+			Logger.ErrorInternal($"Failed to update locale for ResoniteModLoader: {ex}");
+		}
+
+		foreach (var mod in ModLoader.Mods()) {
+			var modNs = mod.GetType().Namespace;
+			if (!mod.FinishedLoading || modNs == null) continue;
+			try {
+				await LoadLocaleData(res, targetLocale, mod.ModAssembly!.Assembly, modNs + ".Locale", "mod " + mod.Name);
+				success = true;
 			}
-
-			//Always load fallback locale
-			var fallbackRes = assembly.GetManifestResourceNames()
-				.FirstOrDefault(r => r.EndsWith("en.json", StringComparison.OrdinalIgnoreCase));
-
-			if (fallbackRes is not null) {
-				using var s = assembly.GetManifestResourceStream(fallbackRes);
-				using var r = new StreamReader(s);
-				string fallbackLocale = await r.ReadToEndAsync();
-				Userspace.Current.GetCoreLocale()?.Asset?.Data?.LoadDataAdditively(fallbackLocale);
-			} else {
-				Logger.WarnInternal("Embedded locale resource for fallback 'en' not found.");
+			catch (Exception ex) {
+				Logger.ErrorInternal($"Failed to update locale for mod {mod.Name}: {ex}");
 			}
+		}
 
-			Logger.DebugInternal($"After apply: {Userspace.Current.GetCoreLocale()?.Asset?.Data.MessageCount} Keys");
+		if (!success)
+			return;
 
+		Logger.DebugInternal($"After apply: {Userspace.Current.GetCoreLocale()?.Asset?.Data.MessageCount} Keys");
+
+		try {
 			ReloadCurrentLocale();
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			Logger.ErrorInternal($"Failed to update locale: {ex}");
 		}
+	}
+
+	private static async Task LoadLocaleData(LocaleResource res, CultureInfo? locale, Assembly assembly, string originNamespace, string originName) {
+		if (locale != null && locale.Name != "en-US") {
+			// Try getting locale data for "LANG-COUNTRY" and fall back to "LANG"
+			// Example "en-GB": Try "en-gb.json" and fall back to "en.json"
+			if (!await LoadLocaleDataResource(res, assembly,
+					$"{originNamespace}.{locale.Name.ToLowerInvariant()}.json",
+					$"{originNamespace}.{locale.TwoLetterISOLanguageName}.json")
+			) {
+				Logger.WarnInternal($"Embedded locale resource for '{locale.Name}' not found for {originName}. Using fallback.");
+			}
+		}
+
+		//Always load fallback locale
+		if (!await LoadLocaleDataResource(res, assembly, $"{originNamespace}.en.json")) {
+			Logger.WarnInternal($"Embedded locale resource for fallback 'en' not found for {originName}.");
+		}
+	}
+
+	/// <summary>
+	///	Loads a locale file from the given <paramref name="assembly"/>, trying
+	/// the different resource names in order, using the first one that exists.
+	/// </summary>
+	/// <param name="res">Locale to apply the locale data to.</param>
+	/// <param name="assembly">Assembly to load the resource from.</param>
+	/// <param name="candidates">Resource names to try.</param>
+	/// <returns>Whether the resource was found and loaded.</returns>
+	private static async Task<bool> LoadLocaleDataResource(LocaleResource res, Assembly assembly, params string[] candidates) {
+		Stream? foundStream = null;
+		foreach (var c in candidates) {
+			foundStream = assembly.GetManifestResourceStream(c);
+			if (foundStream != null) break;
+		}
+		if (foundStream == null) {
+			return false;
+		}
+		using var stream = foundStream;
+		using var reader = new StreamReader(stream);
+		string localeJson = await reader.ReadToEndAsync();
+		res.LoadDataAdditively(localeJson);
+		return true;
 	}
 
 	internal static void ReloadCurrentLocale() {
@@ -78,8 +131,5 @@ internal class LocaleLoader {
 			}
 		}
 	}
-
-
-
 
 }
