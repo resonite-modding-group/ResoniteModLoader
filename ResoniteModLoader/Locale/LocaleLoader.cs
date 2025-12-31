@@ -77,7 +77,8 @@ internal class LocaleLoader {
 	}
 
 	private static async Task LoadLocaleData(LocaleResource res, CultureInfo? locale, Assembly assembly, string originNamespace, string originName) {
-		if (locale != null && locale.Name != "en-US") {
+		// "en-US" is set just after the game loaded, after which it is set to the user preference, like "en".
+		if (locale != null && locale.Name != "en-US" && locale.Name != "en") {
 			// Try getting locale data for "LANG-COUNTRY" and fall back to "LANG"
 			// Example "en-GB": Try "en-gb.json" and fall back to "en.json"
 			if (!await LoadLocaleDataResource(res, assembly,
