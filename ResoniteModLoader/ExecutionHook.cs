@@ -4,14 +4,17 @@ using FrooxEngine;
 
 namespace ResoniteModLoader;
 
+/// <summary>
+/// RML uses an <see cref="IPlatformConnector"/> to hook into the loading process of the game.
+/// </summary>
 public class ExecutionHook : IPlatformConnector {
 
-#pragma warning disable CS1591
-	public PlatformInterface Platform { get; private set; }
+#pragma warning disable CS1591 // IPlatformConnector has no (official) documentation.
+	public PlatformInterface Platform { get; private set; } = null!;
 	public int Priority => -10;
 	public string PlatformName => "ResoniteModLoader";
-	public string Username => null;
-	public string PlatformUserId => null;
+	public string Username => null!;
+	public string PlatformUserId => null!;
 	public bool IsPlatformNameUnique => false;
 	public void SetCurrentStatus(World world, bool isPrivate, int totalWorldCount) { }
 	public void ClearCurrentStatus() { }
@@ -30,7 +33,7 @@ public class ExecutionHook : IPlatformConnector {
 	}
 #pragma warning restore CS1591
 
-#pragma warning disable CA2255
+#pragma warning disable CA2255 // module initializer required for library here to start RML.
 	/// <summary>
 	/// One method that can start the static constructor of the mod loader.
 	/// </summary>

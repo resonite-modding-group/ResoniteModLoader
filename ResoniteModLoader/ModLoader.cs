@@ -23,7 +23,7 @@ public sealed class ModLoader {
 	public static bool IsHeadless { // Extremely thorough, but doesn't rely on any specific class to check for headless presence
 		get {
 			return _isHeadless ??= AppDomain.CurrentDomain.GetAssemblies().Any(a => {
-				IEnumerable<Type> types;
+				IEnumerable<Type?> types;
 				try {
 					types = a.GetTypes();
 				} catch (ReflectionTypeLoadException e) {
@@ -82,8 +82,8 @@ public sealed class ModLoader {
 				// this exception type has some inner exceptions we must also log to gain any insight into what went wrong
 				StringBuilder sb = new();
 				sb.AppendLine(reflectionTypeLoadException.ToString());
-				foreach (Exception loaderException in reflectionTypeLoadException.LoaderExceptions) {
-					sb.AppendLine($"Loader Exception: {loaderException.Message}");
+				foreach (Exception? loaderException in reflectionTypeLoadException.LoaderExceptions) {
+					sb.AppendLine($"Loader Exception: {loaderException?.Message}");
 					if (loaderException is FileNotFoundException fileNotFoundException) {
 						if (!string.IsNullOrEmpty(fileNotFoundException.FusionLog)) {
 							sb.Append("    Fusion Log:\n    ");
@@ -118,7 +118,7 @@ public sealed class ModLoader {
 						Logger.WarnInternal($"    \"{owner}\" ({TypesForOwner(patches, owner)})");
 					}
 				} else if (config.Debug) {
-					string owner = owners.FirstOrDefault();
+					var owner = owners.FirstOrDefault();
 					Logger.DebugFuncInternal(() => $"Method \"{patchedMethod.FullDescription()}\" has been patched by \"{owner}\"");
 				}
 			}

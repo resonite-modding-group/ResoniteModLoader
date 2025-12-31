@@ -66,8 +66,9 @@ public class ModConfigurationDefinitionBuilder {
 			return;
 		}
 
-		ModConfigurationKey fieldValue = (ModConfigurationKey)field.GetValue(field.IsStatic ? null : Owner);
-		Keys.Add(fieldValue);
+		if (field.GetValue(field.IsStatic ? null : Owner) is ModConfigurationKey fieldValue) {
+			Keys.Add(fieldValue);
+		}
 	}
 
 	internal ModConfigurationDefinition? Build() {
