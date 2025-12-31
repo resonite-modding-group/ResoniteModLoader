@@ -48,10 +48,8 @@ public sealed class ModLoader {
 	/// <summary>
 	/// Allows reading metadata for all loaded mods
 	/// </summary>
-	/// <returns>A new list containing each loaded mod</returns>
-	public static IEnumerable<ResoniteModBase> Mods() {
-		return LoadedMods.ToList();
-	}
+	/// <returns>A readonly list containing each loaded mod</returns>
+	public static IEnumerable<ResoniteModBase> Mods() => LoadedMods.AsReadOnly();
 
 	internal static void LoadMods() {
 		ModLoaderConfiguration config = ModLoaderConfiguration.Get();
