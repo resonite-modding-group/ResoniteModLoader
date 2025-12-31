@@ -11,10 +11,10 @@ public sealed class ModLoaderSettings : SettingComponent<ModLoaderSettings> {
 	public override bool UserspaceOnly => true;
 
 	[SettingIndicatorProperty]
-	public readonly Sync<string> LoadedMods;
+	public readonly RawOutput<string> LoadedMods;
 
 	[SettingIndicatorProperty]
-	public readonly Sync<string> ModLoaderVersion;
+	public readonly RawOutput<string> ModLoaderVersion;
 
 	[SettingProperty]
 	public readonly Sync<bool> DebugMode;
@@ -24,7 +24,7 @@ public sealed class ModLoaderSettings : SettingComponent<ModLoaderSettings> {
 
 	//TODO make clickable link in UI
 	[SettingIndicatorProperty]
-	public readonly Sync<string> ProjectLink;
+	public readonly RawOutput<string> ProjectLink;
 
 	[SettingProperty("Open Github Repo", "")]
 	[SyncMethod(typeof(Action), [])]
