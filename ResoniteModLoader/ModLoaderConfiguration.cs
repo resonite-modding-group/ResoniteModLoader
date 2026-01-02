@@ -53,9 +53,9 @@ internal sealed class ModLoaderConfiguration {
 
 	private static string GetConfigPath() {
 		var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-		if (dir == null)
+		if (dir == null) {
 			return CONFIG_FILENAME;
-
+		}
 		return Path.Combine(dir, CONFIG_FILENAME);
 	}
 
