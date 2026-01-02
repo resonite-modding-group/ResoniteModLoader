@@ -5,7 +5,9 @@ using FrooxEngine;
 namespace ResoniteModLoader;
 
 /// <summary>
-/// RML uses an <see cref="IPlatformConnector"/> to hook into the loading process of the game.
+/// Contains hooks for starting ResoniteModLoader initialization via <see cref="ModLoaderInit.Initialize()"/>.
+/// Primarily uses <see cref="IPlatformConnector"/> to be called by the platform,
+/// Additionally has a fallback <see cref="ModuleInitializerAttribute"/> in case the connector is not called.
 /// </summary>
 public class ExecutionHook : IPlatformConnector {
 
@@ -33,9 +35,9 @@ public class ExecutionHook : IPlatformConnector {
 	}
 #pragma warning restore CS1591
 
-#pragma warning disable CA2255 // module initializer required for library here to start RML.
+#pragma warning disable CA2255
 	/// <summary>
-	/// One method that can start the static constructor of the mod loader.
+	/// A fallback method that can start the static constructor of the mod loader.
 	/// </summary>
 	[ModuleInitializer]
 	public static void Init() {
