@@ -118,7 +118,7 @@ public sealed class ModLoader {
 						Logger.WarnInternal($"    \"{owner}\" ({TypesForOwner(patches, owner)})");
 					}
 				} else if (config.Debug) {
-					var owner = owners.FirstOrDefault();
+					string? owner = owners.FirstOrDefault();
 					Logger.DebugFuncInternal(() => $"Method \"{patchedMethod.FullDescription()}\" has been patched by \"{owner}\"");
 				}
 			}
