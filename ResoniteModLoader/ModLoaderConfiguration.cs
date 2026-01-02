@@ -60,10 +60,8 @@ internal sealed class ModLoaderConfiguration {
 	}
 
 	/// <summary>
-	/// Writes additional information to the log file with Debug severity.
-	///
-	/// Currently, this only prints all patched methods, even if they are not conflicting,
-	/// as long as <see cref="LogConflicts"/> is enabled.
+	/// When enabled, messages logged with <see cref="ResoniteMod.Debug(object)"/> or internal Debug methods will be added to the log file.
+	/// Additonally, mods may enable their own debug functionality via <see cref="ResoniteMod.IsDebugEnabled()"/> that isn't limited to logging.
 	/// </summary>
 	public bool Debug { get; internal set; }
 
@@ -78,10 +76,7 @@ internal sealed class ModLoaderConfiguration {
 	public bool HideVisuals { get; internal set; }
 
 	/// <summary>
-	/// Currently this option is not being used. RML used to mask the modified version string
-	/// from other clients such that the user does not appear to be using RML.
-	///
-	/// Since RML no longer masks the version string, this settings does nothing.
+	/// Currently this option does nothing. Previously, this would enable showing the unmodified version string.
 	/// </summary>
 	public bool AdvertiseVersion { get; internal set; }
 
