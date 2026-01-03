@@ -17,11 +17,11 @@ public sealed class ModLoaderSettings : SettingComponent<ModLoaderSettings> {
 
 	/// <summary>How count of loaded mods.</summary>
 	[SettingIndicatorProperty]
-	public readonly Sync<string> LoadedMods;
+	public readonly RawOutput<string> LoadedMods;
 
 	/// <summary>The version of RML. Corresponds to <see cref="ModLoader.VERSION"/>.</summary>
 	[SettingIndicatorProperty]
-	public readonly Sync<string> ModLoaderVersion;
+	public readonly RawOutput<string> ModLoaderVersion;
 
 	/// <summary>Corresponds to <see cref="ModLoaderConfiguration.Debug"/>.</summary>
 	[SettingProperty]
@@ -36,7 +36,7 @@ public sealed class ModLoaderSettings : SettingComponent<ModLoaderSettings> {
 	/// </summary>
 	//TODO make clickable link in UI
 	[SettingIndicatorProperty]
-	public readonly Sync<string> ProjectLink;
+	public readonly RawOutput<string> ProjectLink;
 
 #pragma warning restore CS8618
 
