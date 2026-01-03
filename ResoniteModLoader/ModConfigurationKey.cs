@@ -62,7 +62,7 @@ public abstract class ModConfigurationKey {
 	/// </summary>
 	/// <param name="obj">The other object to compare against.</param>
 	/// <returns><c>true</c> if the other object is equal to this.</returns>
-	public override bool Equals(object obj) {
+	public override bool Equals(object? obj) {
 		return obj is ModConfigurationKey key && Name == key.Name;
 	}
 

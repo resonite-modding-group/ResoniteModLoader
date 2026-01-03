@@ -8,7 +8,7 @@ internal sealed class ModLoaderConfiguration {
 	internal static ModLoaderConfiguration Get() {
 		if (_configuration == null) {
 			// the config file can just sit next to the dll. Simple.
-			string path = Path.Combine(GetAssemblyDirectory(), CONFIG_FILENAME);
+			string path = GetConfigPath();
 			_configuration = new ModLoaderConfiguration();
 
 			Dictionary<string, Action<string>> keyActions = new() {
@@ -29,7 +29,7 @@ internal sealed class ModLoaderConfiguration {
 						string key = line[..splitIdx];
 						string value = line[(splitIdx + 1)..];
 
-						if (keyActions.TryGetValue(key, out Action<string> action)) {
+						if (keyActions.TryGetValue(key, out Action<string>? action)) {
 							try {
 								action(value);
 							} catch (Exception) {
@@ -51,13 +51,37 @@ internal sealed class ModLoaderConfiguration {
 		return _configuration;
 	}
 
-	private static string GetAssemblyDirectory() {
-		return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+	private static string GetConfigPath() {
+		var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+		if (dir == null) {
+			return CONFIG_FILENAME;
+		}
+		return Path.Combine(dir, CONFIG_FILENAME);
 	}
 
+	/// <summary>
+	/// When enabled, messages logged with <see cref="ResoniteMod.Debug(object)"/> or internal Debug methods will be added to the log file.
+	/// Additonally, mods may enable their own debug functionality via <see cref="ResoniteMod.IsDebugEnabled()"/> that isn't limited to logging.
+	/// </summary>
 	public bool Debug { get; internal set; }
+
+	/// <summary>
+	/// No mods will be loaded if this option is set.
+	/// </summary>
 	public bool NoMods { get; internal set; }
+
+	/// <summary>
+	/// No loading progress subphase names will be set if this option is active.
+	/// </summary>
 	public bool HideVisuals { get; internal set; }
+
+	/// <summary>
+	/// Currently this option does nothing. Previously, this would enable showing the unmodified version string.
+	/// </summary>
 	public bool AdvertiseVersion { get; internal set; }
+
+	/// <summary>
+	/// Whether to log warnings if one method is patched by multiple mods. Enabled by default.
+	/// </summary>
 	public bool LogConflicts { get; internal set; } = true;
 }

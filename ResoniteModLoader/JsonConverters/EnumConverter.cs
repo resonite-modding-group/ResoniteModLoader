@@ -25,7 +25,7 @@ internal sealed class EnumConverter : JsonConverter {
 	}
 
 	public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer) {
-		string serialized = Enum.GetName(value!.GetType(), value);
+		string? serialized = Enum.GetName(value!.GetType(), value);
 		writer.WriteValue(serialized);
 	}
 

@@ -4,14 +4,19 @@ using FrooxEngine;
 
 namespace ResoniteModLoader;
 
+/// <summary>
+/// Contains hooks for starting ResoniteModLoader initialization via <see cref="ModLoaderInit.Initialize()"/>.
+/// Primarily uses <see cref="IPlatformConnector"/> to be called by the platform,
+/// Additionally has a fallback <see cref="ModuleInitializerAttribute"/> in case the connector is not called.
+/// </summary>
 public class ExecutionHook : IPlatformConnector {
 
-#pragma warning disable CS1591
-	public PlatformInterface Platform { get; private set; }
+#pragma warning disable CS1591 // IPlatformConnector has no (official) documentation.
+	public PlatformInterface Platform { get; private set; } = null!;
 	public int Priority => -10;
 	public string PlatformName => "ResoniteModLoader";
-	public string Username => null;
-	public string PlatformUserId => null;
+	public string Username => null!;
+	public string PlatformUserId => null!;
 	public bool IsPlatformNameUnique => false;
 	public void SetCurrentStatus(World world, bool isPrivate, int totalWorldCount) { }
 	public void ClearCurrentStatus() { }
@@ -32,7 +37,7 @@ public class ExecutionHook : IPlatformConnector {
 
 #pragma warning disable CA2255
 	/// <summary>
-	/// One method that can start the static constructor of the mod loader.
+	/// A fallback method that can start the static constructor of the mod loader.
 	/// </summary>
 	[ModuleInitializer]
 	public static void Init() {
