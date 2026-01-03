@@ -88,7 +88,7 @@ internal static class Util {
 
 	// Check a potentially unloadable type to see if it is (A) loadable and (B) satisfies a predicate without throwing an exception
 	// this does a series of increasingly aggressive checks to see if the type is unsafe to touch
-	private static bool CheckType([NotNullWhen(true)] Type? type, Predicate<Type> predicate) {
+	private static bool CheckType(Type? type, Predicate<Type> predicate) {
 		if (type == null) {
 			Logger.DebugInternal($"Passed in type was null");
 			return false;
