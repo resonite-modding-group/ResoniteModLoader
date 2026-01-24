@@ -7,7 +7,7 @@ using Stream = System.IO.Stream;
 
 namespace ResoniteModLoader.Locale;
 
-internal class LocaleLoader {
+internal static class LocaleLoader {
 	internal static void InitLocales() {
 		Engine.Current.LocalesUpdated += DelayedLocaleUpdate; //When Vanilla locales are updated on the filesystem
 		Settings.RegisterValueChanges<LocaleSettings>(LocaleChanged); //When the User changes locale in settings
@@ -140,6 +140,8 @@ internal class LocaleLoader {
 	internal static bool ContainsLocales(ResoniteModBase mod) {
 		var type = mod.GetType();
 		var prefix = $"{type.Namespace}.Locale.";
-		return type.Assembly.GetManifestResourceNames().Any(s => s.StartsWith(prefix) && s.EndsWith(".json"));
+		return type.Assembly.GetManifestResourceNames().Any(s =>
+			s.StartsWith(prefix, StringComparison.Ordinal)
+			&& s.EndsWith(".json", StringComparison.Ordinal));
 	}
 }
