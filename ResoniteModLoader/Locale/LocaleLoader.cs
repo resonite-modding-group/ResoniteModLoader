@@ -52,6 +52,7 @@ internal class LocaleLoader {
 		}
 
 		foreach (var mod in ModLoader.Mods()) {
+			if (!mod.IsLocalized) continue;
 			var modNs = mod.GetType().Namespace;
 			if (!mod.FinishedLoading || modNs == null) continue;
 			try {
@@ -65,7 +66,7 @@ internal class LocaleLoader {
 		if (!success) {
 			return;
 		}
-		
+
 		Logger.DebugInternal($"After apply: {Userspace.Current.GetCoreLocale()?.Asset?.Data.MessageCount} Keys");
 
 		try {
@@ -130,5 +131,15 @@ internal class LocaleLoader {
 				});
 			}
 		}
+	}
+
+	/// <summary>
+	/// Tests if a mod contains any locale data by searching its manifest resources.
+	/// </summary>
+	/// <param name="mod">The mod to test.</param>
+	internal static bool ContainsLocales(ResoniteModBase mod) {
+		var type = mod.GetType();
+		var prefix = $"{type.Namespace}.Locale.";
+		return type.Assembly.GetManifestResourceNames().Any(s => s.StartsWith(prefix) && s.EndsWith(".json"));
 	}
 }

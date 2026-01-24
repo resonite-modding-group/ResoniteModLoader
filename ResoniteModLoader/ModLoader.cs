@@ -184,6 +184,7 @@ public sealed class ModLoader {
 			}
 
 			resoniteMod.ModAssembly = mod;
+			resoniteMod.IsLocalized = Locale.LocaleLoader.ContainsLocales(resoniteMod);
 			Logger.MsgInternal($"Loaded mod [{resoniteMod.Name}/{resoniteMod.Version}] ({Path.GetFileName(mod.File)}) by {resoniteMod.Author} with Sha256: {mod.Sha256}");
 			LoadProgressIndicator.SetSubphase($"Loading configuration for [{resoniteMod.Name}/{resoniteMod.Version}]");
 			resoniteMod.ModConfiguration = ModConfiguration.LoadConfigForMod(resoniteMod);
