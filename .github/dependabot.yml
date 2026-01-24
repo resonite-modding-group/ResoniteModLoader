@@ -3,14 +3,14 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     labels:
-      - "dependencies"
-      - "github-actions"
+      - "Dependencies"
+      - "Github-actions"
     schedule:
       interval: "weekly"
 
   - package-ecosystem: "nuget"
     directory: "/"
     labels:
-      - "dependencies"
+      - "Dependencies"
     schedule:
       interval: "weekly"
