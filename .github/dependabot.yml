@@ -4,7 +4,12 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    labels:
+      - "dependencies"
+      - "github-actions"
   - package-ecosystem: "nuget"
     directory: "/"
     schedule:
       interval: "weekly"
+    labels:
+      - "dependencies"
