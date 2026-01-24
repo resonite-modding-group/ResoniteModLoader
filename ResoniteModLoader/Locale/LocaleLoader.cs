@@ -1,5 +1,7 @@
 using System.Globalization;
+
 using FrooxEngine;
+
 using LocaleResource = Elements.Assets.LocaleResource;
 using Stream = System.IO.Stream;
 
@@ -34,8 +36,7 @@ internal class LocaleLoader {
 			}
 			targetLocale = new CultureInfo(targetLocaleString);
 			Logger.MsgInternal($"Updating locale to '{targetLocale.Name}'");
-		}
-		catch (Exception) {
+		} catch (Exception) {
 			Logger.ErrorInternal("Could not find ActiveLocaleCode from LocaleSettings");
 		}
 
@@ -46,8 +47,7 @@ internal class LocaleLoader {
 		try {
 			await LoadLocaleData(res, targetLocale, Assembly.GetExecutingAssembly(), typeof(LocaleLoader).Namespace!, "ResoniteModLoader");
 			success = true;
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			Logger.ErrorInternal($"Failed to update locale for ResoniteModLoader: {ex}");
 		}
 
@@ -57,21 +57,20 @@ internal class LocaleLoader {
 			try {
 				await LoadLocaleData(res, targetLocale, mod.ModAssembly!.Assembly, modNs + ".Locale", "mod " + mod.Name);
 				success = true;
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				Logger.ErrorInternal($"Failed to update locale for mod {mod.Name}: {ex}");
 			}
 		}
 
-		if (!success)
+		if (!success) {
 			return;
-
+		}
+		
 		Logger.DebugInternal($"After apply: {Userspace.Current.GetCoreLocale()?.Asset?.Data.MessageCount} Keys");
 
 		try {
 			ReloadCurrentLocale();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			Logger.ErrorInternal($"Failed to update locale: {ex}");
 		}
 	}
@@ -99,15 +98,15 @@ internal class LocaleLoader {
 	///	Loads a locale file from the given <paramref name="assembly"/>, trying
 	/// the different resource names in order, using the first one that exists.
 	/// </summary>
-	/// <param name="res">Locale to apply the locale data to.</param>
+	/// <param name="localeResource">Locale to apply the locale data to.</param>
 	/// <param name="assembly">Assembly to load the resource from.</param>
 	/// <param name="candidates">Resource names to try.</param>
 	/// <returns>Whether the resource was found and loaded.</returns>
-	private static async Task<bool> LoadLocaleDataResource(LocaleResource res, Assembly assembly, params string[] candidates) {
+	private static async Task<bool> LoadLocaleDataResource(LocaleResource localeResource, Assembly assembly, params string[] candidates) {
 		Stream? foundStream = null;
 		foreach (var c in candidates) {
 			foundStream = assembly.GetManifestResourceStream(c);
-			if (foundStream != null) break;
+			if (foundStream != null) { break; }
 		}
 		if (foundStream == null) {
 			return false;
@@ -115,7 +114,7 @@ internal class LocaleLoader {
 		using var stream = foundStream;
 		using var reader = new StreamReader(stream);
 		string localeJson = await reader.ReadToEndAsync();
-		res.LoadDataAdditively(localeJson);
+		localeResource.LoadDataAdditively(localeJson);
 		return true;
 	}
 
@@ -132,5 +131,4 @@ internal class LocaleLoader {
 			}
 		}
 	}
-
 }
