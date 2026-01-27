@@ -24,38 +24,45 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
 
-# BUILDING
-      - name: Build
-        run: dotnet build --configuration Release --no-restore ResoniteModLoader
+      - name: Debug
+        run: |
+          echo resonite-path: ${{ steps.resonite.outputs.resonite-path }}
+          echo env: $ResonitePath
         env:
           ResonitePath: ${{ steps.resonite.outputs.resonite-path }}
 
-      - name: Upload
-        uses: actions/upload-artifact@v4
-        with:
-          name: ResoniteModLoader
-          path: ${{ env.ARTIFACT_PATH }}
-          if-no-files-found: error
-
-      - name: Attest
-        uses: actions/attest-build-provenance@v3
-        with:
-          subject-path: ${{ env.ARTIFACT_PATH }}
-
-# WEAVING
-      - name: Weave
-        run: dotnet run --configuration Release --no-restore --project PluginWeaver -- "${{ env.ARTIFACT_PATH }}"
-        env:
-          ResonitePath: ${{ steps.resonite.outputs.resonite-path }}
-
-      - name: Upload Weaved
-        uses: actions/upload-artifact@v4
-        with:
-          name: ResoniteModLoader Weaved
-          path: ${{ env.ARTIFACT_PATH }}
-          if-no-files-found: error
-
-      - name: Attest Weaved
-        uses: actions/attest-build-provenance@v3
-        with:
-          subject-path: ${{ env.ARTIFACT_PATH }}
+#BUILDING
+#       - name: Build
+        # run: dotnet build --configuration Release --no-restore ResoniteModLoader
+        # env:
+          # ResonitePath: ${{ steps.resonite.outputs.resonite-path }}
+#
+      # - name: Upload
+        # uses: actions/upload-artifact@v4
+        # with:
+          # name: ResoniteModLoader
+          # path: ${{ env.ARTIFACT_PATH }}
+          # if-no-files-found: error
+#
+      # - name: Attest
+        # uses: actions/attest-build-provenance@v3
+        # with:
+          # subject-path: ${{ env.ARTIFACT_PATH }}
+#
+#WEAVING
+      # - name: Weave
+        # run: dotnet run --configuration Release --no-restore --project PluginWeaver -- "${{ env.ARTIFACT_PATH }}"
+        # env:
+          # ResonitePath: ${{ steps.resonite.outputs.resonite-path }}
+#
+      # - name: Upload Weaved
+        # uses: actions/upload-artifact@v4
+        # with:
+          # name: ResoniteModLoader Weaved
+          # path: ${{ env.ARTIFACT_PATH }}
+          # if-no-files-found: error
+#
+      # - name: Attest Weaved
+        # uses: actions/attest-build-provenance@v3
+        # with:
+          # subject-path: ${{ env.ARTIFACT_PATH }}
