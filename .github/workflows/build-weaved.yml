@@ -1,0 +1,65 @@
+name: build weaved
+
+on:
+  workflow_dispatch: {}
+
+env:
+  ARTIFACT_PATH: ResoniteModLoader/bin/Release/net10.0/ResoniteModLoader.dll
+
+jobs:
+  build:
+    name: build-ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Setup Resonite environment
+        id: resonite
+        uses: resonite-modding-group/setup-resonite-env-action@v0.2.0
+        with:
+          steam-user: ${{ secrets.STEAMUSER }}
+          steam-password: ${{ secrets.STEAMPASS }}
+
+      - name: Set ResonitePath
+        run: echo "ResonitePath=${{ steps.resonite.outputs.resonite-path }}" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: dotnet restore
+
+# BUILDING
+      - name: Build
+        run: dotnet build --configuration Release --no-restore ResoniteModLoader
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: ResoniteModLoader
+          path: ${{ env.ARTIFACT_PATH }}
+          if-no-files-found: error
+
+      - name: Attest
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: ${{ env.ARTIFACT_PATH }}
+
+# WEAVING
+      - name: Weave
+        run: dotnet run --configuration Release --no-restore --project PluginWeaver -- "${{ env.ARTIFACT_PATH }}"
+
+      - name: Upload Weaved
+        uses: actions/upload-artifact@v4
+        with:
+          name: ResoniteModLoader Weaved
+          path: ${{ env.ARTIFACT_PATH }}
+          if-no-files-found: error
+
+      - name: Attest Weaved
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: ${{ env.ARTIFACT_PATH }}

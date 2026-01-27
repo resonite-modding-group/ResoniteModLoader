@@ -1,22 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<TargetFramework>net10.0</TargetFramework>
-		<LangVersion>14.0</LangVersion>
-		<Nullable>enable</Nullable>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<EnableNETAnalyzers>True</EnableNETAnalyzers>
-		<AnalysisLevel>10.0-Recommended</AnalysisLevel>
 		<!-- Change CopyToLibraries to true if you'd like builds to be moved into the Libraries folder automatically-->
 		<CopyToLibraries Condition="'$(CopyToLibraries)'==''">true</CopyToLibraries>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(ResonitePath)'==''">
-		<!-- If you don't want to provide a ResonitePath in dotnet build, you can specify one here -->
-		<ResonitePath>$(MSBuildThisFileDirectory)Resonite/</ResonitePath>
-		<ResonitePath Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Resonite\')">C:\Program Files (x86)\Steam\steamapps\common\Resonite\</ResonitePath>
-		<ResonitePath Condition="Exists('$(HOME)/.steam/steam/steamapps/common/Resonite/')">$(HOME)/.steam/steam/steamapps/common/Resonite/</ResonitePath>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -46,7 +33,7 @@
 			<Private>False</Private>
 		</Reference>
 	</ItemGroup>
-	
+
 	<ItemGroup>
 		<EmbeddedResource Include="Locale\*.json" />
 	</ItemGroup>
