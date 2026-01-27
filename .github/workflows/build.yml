@@ -5,10 +5,10 @@ on:
 
 env:
   ARTIFACT_DIR: ResoniteModLoader/bin/Release/net10.0/
+  NUGET_DIR: ResoniteModLoader/bin/Release/
 
 jobs:
   build:
-    name: build-ubuntu
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -25,8 +25,23 @@ jobs:
           steam-user: ${{ secrets.STEAMUSER }}
           steam-password: ${{ secrets.STEAMPASS }}
 
+      - name: Restore NuGet Package Cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget
+
       - name: Install dependencies
         run: dotnet restore
+
+      - name: Save NuGet Package Cache
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
 
 #BUILDING
       - name: Build
@@ -34,11 +49,18 @@ jobs:
         env:
           ResonitePath: ${{ steps.resonite.outputs.resonite-path }}/
 
-      - name: Upload
+      - name: ResoniteModLoader Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ResoniteModLoader
           path: "${{ env.ARTIFACT_DIR }}*"
+          if-no-files-found: error
+
+      - name: NuGet Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NuGet Packages
+          path: "${{ env.NUGET_DIR }}*.nupkg"
           if-no-files-found: error
 
       - name: Attest
@@ -52,7 +74,7 @@ jobs:
         env:
           ResonitePath: ${{ steps.resonite.outputs.resonite-path }}/
 
-      - name: Upload Weaved
+      - name: Weaved ResoniteModLoader Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ResoniteModLoader Weaved
@@ -63,3 +85,31 @@ jobs:
         uses: actions/attest-build-provenance@v3
         with:
           subject-path: "${{ env.ARTIFACT_DIR }}*.dll"
+
+  validate-nuget:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Setup Dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.x
+
+      - name: Restore NuGet Package Cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget
+
+      - name: Install NuGet Validator
+        run: dotnet tool update Meziantou.Framework.NuGetPackageValidation.Tool --global
+
+      - name: Get NuGet Artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: NuGet Packages
+
+      - name: Validate
+        run: meziantou.validate-nuget-package *.nupkg

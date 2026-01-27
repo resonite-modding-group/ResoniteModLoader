@@ -10,7 +10,8 @@ public sealed class ModLoader {
 	/// <summary>
 	/// ResoniteModLoader's version
 	/// </summary>
-	public static readonly string VERSION = VERSION_CONSTANT;
+	public static readonly string VERSION =
+		System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "0.0.0";
 	private static readonly Type RESONITE_MOD_TYPE = typeof(ResoniteMod);
 	private static readonly List<ResoniteMod> LoadedMods = []; // used for mod enumeration
 	internal static readonly Dictionary<Assembly, ResoniteMod> AssemblyLookupMap = []; // used for logging
