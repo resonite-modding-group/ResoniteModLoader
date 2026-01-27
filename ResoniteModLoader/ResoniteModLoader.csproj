@@ -28,6 +28,21 @@
 		<None Include="..\README.md" Pack="true" PackagePath="" />
 	</ItemGroup>
 
+	<Target Name="GenerateVersionFile" BeforeTargets="BeforeCompile">
+		<!-- %3B is in escape sequence for ; -->
+		<WriteLinesToFile
+			File="$(IntermediateOutputPath)ModLoaderVersion.g.cs"
+			Lines="
+namespace ResoniteModLoader%3B
+public sealed partial class ModLoader {
+	internal const string VERSION_CONSTANT = &quot;$(Version)&quot;%3B
+}"
+			Overwrite="true" />
+		<ItemGroup>
+			<Compile Include="$(IntermediateOutputPath)ModLoaderVersion.g.cs" />
+		</ItemGroup>
+	</Target>
+
 	<ItemGroup>
 		<PackageReference Include="Lib.Harmony" Version="2.4.2" />
 		<Reference Include="FrooxEngine">
