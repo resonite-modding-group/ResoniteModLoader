@@ -21,15 +21,14 @@ jobs:
           steam-user: ${{ secrets.STEAMUSER }}
           steam-password: ${{ secrets.STEAMPASS }}
 
-      - name: Set ResonitePath
-        run: echo "ResonitePath=${{ steps.resonite.outputs.resonite-path }}" >> $GITHUB_ENV
-
       - name: Install dependencies
         run: dotnet restore
 
 # BUILDING
       - name: Build
         run: dotnet build --configuration Release --no-restore ResoniteModLoader
+        env:
+          ResonitePath: ${{ steps.resonite.outputs.resonite-path }}
 
       - name: Upload
         uses: actions/upload-artifact@v4
@@ -46,6 +45,8 @@ jobs:
 # WEAVING
       - name: Weave
         run: dotnet run --configuration Release --no-restore --project PluginWeaver -- "${{ env.ARTIFACT_PATH }}"
+        env:
+          ResonitePath: ${{ steps.resonite.outputs.resonite-path }}
 
       - name: Upload Weaved
         uses: actions/upload-artifact@v4
