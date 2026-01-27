@@ -95,7 +95,7 @@ internal static class Util {
 		}
 
 		try {
-			string _name = type.Name;
+			_ = type.Name;
 		} catch (Exception e) {
 			Logger.DebugFuncInternal(() => $"Could not read the name for a type: {e}");
 			return false;
