@@ -6,6 +6,7 @@ on:
       - "v*.*.*"
 
 env:
+  HARMONY_VERSION: "2.4.2"
   NUGET_REGISTRY_URL: https://api.nuget.org/v3/index.json
 
 concurrency:
@@ -26,11 +27,30 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Download Harmony
+        run: curl -L https://www.nuget.org/api/v2/package/Lib.Harmony/${{ env.HARMONY_VERSION }} --output Lib.Harmony.nupkg
+
       - name: Get Weaved ResoniteModLoader Artifact
         uses: actions/download-artifact@v5
         with:
           name: ResoniteModLoader Weaved
           path: ${{ github.workspace }}/release
+
+# Installer zip archive:
+# /Libraries/ResoniteModLoader.dll
+# /Libraries/ResoniteModLoader.xml
+# /rml_libs/0Harmony.dll
+# /rml_mods/
+      - name: Build installer
+        run: |
+          mkdir installer
+          cd installer
+          mkdir Libraries
+          cp "${{ github.workspace }}/release/*.dll" "${{ github.workspace }}/release/*.xml" Libraries/
+          mkdir rml_libs
+          unzip -p Lib.Harmony.nupkg lib/net10.0/0Harmony.dll > rml_libs/0Harmony.dll
+          mkdir rml_mods
+          zip ../ResoniteModLoader.zip *
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
@@ -38,6 +58,7 @@ jobs:
           files: |
             ${{ github.workspace }}/release/*.dll
             ${{ github.workspace }}/release/*.xml
+            ${{ github.workspace }}/ResoniteModLoader.zip
           generate_release_notes: true
 
   release-nuget:
