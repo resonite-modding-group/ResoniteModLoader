@@ -1,3 +1,4 @@
-﻿<Solution>
-  <Project Path="ResoniteModLoader\ResoniteModLoader.csproj" />
+<Solution>
+	<Project Path="ResoniteModLoader\ResoniteModLoader.csproj" />
+	<Project Path="PluginWeaver\PluginWeaver.csproj" />
 </Solution>
