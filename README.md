@@ -1,5 +1,5 @@
 <p align="center">
-	<img width="256" height="256" alt="RML_Logomark_256" src="https://github.com/user-attachments/assets/abfadf82-1f7a-45fb-a1f7-9128db06896d" />
+	<img width="256" height="256" alt="RML_Logomark_256" src="https://raw.githubusercontent.com/resonite-modding-group/ResoniteModLoader/master/RML_Logomark.png" />
 </p>
 <h1 align="center">ResoniteModLoader</h1>
 
