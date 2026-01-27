@@ -29,7 +29,7 @@
 	</ItemGroup>
 
 	<Target Name="GenerateVersionFile" BeforeTargets="BeforeCompile">
-		<!-- %3B is in escape sequence for ; -->
+		<!-- %3B is an escape sequence for ; -->
 		<WriteLinesToFile
 			File="$(IntermediateOutputPath)ModLoaderVersion.g.cs"
 			Lines="
