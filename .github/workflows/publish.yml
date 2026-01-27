@@ -32,18 +32,12 @@ jobs:
           name: ResoniteModLoader Weaved
           path: ${{ github.workspace }}/release
 
-      - name: Get NuGet Artifact
-        uses: actions/download-artifact@v5
-        with:
-          name: NuGet Packages
-          path: ${{ github.workspace }}/release
-
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             ${{ github.workspace }}/release/*.dll
-            ${{ github.workspace }}/release/*.nupkg
+            ${{ github.workspace }}/release/*.xml
           generate_release_notes: true
 
   release-nuget:
