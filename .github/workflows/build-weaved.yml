@@ -26,8 +26,7 @@ jobs:
 
       - name: Debug
         run: |
-          echo resonite-path: ${{ steps.resonite.outputs.resonite-path }}
-          echo env: $ResonitePath
+          ls -l $ResonitePath
         env:
           ResonitePath: ${{ steps.resonite.outputs.resonite-path }}
 
