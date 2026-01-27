@@ -1,6 +1,6 @@
 name: Feature Request
 description: Request a feature to be added.
-labels: [enhancement]
+labels: [Enhancement]
 body:
   - type: textarea
     id: request
