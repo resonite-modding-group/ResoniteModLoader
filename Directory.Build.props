@@ -1,7 +1,6 @@
 <Project>
 
 	<PropertyGroup>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<TargetFramework>net10.0</TargetFramework>
 		<LangVersion>14.0</LangVersion>
 		<Nullable>enable</Nullable>

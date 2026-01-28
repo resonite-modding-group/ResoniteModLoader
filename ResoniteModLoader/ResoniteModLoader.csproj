@@ -1,10 +1,46 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<!-- Change CopyToLibraries to true if you'd like builds to be moved into the Libraries folder automatically-->
 		<CopyToLibraries Condition="'$(CopyToLibraries)'==''">true</CopyToLibraries>
 	</PropertyGroup>
+
+	<PropertyGroup>
+		<AssemblyTitle>ResoniteModLoader</AssemblyTitle>
+		<AssemblyProduct>$(AssemblyTitle)</AssemblyProduct>
+		<PackageId>$(AssemblyTitle)</PackageId>
+		<Version>4.2.0</Version>
+		<FileVersion>$(Version)</FileVersion>
+		<AssemblyVersion>$(Version)</AssemblyVersion>
+		<Authors>resonite-modding-group, DeltaWolf</Authors>
+		<Description>A modloader for Resonite</Description>
+		<Copyright>Copyright © 2026</Copyright>
+		<PackageTags>mod mods modding modloader harmony resonite game resonitemodloader frooxengine</PackageTags>
+		<PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\RML_Logomark.png" Pack="true" PackagePath="icon.png" />
+		<None Include="..\README.md" Pack="true" PackagePath="" />
+	</ItemGroup>
+
+	<Target Name="GenerateVersionFile" BeforeTargets="BeforeCompile">
+		<!-- %3B is an escape sequence for ; -->
+		<WriteLinesToFile
+			File="$(IntermediateOutputPath)ModLoaderVersion.g.cs"
+			Lines="
+namespace ResoniteModLoader%3B
+public sealed partial class ModLoader {
+	internal const string VERSION_CONSTANT = &quot;$(Version)&quot;%3B
+}"
+			Overwrite="true" />
+		<ItemGroup>
+			<Compile Include="$(IntermediateOutputPath)ModLoaderVersion.g.cs" />
+		</ItemGroup>
+	</Target>
 
 	<ItemGroup>
 		<PackageReference Include="Lib.Harmony" Version="2.4.2" />

@@ -5,8 +5,7 @@ namespace ResoniteModLoader;
 /// <summary>
 /// Contains the actual mod loader.
 /// </summary>
-public sealed class ModLoader {
-	internal const string VERSION_CONSTANT = "4.2.0";
+public sealed partial class ModLoader {
 	/// <summary>
 	/// ResoniteModLoader's version
 	/// </summary>
