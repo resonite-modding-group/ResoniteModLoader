@@ -1,4 +1,5 @@
 <Solution>
 	<Project Path="ResoniteModLoader\ResoniteModLoader.csproj" />
 	<Project Path="PluginWeaver\PluginWeaver.csproj" />
+	<Project Path="ResoniteModLoader.Benchmarks\ResoniteModLoader.Benchmarks.csproj" />
 </Solution>
