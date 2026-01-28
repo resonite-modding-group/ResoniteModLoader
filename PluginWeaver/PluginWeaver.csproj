@@ -9,6 +9,14 @@
 			<HintPath>$(ResonitePath)FrooxEngine.Weaver.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
+		<Reference Include="Mono.Cecil">
+			<HintPath>$(ResonitePath)Mono.Cecil.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Mono.Cecil.Pdb">
+			<HintPath>$(ResonitePath)Mono.Cecil.Pdb.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
 	</ItemGroup>
 
 </Project>

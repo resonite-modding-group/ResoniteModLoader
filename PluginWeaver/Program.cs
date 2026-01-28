@@ -1,4 +1,7 @@
-﻿using System.Reflection;
+using System.Reflection;
+
+using Mono.Cecil;
+using Mono.Cecil.Pdb;
 
 if (args.Length != 1) {
 	Console.WriteLine("Missing DLL argument.");
@@ -7,7 +10,7 @@ if (args.Length != 1) {
 
 var dllToProcess = Path.GetFullPath(args[0]);
 
-var resonite = System.Environment.GetEnvironmentVariable("ResonitePath");
+var resonite = Environment.GetEnvironmentVariable("ResonitePath");
 
 if (resonite is null) {
 	Console.WriteLine("Missing env ResonitePath.");
@@ -26,7 +29,27 @@ currentDomain.AssemblyResolve += new ResolveEventHandler((_, args) => {
 // This makes Mono.Cecil correctly resolve DLLs
 Directory.SetCurrentDirectory(resonite);
 
+var asmBefore = AssemblyDefinition.ReadAssembly(dllToProcess);
+Version originalVersion = asmBefore.Name.Version;
+Console.WriteLine($"Original Version: {originalVersion}");
+asmBefore.Dispose();
+
 // Process the provided DLL
 Weaver.Process(dllToProcess, resonite);
+
+//If Resonite no longer rewrites the originalVersion to a datetime, we can remove this.
+//Rewrite originalVersion on DLL
+var asmAfter = AssemblyDefinition.ReadAssembly(dllToProcess,new ReaderParameters() { ReadWrite = true});
+asmAfter.Name.Version = originalVersion; // Writes [assembly: AssemblyVersion("4.2.0.0")]
+bool symbolsExist = File.Exists(Path.ChangeExtension(dllToProcess, ".pdb"));
+asmAfter.Write(new WriterParameters {
+	WriteSymbols = symbolsExist,
+	SymbolWriterProvider = (symbolsExist ? new PdbWriterProvider() : null)
+});
+asmAfter.Dispose();
+
+var asmVerify = AssemblyDefinition.ReadAssembly(dllToProcess);
+Console.WriteLine($"Wrote new Version as {asmVerify.Name.Version}");
+asmVerify.Dispose();
 
 return 0;
