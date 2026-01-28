@@ -421,10 +421,6 @@ public class ModConfiguration : IModConfigurationDefinition {
 			switch (handlingMode) {
 				case IncompatibleConfigurationHandlingOption.CLOBBER:
 					Logger.WarnInternal($"{mod.Name} saved config version is {version} which is incompatible with mod's definition version {definition.Version}. Clobbering old config and starting fresh.");
-
-					while (reader.TokenType != JsonTokenType.EndObject)
-						reader.Skip();
-
 					return new ModConfiguration(definition);
 				case IncompatibleConfigurationHandlingOption.FORCELOAD:
 					break;
