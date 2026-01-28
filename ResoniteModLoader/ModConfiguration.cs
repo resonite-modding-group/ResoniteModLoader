@@ -455,7 +455,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 				continue;
 			}
 
-			var value = DynamicJsonConverter.ReadDynamic(ref reader, key.ValueType(), options);
+			var value = DynamicJsonConverter.Read(ref reader, key.ValueType(), options);
 			key.Set(value);
 			reader.Read();
 		}
@@ -591,7 +591,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 				writer.WriteNullValue();
 				continue;
 			}
-			DynamicJsonConverter.WriteDynamic(writer, key.ValueType(), writtenValue, options);
+			DynamicJsonConverter.Write(writer, key.ValueType(), writtenValue, options);
 		}
 
 		writer.WriteEndObject();
