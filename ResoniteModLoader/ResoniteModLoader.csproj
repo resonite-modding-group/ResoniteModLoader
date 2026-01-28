@@ -7,8 +7,12 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<PackageId>ResoniteModLoader</PackageId>
+		<AssemblyTitle>ResoniteModLoader</AssemblyTitle>
+		<AssemblyProduct>$(AssemblyTitle)</AssemblyProduct>
+		<PackageId>$(AssemblyTitle)</PackageId>
 		<Version>4.2.0</Version>
+		<FileVersion>$(Version)</FileVersion>
+		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<Authors>resonite-modding-group, DeltaWolf</Authors>
 		<Description>A modloader for Resonite</Description>
 		<Copyright>Copyright © 2026</Copyright>
@@ -16,11 +20,6 @@
 		<PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
 		<PackageIcon>icon.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-
-		<AssemblyTitle>$(PackageId)</AssemblyTitle>
-		<AssemblyProduct>$(AssemblyTitle)</AssemblyProduct>
-		<FileVersion>$(Version)</FileVersion>
-		<AssemblyVersion>$(Version)</AssemblyVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
