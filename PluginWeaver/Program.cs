@@ -43,7 +43,7 @@ var asmAfter = AssemblyDefinition.ReadAssembly(dllToProcess,new ReaderParameters
 // Write [assembly: AssemblyVersion("4.2.0.0")]
 asmAfter.Name.Version = originalVersion;
 // Write [assembly: AssemblyFileVersion("4.2.0")]
-CustomAttribute afv = asmAfter.CustomAttributes.FirstOrDefault((CustomAttribute ca) => ca.AttributeType.Name == "AssemblyFileVersionAttribute");
+CustomAttribute? afv = asmAfter.CustomAttributes.FirstOrDefault(ca => ca.AttributeType.Name == "AssemblyFileVersionAttribute");
 if (afv != null) {
 	afv.ConstructorArguments.RemoveAt(0);
 	afv.ConstructorArguments.Add(new CustomAttributeArgument(asmAfter.MainModule.ImportReference(typeof(string)), originalVersion.ToString(3)));
