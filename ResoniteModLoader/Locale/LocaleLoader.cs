@@ -21,8 +21,8 @@ internal static class LocaleLoader {
 	}
 
 	internal static async void UpdateLocale() {
-		var res = Userspace.Current.GetCoreLocale()?.Asset?.Data;
-		if (res == null) {
+		var localeResource = Userspace.Current.GetCoreLocale()?.Asset?.Data;
+		if (localeResource == null) {
 			Logger.WarnInternal("Userspace core locale asset is not loaded.");
 			return;
 		}
@@ -45,7 +45,7 @@ internal static class LocaleLoader {
 
 		Logger.DebugInternal($"Before apply: {Userspace.Current.GetCoreLocale()?.Asset?.Data.MessageCount} Keys");
 		try {
-			await LoadLocaleData(res, targetLocale, Assembly.GetExecutingAssembly(), typeof(LocaleLoader).Namespace!, "ResoniteModLoader");
+			await LoadLocaleData(localeResource, targetLocale, Assembly.GetExecutingAssembly(), typeof(LocaleLoader).Namespace!, "ResoniteModLoader");
 			success = true;
 		} catch (Exception ex) {
 			Logger.ErrorInternal($"Failed to update locale for ResoniteModLoader: {ex}");
@@ -53,10 +53,10 @@ internal static class LocaleLoader {
 
 		foreach (var mod in ModLoader.Mods()) {
 			if (!mod.IsLocalized) continue;
-			var modNs = mod.GetType().Namespace;
-			if (!mod.FinishedLoading || modNs == null) continue;
+			var modNamespace = mod.GetType().Namespace;
+			if (!mod.FinishedLoading || modNamespace == null) continue;
 			try {
-				await LoadLocaleData(res, targetLocale, mod.ModAssembly!.Assembly, modNs + ".Locale", "mod " + mod.Name);
+				await LoadLocaleData(localeResource, targetLocale, mod.ModAssembly!.Assembly, modNamespace + ".Locale", "mod " + mod.Name);
 				success = true;
 			} catch (Exception ex) {
 				Logger.ErrorInternal($"Failed to update locale for mod {mod.Name}: {ex}");
@@ -76,12 +76,12 @@ internal static class LocaleLoader {
 		}
 	}
 
-	private static async Task LoadLocaleData(LocaleResource res, CultureInfo? locale, Assembly assembly, string originNamespace, string originName) {
+	private static async Task LoadLocaleData(LocaleResource localeResource, CultureInfo? locale, Assembly assembly, string originNamespace, string originName) {
 		// "en-US" is set just after the game loaded, after which it is set to the user preference, like "en".
 		if (locale != null && locale.Name != "en-US" && locale.Name != "en") {
 			// Try getting locale data for "LANG-COUNTRY" and fall back to "LANG"
 			// Example "en-GB": Try "en-gb.json" and fall back to "en.json"
-			if (!await LoadLocaleDataResource(res, assembly,
+			if (!await LoadLocaleDataResource(localeResource, assembly,
 					$"{originNamespace}.{locale.Name.ToLowerInvariant()}.json",
 					$"{originNamespace}.{locale.TwoLetterISOLanguageName}.json")
 			) {
@@ -90,7 +90,7 @@ internal static class LocaleLoader {
 		}
 
 		//Always load fallback locale
-		if (!await LoadLocaleDataResource(res, assembly, $"{originNamespace}.en.json")) {
+		if (!await LoadLocaleDataResource(localeResource, assembly, $"{originNamespace}.en.json")) {
 			Logger.WarnInternal($"Embedded locale resource for fallback 'en' not found for {originName}.");
 		}
 	}
