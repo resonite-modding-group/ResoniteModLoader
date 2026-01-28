@@ -22,7 +22,7 @@ internal sealed class ResonitePrimitiveConverter : JsonConverterFactory {
 		return (JsonConverter?)Activator.CreateInstance(type);
 	}
 
-	private sealed class Inner<T> : JsonConverter<T?> {
+	private sealed class Inner<T> : JsonConverter<T> {
 		public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
 			var value = reader.GetString();
 			if (value == null)
