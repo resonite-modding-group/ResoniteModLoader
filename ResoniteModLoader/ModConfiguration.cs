@@ -138,6 +138,8 @@ public class ModConfiguration : IModConfigurationDefinition {
 	private readonly Dictionary<string, Action<bool>> saveActionForCallee = [];
 
 	private static readonly JsonSerializerOptions jsonSerializerOptions;
+	private static readonly JsonReaderOptions jsonReaderOptions;
+	private static readonly JsonWriterOptions jsonWriterOptions;
 
 	static ModConfiguration() {
 		JsonSerializerOptions options = new(JsonSerializerDefaults.Strict) {
@@ -156,6 +158,17 @@ public class ModConfiguration : IModConfigurationDefinition {
 		converters.Add(new ResonitePrimitiveConverter());
 		options.MakeReadOnly();
 		jsonSerializerOptions = options;
+
+		jsonReaderOptions = new() {
+			MaxDepth = options.MaxDepth,
+			AllowMultipleValues = false,
+		};
+
+		jsonWriterOptions = new() {
+			Indented = options.WriteIndented,
+			IndentSize = options.IndentSize,
+			IndentCharacter = ' ',
+		};
 	}
 
 	internal ModConfiguration(ModConfigurationDefinition definition) {
@@ -363,7 +376,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 
 		try {
 			var file = File.ReadAllBytes(configFile);
-			Utf8JsonReader reader = new(file);
+			Utf8JsonReader reader = new(file, jsonReaderOptions);
 			return ReadModConfiguration(ref reader, jsonSerializerOptions, definition, mod);
 		} catch (FileNotFoundException) {
 			// return early and create a new config
@@ -385,6 +398,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 		ModConfigurationDefinition definition,
 		ResoniteMod mod
 	) {
+		reader.Read();
 		if (reader.TokenType != JsonTokenType.StartObject) {
 			throw new JsonException($"Expected an object, got {reader.TokenType}");
 		}
@@ -551,8 +565,8 @@ public class ModConfiguration : IModConfigurationDefinition {
 		Stopwatch stopwatch = Stopwatch.StartNew();
 		string configFile = GetModConfigPath(Owner);
 
-		using var file = File.OpenWrite(configFile);
-		using Utf8JsonWriter writer = new(file);
+		using var file = File.Open(configFile, FileMode.Create, FileAccess.Write);
+		using Utf8JsonWriter writer = new(file, jsonWriterOptions);
 		WriteModConfiguration(writer, jsonSerializerOptions, saveDefaultValues);
 
 		Logger.DebugFuncInternal(() => $"Saved ModConfiguration for \"{Owner.Name}\" in {stopwatch.ElapsedMilliseconds}ms");
