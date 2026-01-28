@@ -10,7 +10,7 @@
 		<AssemblyTitle>ResoniteModLoader</AssemblyTitle>
 		<AssemblyProduct>$(AssemblyTitle)</AssemblyProduct>
 		<PackageId>$(AssemblyTitle)</PackageId>
-		<Version>4.2.0</Version>
+		<Version>4.3.0</Version>
 		<FileVersion>$(Version)</FileVersion>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<Authors>resonite-modding-group, DeltaWolf</Authors>
