@@ -156,6 +156,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 		converters.Add(new ResonitePrimitiveConverter());
 		jsonConfigurationConverter = new();
 		converters.Add(jsonConfigurationConverter);
+		options.MakeReadOnly();
 		jsonSerializerOptions = options;
 	}
 
