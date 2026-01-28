@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-
+using System.Text.Json.Serialization.Metadata;
 using FrooxEngine;
 
 using HarmonyLib;
@@ -141,12 +141,13 @@ public class ModConfiguration : IModConfigurationDefinition {
 	private static readonly ModConfigurationConverter jsonConfigurationConverter;
 
 	static ModConfiguration() {
-		JsonSerializerOptions options = new() {
+		JsonSerializerOptions options = new(JsonSerializerDefaults.Strict) {
 			MaxDepth = 32,
 			ReferenceHandler = ReferenceHandler.IgnoreCycles,
 			DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
 			WriteIndented = true,
 			IndentSize = 2,
+			TypeInfoResolver = new DefaultJsonTypeInfoResolver(),
 		};
 		var converters = options.Converters;
 		if (converters.Count != 0) {
