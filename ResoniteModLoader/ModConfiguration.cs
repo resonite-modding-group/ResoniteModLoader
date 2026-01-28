@@ -137,7 +137,6 @@ public class ModConfiguration : IModConfigurationDefinition {
 	private readonly Dictionary<string, Action<bool>> saveActionForCallee = [];
 
 	private static readonly JsonSerializerOptions jsonSerializerOptions;
-	private static readonly ModConfigurationConverter jsonConfigurationConverter;
 
 	static ModConfiguration() {
 		JsonSerializerOptions options = new(JsonSerializerDefaults.Strict) {
@@ -154,8 +153,6 @@ public class ModConfiguration : IModConfigurationDefinition {
 		}
 		converters.Add(new EnumConverter());
 		converters.Add(new ResonitePrimitiveConverter());
-		jsonConfigurationConverter = new();
-		converters.Add(jsonConfigurationConverter);
 		options.MakeReadOnly();
 		jsonSerializerOptions = options;
 	}
@@ -364,9 +361,9 @@ public class ModConfiguration : IModConfigurationDefinition {
 		string configFile = GetModConfigPath(mod);
 
 		try {
-			using var file = File.OpenRead(configFile);
-			jsonConfigurationConverter.SetContext(definition, mod);
-			return JsonSerializer.Deserialize<ModConfiguration>(file, jsonSerializerOptions);
+			var file = File.ReadAllBytes(configFile);
+			Utf8JsonReader reader = new(file);
+			return ReadModConfiguration(ref reader, jsonSerializerOptions, definition, mod);
 		} catch (FileNotFoundException) {
 			// return early and create a new config
 			return new ModConfiguration(definition);
@@ -377,11 +374,106 @@ public class ModConfiguration : IModConfigurationDefinition {
 			Logger.ErrorInternal($"Error loading config for {mod.Name}, creating new config file (old file can be found at {backupPath}). Exception:\n{e}");
 			File.Move(configFile, backupPath);
 		}
-		finally {
-			jsonConfigurationConverter.ClearContext();
-		}
 
 		return new ModConfiguration(definition);
+	}
+
+	private static ModConfiguration ReadModConfiguration(
+		ref Utf8JsonReader reader,
+		JsonSerializerOptions options,
+		ModConfigurationDefinition definition,
+		ResoniteMod mod
+	) {
+		if (reader.TokenType != JsonTokenType.StartObject) {
+			throw new JsonException($"Expected an object, got {reader.TokenType}");
+		}
+		reader.Read(); // Consume start of object
+
+		// Read "version": "..."
+
+		if (reader.GetString() != VERSION_JSON_KEY) {
+			throw new JsonException($"Expected first property to be '{VERSION_JSON_KEY}'");
+		}
+		reader.Read();
+
+		var versionString = reader.GetString()
+			?? throw new JsonException("Version string is null");
+		Logger.MsgInternal($"Version: '{versionString}'");
+		Version version = new(versionString);
+		reader.Read();
+
+		if (!AreVersionsCompatible(version, definition.Version)) {
+			var handlingMode = mod.HandleIncompatibleConfigurationVersions(version, definition.Version);
+			switch (handlingMode) {
+				case IncompatibleConfigurationHandlingOption.CLOBBER:
+					Logger.WarnInternal($"{mod.Name} saved config version is {version} which is incompatible with mod's definition version {definition.Version}. Clobbering old config and starting fresh.");
+
+					while (reader.TokenType != JsonTokenType.EndObject)
+						reader.Skip();
+
+					return new ModConfiguration(definition);
+				case IncompatibleConfigurationHandlingOption.FORCELOAD:
+					break;
+				case IncompatibleConfigurationHandlingOption.ERROR: // fall through to default
+				default:
+					mod.AllowSavingConfiguration = false;
+					throw new ModConfigurationException($"{mod.Name} saved config version is {version} which is incompatible with mod's definition version {definition.Version}");
+			}
+		}
+
+		// Read "values": { ... }
+
+		if (reader.GetString() != VALUES_JSON_KEY)
+			throw new JsonException($"Expected second property to be '{VALUES_JSON_KEY}'");
+		reader.Read();
+
+		if (reader.TokenType != JsonTokenType.StartObject)
+			throw new JsonException($"Expected an object, got {reader.TokenType}");
+		reader.Read(); // Consume start of object
+
+		var keys = definition.ConfigurationItemDefinitions.ToDictionary(key => key.Name);
+
+		while (reader.TokenType != JsonTokenType.EndObject) {
+			var name = reader.GetString()
+				?? throw new JsonException("Object key is null");
+			reader.Read();
+
+			// Ignore unknown keys
+			if (!keys.TryGetValue(name, out var key)) {
+				Logger.WarnInternal($"{mod.Name} saved config version contains entry '{name}' which does not exist in its configuration definition");
+				continue;
+			}
+
+			var value = DynamicJsonConverter.ReadDynamic(ref reader, key.ValueType(), options);
+			key.Set(value);
+			reader.Read();
+		}
+		reader.Read(); // Consume end of object
+
+		if (reader.TokenType != JsonTokenType.EndObject) {
+			throw new JsonException($"Extra keys in configuration object");
+		}
+
+		// Exit on end object token
+
+		return new(definition);
+	}
+
+	private static bool AreVersionsCompatible(Version serializedVersion, Version currentVersion) {
+		if (serializedVersion.Major != currentVersion.Major) {
+			// major version differences are hard incompatible
+			return false;
+		}
+
+		if (serializedVersion.Minor > currentVersion.Minor) {
+			// if serialized config has a newer minor version than us
+			// in other words, someone downgraded the mod but not the config
+			// then we cannot load the config
+			return false;
+		}
+
+		// none of the checks failed!
+		return true;
 	}
 
 	/// <summary>
@@ -459,16 +551,40 @@ public class ModConfiguration : IModConfigurationDefinition {
 		string configFile = GetModConfigPath(Owner);
 
 		using var file = File.OpenWrite(configFile);
-
-		jsonConfigurationConverter.SetContext(Definition, (ResoniteMod)Definition.Owner, saveDefaultValues);
-		try {
-			JsonSerializer.Serialize(file, this, jsonSerializerOptions);
-		}
-		finally {
-			jsonConfigurationConverter.ClearContext();
-		}
+		using Utf8JsonWriter writer = new(file);
+		WriteModConfiguration(writer, jsonSerializerOptions, saveDefaultValues);
 
 		Logger.DebugFuncInternal(() => $"Saved ModConfiguration for \"{Owner.Name}\" in {stopwatch.ElapsedMilliseconds}ms");
+	}
+
+	private void WriteModConfiguration(Utf8JsonWriter writer, JsonSerializerOptions options, bool saveDefaultValues) {
+		writer.WriteStartObject();
+
+		writer.WriteString(VERSION_JSON_KEY, Definition.Version.ToString());
+
+		writer.WritePropertyName(VALUES_JSON_KEY);
+		writer.WriteStartObject();
+
+		foreach (var key in Definition.ConfigurationItemDefinitions) {
+			if (key.TryGetValue(out object? writtenValue)) {
+				// write
+			}
+			else if (saveDefaultValues && key.TryComputeDefault(out writtenValue)) {
+				// write
+			}
+			else {
+				continue;
+			}
+			writer.WritePropertyName(key.Name);
+			if (writtenValue == null) {
+				writer.WriteNullValue();
+				continue;
+			}
+			DynamicJsonConverter.WriteDynamic(writer, key.ValueType(), writtenValue, options);
+		}
+
+		writer.WriteEndObject();
+		writer.WriteEndObject();
 	}
 
 	private void FireConfigurationChangedEvent(ModConfigurationKey key, string? label) {
