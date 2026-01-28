@@ -59,7 +59,7 @@ internal sealed class ModConfigurationConverter : JsonConverter<ModConfiguration
 		reader.Read();
 
 		if (!AreVersionsCompatible(version, ctx.definition!.Version)) {
-			var handlingMode = ctx.mod!.HandleIncompatibleConfigurationVersions(ctx.definition.Version, version);
+			var handlingMode = ctx.mod!.HandleIncompatibleConfigurationVersions(version, ctx.definition.Version);
 			switch (handlingMode) {
 				case IncompatibleConfigurationHandlingOption.CLOBBER:
 					Logger.WarnInternal($"{ctx.mod.Name} saved config version is {version} which is incompatible with mod's definition version {ctx.definition.Version}. Clobbering old config and starting fresh.");
