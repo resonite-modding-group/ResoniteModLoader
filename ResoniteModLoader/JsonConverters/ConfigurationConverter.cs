@@ -43,26 +43,30 @@ internal sealed class ModConfigurationConverter : JsonConverter<ModConfiguration
 		if (reader.TokenType != JsonTokenType.StartObject) {
 			throw new JsonException($"Expected an object, got {reader.TokenType}");
 		}
-		reader.ReadOrThrow(); // Consume start of object
+		reader.Read(); // Consume start of object
 
 		// Read "version": "..."
 
 		if (reader.GetString() != VERSION_JSON_KEY) {
 			throw new JsonException($"Expected first property to be '{VERSION_JSON_KEY}'");
 		}
-		reader.ReadOrThrow();
+		reader.Read();
 
 		var versionString = reader.GetString()
 			?? throw new JsonException("Version string is null");
 		Logger.MsgInternal($"Version: '{versionString}'");
 		Version version = new(versionString);
-		reader.ReadOrThrow();
+		reader.Read();
 
 		if (!AreVersionsCompatible(version, ctx.definition!.Version)) {
 			var handlingMode = ctx.mod!.HandleIncompatibleConfigurationVersions(ctx.definition.Version, version);
 			switch (handlingMode) {
 				case IncompatibleConfigurationHandlingOption.CLOBBER:
 					Logger.WarnInternal($"{ctx.mod.Name} saved config version is {version} which is incompatible with mod's definition version {ctx.definition.Version}. Clobbering old config and starting fresh.");
+
+					while (reader.TokenType != JsonTokenType.EndObject)
+						reader.Skip();
+
 					return new ModConfiguration(ctx.definition!);
 				case IncompatibleConfigurationHandlingOption.FORCELOAD:
 					break;
@@ -77,18 +81,18 @@ internal sealed class ModConfigurationConverter : JsonConverter<ModConfiguration
 
 		if (reader.GetString() != VALUES_JSON_KEY)
 			throw new JsonException($"Expected second property to be '{VALUES_JSON_KEY}'");
-		reader.ReadOrThrow();
+		reader.Read();
 
 		if (reader.TokenType != JsonTokenType.StartObject)
 			throw new JsonException($"Expected an object, got {reader.TokenType}");
-		reader.ReadOrThrow(); // Consume start of object
+		reader.Read(); // Consume start of object
 
 		var keys = ctx.definition.ConfigurationItemDefinitions.ToDictionary(key => key.Name);
 
 		while (reader.TokenType != JsonTokenType.EndObject) {
 			var name = reader.GetString()
 				?? throw new JsonException("Object key is null");
-			reader.ReadOrThrow();
+			reader.Read();
 
 			// Ignore unknown keys
 			if (!keys.TryGetValue(name, out var key)) {
@@ -98,9 +102,9 @@ internal sealed class ModConfigurationConverter : JsonConverter<ModConfiguration
 
 			var value = ReadGeneric(ref reader, key.ValueType(), options);
 			key.Set(value);
-			reader.ReadOrThrow();
+			reader.Read();
 		}
-		reader.ReadOrThrow(); // Consume end of object
+		reader.Read(); // Consume end of object
 
 		if (reader.TokenType != JsonTokenType.EndObject) {
 			throw new JsonException($"Extra keys in configuration object");
@@ -188,12 +192,5 @@ internal sealed class ModConfigurationConverter : JsonConverter<ModConfiguration
 			var converter = (JsonConverter<T?>)options.GetConverter(typeof(T));
 			converter.Write(writer, (T?)value, options);
 		}
-	}
-}
-
-internal static class Utf8JsonReaderExt {
-	public static void ReadOrThrow(this ref Utf8JsonReader reader) {
-		if (!reader.Read())
-			throw new JsonException();
 	}
 }
