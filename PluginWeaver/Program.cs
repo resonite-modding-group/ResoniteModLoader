@@ -1,8 +1,5 @@
 using System.Reflection;
 
-using Mono.Cecil;
-using Mono.Cecil.Pdb;
-
 if (args.Length != 1) {
 	Console.WriteLine("Missing DLL argument.");
 	return 1;
@@ -29,35 +26,15 @@ currentDomain.AssemblyResolve += new ResolveEventHandler((_, args) => {
 // This makes Mono.Cecil correctly resolve DLLs
 Directory.SetCurrentDirectory(resonite);
 
-var asmBefore = AssemblyDefinition.ReadAssembly(dllToProcess);
-Version originalVersion = asmBefore.Name.Version;
-Console.WriteLine($"Original Version: {originalVersion}");
-asmBefore.Dispose();
+var version = Util.ReadAssemblyVersion(dllToProcess);
+Console.WriteLine($"Original Version: {version}");
 
 // Process the provided DLL
 Weaver.Process(dllToProcess, resonite);
 
-//If Resonite no longer rewrites the originalVersion to a datetime, we can remove this.
-//Rewrite originalVersion on DLL
-var asmAfter = AssemblyDefinition.ReadAssembly(dllToProcess,new ReaderParameters() { ReadWrite = true});
-// Write [assembly: AssemblyVersion("4.2.0.0")]
-asmAfter.Name.Version = originalVersion;
-// Write [assembly: AssemblyFileVersion("4.2.0")]
-CustomAttribute? afv = asmAfter.CustomAttributes.FirstOrDefault(ca => ca.AttributeType.Name == "AssemblyFileVersionAttribute");
-if (afv != null) {
-	afv.ConstructorArguments.RemoveAt(0);
-	afv.ConstructorArguments.Add(new CustomAttributeArgument(asmAfter.MainModule.ImportReference(typeof(string)), originalVersion.ToString(3)));
-}
+Util.WriteAssemblyVersion(dllToProcess, version);
 
-bool symbolsExist = File.Exists(Path.ChangeExtension(dllToProcess, ".pdb"));
-asmAfter.Write(new WriterParameters {
-	WriteSymbols = symbolsExist,
-	SymbolWriterProvider = (symbolsExist ? new PdbWriterProvider() : null)
-});
-asmAfter.Dispose();
-
-var asmVerify = AssemblyDefinition.ReadAssembly(dllToProcess);
-Console.WriteLine($"Wrote new Version as {asmVerify.Name.Version}");
-asmVerify.Dispose();
+var newVersion = Util.ReadAssemblyVersion(dllToProcess);
+Console.WriteLine($"Wrote new Version: {newVersion}");
 
 return 0;
