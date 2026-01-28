@@ -40,7 +40,15 @@ Weaver.Process(dllToProcess, resonite);
 //If Resonite no longer rewrites the originalVersion to a datetime, we can remove this.
 //Rewrite originalVersion on DLL
 var asmAfter = AssemblyDefinition.ReadAssembly(dllToProcess,new ReaderParameters() { ReadWrite = true});
-asmAfter.Name.Version = originalVersion; // Writes [assembly: AssemblyVersion("4.2.0.0")]
+// Write [assembly: AssemblyVersion("4.2.0.0")]
+asmAfter.Name.Version = originalVersion;
+// Write [assembly: AssemblyFileVersion("4.2.0")]
+CustomAttribute afv = asmAfter.CustomAttributes.FirstOrDefault((CustomAttribute ca) => ca.AttributeType.Name == "AssemblyFileVersionAttribute");
+if (afv != null) {
+	afv.ConstructorArguments.RemoveAt(0);
+	afv.ConstructorArguments.Add(new CustomAttributeArgument(asmAfter.MainModule.ImportReference(typeof(string)), originalVersion.ToString(3)));
+}
+
 bool symbolsExist = File.Exists(Path.ChangeExtension(dllToProcess, ".pdb"));
 asmAfter.Write(new WriterParameters {
 	WriteSymbols = symbolsExist,
