@@ -43,13 +43,10 @@ jobs:
 # /rml_mods/
       - name: Build installer
         run: |
-          mkdir installer
+          mkdir -p installer/{Libraries,rml_libs,rml_mods}
+          cp release/{*.dll,*.xml} installer/Libraries/
+          unzip -p Lib.Harmony.nupkg lib/net10.0/0Harmony.dll > installer/rml_libs/0Harmony.dll
           cd installer
-          mkdir Libraries
-          cp "${{ github.workspace }}/release/*.dll" "${{ github.workspace }}/release/*.xml" Libraries/
-          mkdir rml_libs
-          unzip -p Lib.Harmony.nupkg lib/net10.0/0Harmony.dll > rml_libs/0Harmony.dll
-          mkdir rml_mods
           zip ${{ github.workspace }}/ResoniteModLoader.zip *
 
       - name: Create Release
