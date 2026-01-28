@@ -170,7 +170,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 		};
 	}
 
-	internal ModConfiguration(ModConfigurationDefinition definition) {
+	private ModConfiguration(ModConfigurationDefinition definition) {
 		Definition = definition;
 	}
 
