@@ -1,5 +1,5 @@
 using System.Diagnostics;
-
+using System.Globalization;
 using FrooxEngine;
 
 using HarmonyLib;
@@ -421,7 +421,7 @@ public class ModConfiguration : IModConfigurationDefinition {
 		} catch (Exception e) {
 			// I know not what exceptions the JSON library will throw, but they must be contained
 			mod.AllowSavingConfiguration = false;
-			var backupPath = configFile + "." + Convert.ToBase64String(Encoding.UTF8.GetBytes(((int)DateTimeOffset.Now.TimeOfDay.TotalSeconds).ToString("X"))) + ".bak"; //ExampleMod.json.40A4.bak, unlikely to already exist
+			var backupPath = configFile + "." + Convert.ToBase64String(Encoding.UTF8.GetBytes(((int)DateTimeOffset.Now.TimeOfDay.TotalSeconds).ToString("X", CultureInfo.InvariantCulture))) + ".bak"; //ExampleMod.json.40A4.bak, unlikely to already exist
 			Logger.ErrorInternal($"Error loading config for {mod.Name}, creating new config file (old file can be found at {backupPath}). Exception:\n{e}");
 			File.Move(configFile, backupPath);
 		}
