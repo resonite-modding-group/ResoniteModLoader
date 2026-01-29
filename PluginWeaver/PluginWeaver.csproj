@@ -13,8 +13,8 @@
 			<HintPath>$(ResonitePath)Mono.Cecil.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
-		<Reference Include="Mono.Cecil.Pdb">
-			<HintPath>$(ResonitePath)Mono.Cecil.Pdb.dll</HintPath>
+		<Reference Include="Mono.Cecil.Cil">
+			<HintPath>$(ResonitePath)Mono.Cecil.Cil.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 	</ItemGroup>

@@ -1,5 +1,5 @@
 using Mono.Cecil;
-using Mono.Cecil.Pdb;
+using Mono.Cecil.Cil;
 static class Util {
 	public static Version ReadAssemblyVersion(string dllToProcess) {
 		using var asmBefore = AssemblyDefinition.ReadAssembly(dllToProcess);
@@ -22,7 +22,7 @@ static class Util {
 
 		asmAfter.Write(new WriterParameters {
 			WriteSymbols = symbolsExist,
-			SymbolWriterProvider = (symbolsExist ? new PdbWriterProvider() : null)
+			SymbolWriterProvider = (symbolsExist ? new PortablePdbWriterProvider() : null)
 		});
 	}
 }
