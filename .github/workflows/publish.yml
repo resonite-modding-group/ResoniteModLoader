@@ -75,4 +75,6 @@ jobs:
           path: ${{ github.workspace }}/nupkgs
 
       - name: Publish package to registry
-        run: dotnet nuget push "${{ github.workspace }}/nupkgs/*.nupkg" --api-key "${{ secrets.NUGET_APIKEY }}" --source "${{ env.NUGET_REGISTRY_URL }}"
+        run: |
+          dotnet nuget push "${{ github.workspace }}/nupkgs/*.nupkg" --api-key "${{ secrets.NUGET_APIKEY }}" --source "${{ env.NUGET_REGISTRY_URL }}"
+          dotnet nuget push "${{ github.workspace }}/nupkgs/*.snupkg" --api-key "${{ secrets.NUGET_APIKEY }}" --source "${{ env.NUGET_REGISTRY_URL }}"

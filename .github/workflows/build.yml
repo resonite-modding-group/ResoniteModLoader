@@ -5,6 +5,7 @@ on:
   workflow_call: {}
 
 env:
+  CI_BUILD: true
   ARTIFACT_DIR: ResoniteModLoader/bin/Release/net10.0/
   NUGET_DIR: ResoniteModLoader/bin/Release/
 
@@ -62,7 +63,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: NuGet Packages
-          path: "${{ env.NUGET_DIR }}*.nupkg"
+          path: |
+            ${{ env.NUGET_DIR }}*.nupkg
+            ${{ env.NUGET_DIR }}*.snupkg
           if-no-files-found: error
 
       - name: Attest

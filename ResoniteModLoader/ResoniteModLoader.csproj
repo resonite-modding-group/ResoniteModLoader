@@ -16,10 +16,7 @@
 		<Authors>resonite-modding-group, DeltaWolf</Authors>
 		<Description>A modloader for Resonite</Description>
 		<Copyright>Copyright © 2026</Copyright>
-		<PackageTags>mod mods modding modloader harmony resonite game resonitemodloader frooxengine</PackageTags>
-		<PackageProjectUrl>https://github.com/resonite-modding-group/ResoniteModLoader</PackageProjectUrl>
-		<RepositoryUrl>$(PackageProjectUrl).git</RepositoryUrl>
-		<PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
+		<PackageTags>mod;mods;modding;modloader;harmony;resonite;game;resonitemodloader;frooxengine</PackageTags>
 		<PackageIcon>icon.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
