@@ -58,13 +58,7 @@ public sealed partial class ModLoader {
 			<HintPath>$(ResonitePath)Elements.Core.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
-		<Reference Include="Elements.Quantity">
-			<HintPath>$(ResonitePath)Elements.Quantity.dll</HintPath>
-			<Private>False</Private>
-			<!-- Prevents ambiguity for System type ExtensionAttribute which is also defined here -->
-			<Aliases>quantity</Aliases>
-		</Reference>
-			<Reference Include="Elements.Data">
+		<Reference Include="Elements.Data">
 			<HintPath>$(ResonitePath)Elements.Data.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
