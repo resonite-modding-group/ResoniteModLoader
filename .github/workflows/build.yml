@@ -116,4 +116,4 @@ jobs:
           path: ${{ github.workspace }}/nupkgs
 
       - name: Validate
-        run: meziantou.validate-nuget-package "${{ github.workspace }}/nupkgs/*.nupkg"
+        run: meziantou.validate-nuget-package (Get-ChildItem "${{ github.workspace }}/*.nupkg")
