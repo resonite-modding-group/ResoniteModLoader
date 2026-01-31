@@ -53,14 +53,14 @@ jobs:
           ResonitePath: ${{ steps.resonite.outputs.resonite-path }}/
 
       - name: ResoniteModLoader Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ResoniteModLoader
           path: "${{ env.ARTIFACT_DIR }}*"
           if-no-files-found: error
 
       - name: NuGet Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: NuGet Packages
           path: |
@@ -80,7 +80,7 @@ jobs:
           ResonitePath: ${{ steps.resonite.outputs.resonite-path }}/
 
       - name: Weaved ResoniteModLoader Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ResoniteModLoader Weaved
           path: "${{ env.ARTIFACT_DIR }}*"
