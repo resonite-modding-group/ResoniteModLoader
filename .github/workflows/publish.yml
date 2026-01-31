@@ -31,7 +31,7 @@ jobs:
         run: curl -L https://www.nuget.org/api/v2/package/Lib.Harmony/${{ env.HARMONY_VERSION }} --output Lib.Harmony.nupkg
 
       - name: Get Weaved ResoniteModLoader Artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: ResoniteModLoader Weaved
           path: ${{ github.workspace }}/release
@@ -69,7 +69,7 @@ jobs:
           dotnet-version: 10.x
 
       - name: Get NuGet Artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: NuGet Packages
           path: ${{ github.workspace }}/nupkgs
