@@ -63,10 +63,6 @@ public sealed partial class ModLoader {
 			<HintPath>$(ResonitePath)Elements.Data.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
-		<Reference Include="Newtonsoft.Json">
-			<HintPath>$(ResonitePath)Newtonsoft.Json.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
 	</ItemGroup>
 
 	<ItemGroup>

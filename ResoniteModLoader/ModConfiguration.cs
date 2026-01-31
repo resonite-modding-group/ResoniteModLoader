@@ -1,11 +1,11 @@
 using System.Diagnostics;
-
+using System.Globalization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using FrooxEngine;
 
 using HarmonyLib;
-
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 using ResoniteModLoader.JsonConverters;
 
@@ -123,39 +123,52 @@ public class ModConfiguration : IModConfigurationDefinition {
 	public event ConfigurationChangedHandler? OnThisConfigurationChanged;
 
 	// used to track how frequenly Save() is being called
-	private Stopwatch saveTimer = new();
+	private readonly Stopwatch saveTimer = new();
 
 	// time that save must not be called for a save to actually go through
-	private int debounceMilliseconds = 3000;
+	private const int DEBOUNCE_MILLIS = 3000;
 
 	// used to keep track of mods that spam Save():
 	// any mod that calls Save() for the ModConfiguration within debounceMilliseconds of the previous call to the same ModConfiguration
 	// will be put into Ultimate Punishment Mode, and ALL their Save() calls, regardless of ModConfiguration, will be debounced.
 	// The naughty list is global, while the actual debouncing is per-configuration.
-	private static HashSet<string> naughtySavers = [];
+	private static readonly HashSet<string> naughtySavers = [];
 
 	// used to keep track of the debouncers for this configuration.
-	private Dictionary<string, Action<bool>> saveActionForCallee = [];
+	private readonly Dictionary<string, Action<bool>> saveActionForCallee = [];
 
-	private static readonly JsonSerializer jsonSerializer = CreateJsonSerializer();
+	private static readonly JsonSerializerOptions jsonSerializerOptions;
+	private static readonly JsonReaderOptions jsonReaderOptions;
+	private static readonly JsonWriterOptions jsonWriterOptions;
 
-	private static JsonSerializer CreateJsonSerializer() {
-		JsonSerializerSettings settings = new() {
+	static ModConfiguration() {
+		JsonSerializerOptions options = new(JsonSerializerDefaults.Strict) {
 			MaxDepth = 32,
-			ReferenceLoopHandling = ReferenceLoopHandling.Error,
-			DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate,
-			Formatting = Formatting.Indented
+			ReferenceHandler = ReferenceHandler.IgnoreCycles,
+			DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
+			WriteIndented = true,
+			IndentSize = 2,
+			TypeInfoResolver = new DefaultJsonTypeInfoResolver(),
 		};
-		List<JsonConverter> converters = [];
-		IList<JsonConverter> defaultConverters = settings.Converters;
-		if (defaultConverters != null && defaultConverters.Count != 0) {
-			Logger.DebugFuncInternal(() => $"Using {defaultConverters.Count} default json converters");
-			converters.AddRange(defaultConverters);
+		var converters = options.Converters;
+		if (converters.Count != 0) {
+			Logger.DebugFuncInternal(() => $"Using {converters.Count} default json converters");
 		}
 		converters.Add(new EnumConverter());
 		converters.Add(new ResonitePrimitiveConverter());
-		settings.Converters = converters;
-		return JsonSerializer.Create(settings);
+		options.MakeReadOnly();
+		jsonSerializerOptions = options;
+
+		jsonReaderOptions = new() {
+			MaxDepth = options.MaxDepth,
+			AllowMultipleValues = false,
+		};
+
+		jsonWriterOptions = new() {
+			Indented = options.WriteIndented,
+			IndentSize = options.IndentSize,
+			IndentCharacter = ' ',
+		};
 	}
 
 	private ModConfiguration(ModConfigurationDefinition definition) {
@@ -173,23 +186,6 @@ public class ModConfiguration : IModConfigurationDefinition {
 
 		string filename = Path.ChangeExtension(Path.GetFileName(mod.ModAssembly.File), ".json");
 		return Path.Combine(ConfigDirectory, filename);
-	}
-
-	private static bool AreVersionsCompatible(Version serializedVersion, Version currentVersion) {
-		if (serializedVersion.Major != currentVersion.Major) {
-			// major version differences are hard incompatible
-			return false;
-		}
-
-		if (serializedVersion.Minor > currentVersion.Minor) {
-			// if serialized config has a newer minor version than us
-			// in other words, someone downgraded the mod but not the config
-			// then we cannot load the config
-			return false;
-		}
-
-		// none of the checks failed!
-		return true;
 	}
 
 	/// <summary>
@@ -379,54 +375,117 @@ public class ModConfiguration : IModConfigurationDefinition {
 		string configFile = GetModConfigPath(mod);
 
 		try {
-			using StreamReader file = File.OpenText(configFile);
-			using JsonTextReader reader = new(file);
-			JObject json = JObject.Load(reader);
-			string? versionString = json[VERSION_JSON_KEY]?.ToObject<string>(jsonSerializer);
-			if (versionString == null) {
-				throw new ModConfigurationException($"Missing version in config for {mod.Name}");
-			}
-			Version version = new(versionString);
-			if (!AreVersionsCompatible(version, definition.Version)) {
-				var handlingMode = mod.HandleIncompatibleConfigurationVersions(definition.Version, version);
-				switch (handlingMode) {
-					case IncompatibleConfigurationHandlingOption.CLOBBER:
-						Logger.WarnInternal($"{mod.Name} saved config version is {version} which is incompatible with mod's definition version {definition.Version}. Clobbering old config and starting fresh.");
-						return new ModConfiguration(definition);
-					case IncompatibleConfigurationHandlingOption.FORCELOAD:
-						break;
-					case IncompatibleConfigurationHandlingOption.ERROR: // fall through to default
-					default:
-						mod.AllowSavingConfiguration = false;
-						throw new ModConfigurationException($"{mod.Name} saved config version is {version} which is incompatible with mod's definition version {definition.Version}");
-				}
-			}
-			foreach (ModConfigurationKey key in definition.ConfigurationItemDefinitions) {
-				string keyName = key.Name;
-				try {
-					JToken? token = json[VALUES_JSON_KEY]?[keyName];
-					if (token != null) {
-						object? value = token.ToObject(key.ValueType(), jsonSerializer);
-						key.Set(value);
-					}
-				} catch (Exception e) {
-					// I know not what exceptions the JSON library will throw, but they must be contained
-					mod.AllowSavingConfiguration = false;
-					throw new ModConfigurationException($"Error loading {key.ValueType()} config key \"{keyName}\" for {mod.Name}", e);
-				}
-			}
+			var file = File.ReadAllBytes(configFile);
+			Utf8JsonReader reader = new(file, jsonReaderOptions);
+			return ReadModConfiguration(ref reader, jsonSerializerOptions, definition, mod);
 		} catch (FileNotFoundException) {
 			// return early and create a new config
 			return new ModConfiguration(definition);
 		} catch (Exception e) {
 			// I know not what exceptions the JSON library will throw, but they must be contained
 			mod.AllowSavingConfiguration = false;
-			var backupPath = configFile + "." + Convert.ToBase64String(Encoding.UTF8.GetBytes(((int)DateTimeOffset.Now.TimeOfDay.TotalSeconds).ToString("X"))) + ".bak"; //ExampleMod.json.40A4.bak, unlikely to already exist
+			var hex = ((int)DateTimeOffset.Now.TimeOfDay.TotalSeconds).ToString("X", CultureInfo.InvariantCulture);
+			var backupPath = configFile + "." + Convert.ToBase64String(Encoding.UTF8.GetBytes(hex)) + ".bak"; //ExampleMod.json.40A4.bak, unlikely to already exist
 			Logger.ErrorInternal($"Error loading config for {mod.Name}, creating new config file (old file can be found at {backupPath}). Exception:\n{e}");
 			File.Move(configFile, backupPath);
 		}
 
 		return new ModConfiguration(definition);
+	}
+
+	private static ModConfiguration ReadModConfiguration(
+		ref Utf8JsonReader reader,
+		JsonSerializerOptions options,
+		ModConfigurationDefinition definition,
+		ResoniteMod mod
+	) {
+		reader.Read();
+		if (reader.TokenType != JsonTokenType.StartObject) {
+			throw new JsonException($"Expected an object, got {reader.TokenType}");
+		}
+		reader.Read(); // Consume start of object
+
+		// Read "version": "..."
+
+		if (reader.GetString() != VERSION_JSON_KEY) {
+			throw new JsonException($"Expected first property to be '{VERSION_JSON_KEY}'");
+		}
+		reader.Read();
+
+		var versionString = reader.GetString()
+			?? throw new JsonException("Version string is null");
+		Logger.MsgInternal($"Version: '{versionString}'");
+		Version version = new(versionString);
+		reader.Read();
+
+		if (!AreVersionsCompatible(version, definition.Version)) {
+			var handlingMode = mod.HandleIncompatibleConfigurationVersions(version, definition.Version);
+			switch (handlingMode) {
+				case IncompatibleConfigurationHandlingOption.CLOBBER:
+					Logger.WarnInternal($"{mod.Name} saved config version is {version} which is incompatible with mod's definition version {definition.Version}. Clobbering old config and starting fresh.");
+					return new ModConfiguration(definition);
+				case IncompatibleConfigurationHandlingOption.FORCELOAD:
+					break;
+				case IncompatibleConfigurationHandlingOption.ERROR: // fall through to default
+				default:
+					mod.AllowSavingConfiguration = false;
+					throw new ModConfigurationException($"{mod.Name} saved config version is {version} which is incompatible with mod's definition version {definition.Version}");
+			}
+		}
+
+		// Read "values": { ... }
+
+		if (reader.GetString() != VALUES_JSON_KEY)
+			throw new JsonException($"Expected second property to be '{VALUES_JSON_KEY}'");
+		reader.Read();
+
+		if (reader.TokenType != JsonTokenType.StartObject)
+			throw new JsonException($"Expected an object, got {reader.TokenType}");
+		reader.Read(); // Consume start of object
+
+		var keys = definition.ConfigurationItemDefinitions.ToDictionary(key => key.Name);
+
+		while (reader.TokenType != JsonTokenType.EndObject) {
+			var name = reader.GetString()
+				?? throw new JsonException("Object key is null");
+			reader.Read();
+
+			// Ignore unknown keys
+			if (!keys.TryGetValue(name, out var key)) {
+				Logger.WarnInternal($"{mod.Name} saved config version contains entry '{name}' which does not exist in its configuration definition");
+				continue;
+			}
+
+			var value = DynamicJsonConverter.Read(ref reader, key.ValueType(), options);
+			key.Set(value);
+			reader.Read();
+		}
+		reader.Read(); // Consume end of object
+
+		if (reader.TokenType != JsonTokenType.EndObject) {
+			throw new JsonException($"Extra keys in configuration object");
+		}
+
+		// Exit on end object token
+
+		return new(definition);
+	}
+
+	private static bool AreVersionsCompatible(Version serializedVersion, Version currentVersion) {
+		if (serializedVersion.Major != currentVersion.Major) {
+			// major version differences are hard incompatible
+			return false;
+		}
+
+		if (serializedVersion.Minor > currentVersion.Minor) {
+			// if serialized config has a newer minor version than us
+			// in other words, someone downgraded the mod but not the config
+			// then we cannot load the config
+			return false;
+		}
+
+		// none of the checks failed!
+		return true;
 	}
 
 	/// <summary>
@@ -457,18 +516,18 @@ public class ModConfiguration : IModConfigurationDefinition {
 		// get saved state for this callee
 		if (callee != null && naughtySavers.Contains(callee.Name) && !saveActionForCallee.TryGetValue(callee.Name, out saveAction)) {
 			// handle case where the callee was marked as naughty from a different ModConfiguration being spammed
-			saveAction = Util.Debounce<bool>(SaveInternal, debounceMilliseconds);
+			saveAction = Util.Debounce<bool>(SaveInternal, DEBOUNCE_MILLIS);
 			saveActionForCallee.Add(callee.Name, saveAction);
 		}
 
 		if (saveTimer.IsRunning) {
 			float elapsedMillis = saveTimer.ElapsedMilliseconds;
 			saveTimer.Restart();
-			if (elapsedMillis < debounceMilliseconds) {
-				Logger.WarnInternal($"ModConfiguration.Save({saveDefaultValues}) called for \"{Owner.Name}\" by \"{callee?.Name}\" from thread with id=\"{thread.ManagedThreadId}\", name=\"{thread.Name}\", bg=\"{thread.IsBackground}\", pool=\"{thread.IsThreadPoolThread}\". Last called {elapsedMillis / 1000f}s ago. This is very recent! Do not spam calls to ModConfiguration.Save()! All Save() calls by this mod are now subject to a {debounceMilliseconds}ms debouncing delay.");
+			if (elapsedMillis < DEBOUNCE_MILLIS) {
+				Logger.WarnInternal($"ModConfiguration.Save({saveDefaultValues}) called for \"{Owner.Name}\" by \"{callee?.Name}\" from thread with id=\"{thread.ManagedThreadId}\", name=\"{thread.Name}\", bg=\"{thread.IsBackground}\", pool=\"{thread.IsThreadPoolThread}\". Last called {elapsedMillis / 1000f}s ago. This is very recent! Do not spam calls to ModConfiguration.Save()! All Save() calls by this mod are now subject to a {DEBOUNCE_MILLIS}ms debouncing delay.");
 				if (saveAction == null && callee != null) {
 					// congrats, you've switched into Ultimate Punishment Mode where now I don't trust you and your Save() calls get debounced
-					saveAction = Util.Debounce<bool>(SaveInternal, debounceMilliseconds);
+					saveAction = Util.Debounce<bool>(SaveInternal, DEBOUNCE_MILLIS);
 					saveActionForCallee.Add(callee.Name, saveAction);
 					naughtySavers.Add(callee.Name);
 				}
@@ -501,26 +560,43 @@ public class ModConfiguration : IModConfigurationDefinition {
 	/// <param name="saveDefaultValues">If true, default values will also be persisted</param>
 	private void SaveInternal(bool saveDefaultValues = false) {
 		Stopwatch stopwatch = Stopwatch.StartNew();
-		JObject json = new() {
-			[VERSION_JSON_KEY] = JToken.FromObject(Definition.Version.ToString(), jsonSerializer)
-		};
-
-		JObject valueMap = [];
-		foreach (ModConfigurationKey key in ConfigurationItemDefinitions) {
-			if (key.TryGetValue(out object? value)) {
-				valueMap[key.Name] = value == null ? null : JToken.FromObject(value, jsonSerializer);
-			} else if (saveDefaultValues && key.TryComputeDefault(out object? defaultValue)) {
-				valueMap[key.Name] = defaultValue == null ? null : JToken.FromObject(defaultValue, jsonSerializer);
-			}
-		}
-
-		json[VALUES_JSON_KEY] = valueMap;
-
 		string configFile = GetModConfigPath(Owner);
 
-		File.WriteAllText(configFile, json.ToString());
+		using var file = File.Open(configFile, FileMode.Create, FileAccess.Write);
+		using Utf8JsonWriter writer = new(file, jsonWriterOptions);
+		WriteModConfiguration(writer, jsonSerializerOptions, saveDefaultValues);
 
 		Logger.DebugFuncInternal(() => $"Saved ModConfiguration for \"{Owner.Name}\" in {stopwatch.ElapsedMilliseconds}ms");
+	}
+
+	private void WriteModConfiguration(Utf8JsonWriter writer, JsonSerializerOptions options, bool saveDefaultValues) {
+		writer.WriteStartObject();
+
+		writer.WriteString(VERSION_JSON_KEY, Definition.Version.ToString());
+
+		writer.WritePropertyName(VALUES_JSON_KEY);
+		writer.WriteStartObject();
+
+		foreach (var key in Definition.ConfigurationItemDefinitions) {
+			if (key.TryGetValue(out object? writtenValue)) {
+				// write
+			}
+			else if (saveDefaultValues && key.TryComputeDefault(out writtenValue)) {
+				// write
+			}
+			else {
+				continue;
+			}
+			writer.WritePropertyName(key.Name);
+			if (writtenValue == null) {
+				writer.WriteNullValue();
+				continue;
+			}
+			DynamicJsonConverter.Write(writer, key.ValueType(), writtenValue, options);
+		}
+
+		writer.WriteEndObject();
+		writer.WriteEndObject();
 	}
 
 	private void FireConfigurationChangedEvent(ModConfigurationKey key, string? label) {
