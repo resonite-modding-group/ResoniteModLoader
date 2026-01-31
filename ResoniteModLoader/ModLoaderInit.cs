@@ -3,7 +3,7 @@ using System.Diagnostics;
 using ResoniteModLoader.Locale;
 
 namespace ResoniteModLoader;
-internal class ModLoaderInit {
+internal static class ModLoaderInit {
 
 	internal static void Initialize() {
 		Logger.DebugInternal($"Start of ModLoader Initialization");

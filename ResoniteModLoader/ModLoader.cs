@@ -1,3 +1,4 @@
+using System.Globalization;
 using HarmonyLib;
 
 namespace ResoniteModLoader;
@@ -80,7 +81,7 @@ public sealed partial class ModLoader {
 				StringBuilder sb = new();
 				sb.AppendLine(reflectionTypeLoadException.ToString());
 				foreach (Exception? loaderException in reflectionTypeLoadException.LoaderExceptions) {
-					sb.AppendLine($"Loader Exception: {loaderException?.Message}");
+					sb.AppendLine(CultureInfo.InvariantCulture, $"Loader Exception: {loaderException?.Message}");
 					if (loaderException is FileNotFoundException fileNotFoundException) {
 						if (!string.IsNullOrEmpty(fileNotFoundException.FusionLog)) {
 							sb.Append("    Fusion Log:\n    ");
