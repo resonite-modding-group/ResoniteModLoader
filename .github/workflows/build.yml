@@ -29,7 +29,7 @@ jobs:
           steam-password: ${{ secrets.STEAMPASS }}
 
       - name: Restore NuGet Package Cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
@@ -41,7 +41,7 @@ jobs:
 
       - name: Save NuGet Package Cache
         if: ${{ github.event_name != 'pull_request' }}
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
@@ -102,7 +102,7 @@ jobs:
           dotnet-version: 10.x
 
       - name: Restore NuGet Package Cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
