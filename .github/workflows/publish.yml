@@ -31,7 +31,7 @@ jobs:
         run: curl -L https://www.nuget.org/api/v2/package/Lib.Harmony/${{ env.HARMONY_VERSION }} --output Lib.Harmony.nupkg
 
       - name: Get Weaved ResoniteModLoader Artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: ResoniteModLoader Weaved
           path: ${{ github.workspace }}/release
@@ -43,13 +43,10 @@ jobs:
 # /rml_mods/
       - name: Build installer
         run: |
-          mkdir installer
+          mkdir -p installer/{Libraries,rml_libs,rml_mods}
+          cp release/{*.dll,*.xml} installer/Libraries/
+          unzip -p Lib.Harmony.nupkg lib/net10.0/0Harmony.dll > installer/rml_libs/0Harmony.dll
           cd installer
-          mkdir Libraries
-          cp "${{ github.workspace }}/release/*.dll" "${{ github.workspace }}/release/*.xml" Libraries/
-          mkdir rml_libs
-          unzip -p Lib.Harmony.nupkg lib/net10.0/0Harmony.dll > rml_libs/0Harmony.dll
-          mkdir rml_mods
           zip ${{ github.workspace }}/ResoniteModLoader.zip *
 
       - name: Create Release
@@ -67,15 +64,17 @@ jobs:
     needs: [build]
     steps:
       - name: Setup Dotnet
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 10.x
 
       - name: Get NuGet Artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: NuGet Packages
           path: ${{ github.workspace }}/nupkgs
 
       - name: Publish package to registry
-        run: dotnet nuget push "${{ github.workspace }}/nupkgs/*.nupkg" --api-key "${{ secrets.NUGET_APIKEY }}" --source "${{ env.NUGET_REGISTRY_URL }}"
+        run: |
+          dotnet nuget push "${{ github.workspace }}/nupkgs/*.nupkg" --api-key "${{ secrets.NUGET_APIKEY }}" --source "${{ env.NUGET_REGISTRY_URL }}"
+          dotnet nuget push "${{ github.workspace }}/nupkgs/*.snupkg" --api-key "${{ secrets.NUGET_APIKEY }}" --source "${{ env.NUGET_REGISTRY_URL }}"
