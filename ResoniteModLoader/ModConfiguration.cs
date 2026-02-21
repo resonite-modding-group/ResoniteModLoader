@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Globalization;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
@@ -149,6 +150,8 @@ public class ModConfiguration : IModConfigurationDefinition {
 			WriteIndented = true,
 			IndentSize = 2,
 			TypeInfoResolver = new DefaultJsonTypeInfoResolver(),
+			// No need to escape `<`, `>`, `&`, etc. We are not interfacing with JavaScript
+			Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
 		};
 		var converters = options.Converters;
 		if (converters.Count != 0) {
