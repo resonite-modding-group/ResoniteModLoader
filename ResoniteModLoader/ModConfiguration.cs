@@ -168,8 +168,10 @@ public class ModConfiguration : IModConfigurationDefinition {
 		};
 
 		jsonWriterOptions = new() {
+			MaxDepth = options.MaxDepth,
 			Indented = options.WriteIndented,
 			IndentSize = options.IndentSize,
+			Encoder = options.Encoder,
 			IndentCharacter = ' ',
 		};
 	}
