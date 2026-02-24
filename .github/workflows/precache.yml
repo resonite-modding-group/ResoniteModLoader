@@ -1,11 +1,11 @@
-name: Build Resonite cache
+name: Precache Resonite
 
 on:
   workflow_dispatch: {}
 
 jobs:
   build:
-    name: build-ubuntu
+    name: precache-resonite
     runs-on: ubuntu-latest
     permissions:
       id-token: write
