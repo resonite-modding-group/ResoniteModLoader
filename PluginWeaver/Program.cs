@@ -20,7 +20,7 @@ currentDomain.AssemblyResolve += new ResolveEventHandler((_, args) => {
 	var assemblyPath = Path.Combine(resonite, new AssemblyName(args.Name).Name + ".dll");
 	if (!File.Exists(assemblyPath)) return null;
 	var assembly = Assembly.LoadFrom(assemblyPath);
-    return assembly;
+	return assembly;
 });
 
 // This makes Mono.Cecil correctly resolve DLLs

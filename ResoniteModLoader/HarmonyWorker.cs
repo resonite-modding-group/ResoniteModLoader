@@ -1,8 +1,4 @@
-using FrooxEngine;
-
 using HarmonyLib;
-
-using ResoniteModLoader.Locale;
 
 namespace ResoniteModLoader;
 // this class does all the harmony-related RML work.

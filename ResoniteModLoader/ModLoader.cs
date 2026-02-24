@@ -1,4 +1,5 @@
 using System.Globalization;
+
 using HarmonyLib;
 
 namespace ResoniteModLoader;
@@ -32,8 +33,7 @@ public sealed partial class ModLoader {
 				return types.Any(t => {
 					try {
 						return t != null && t.Namespace == "FrooxEngine.Headless";
-					}
-					catch {
+					} catch {
 						return false;
 					}
 				}
