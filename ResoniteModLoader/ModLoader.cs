@@ -52,7 +52,6 @@ public sealed partial class ModLoader {
 	public static IEnumerable<ResoniteModBase> Mods() => LoadedMods.AsReadOnly();
 
 	internal static void LoadMods() {
-		SetupResolveHook();
 		ModLoaderConfiguration config = ModLoaderConfiguration.Get();
 		if (config.NoMods) {
 			Logger.DebugInternal("Mods will not be loaded due to configuration file");
@@ -201,23 +200,5 @@ public sealed partial class ModLoader {
 		} catch (Exception e) {
 			Logger.ErrorInternal($"Mod {mod.Name} from {mod.ModAssembly?.File ?? "Unknown Assembly"} threw error from OnEngineInit():\n{e}");
 		}
-	}
-
-	private static bool _resolveHookRegistered;
-	private static readonly Assembly RMLAssembly = Assembly.GetExecutingAssembly();
-
-	private static void SetupResolveHook() {
-		if (_resolveHookRegistered) return;
-		AppDomain.CurrentDomain.AssemblyResolve += RMLResolveEventHandler;
-		Logger.DebugInternal("Resolve event handler registered");
-		_resolveHookRegistered = true;
-	}
-
-	private static Assembly? RMLResolveEventHandler(object? sender, ResolveEventArgs args) {
-		if (args.Name.StartsWith("ResoniteModLoader, Version=202", StringComparison.Ordinal)) {
-			return RMLAssembly;
-		}
-
-		return null;
 	}
 }

@@ -10,6 +10,7 @@ internal static class ModLoaderInit {
 		Stopwatch initializationTimer = Stopwatch.StartNew();
 
 		try {
+			AssemblyLoader.SetupResolveHook();
 			LoadProgressIndicator.SetSubphase("Loading Libraries");
 			AssemblyFile[] loadedAssemblies = AssemblyLoader.LoadAssembliesFromDir("rml_libs");
 			// note that harmony may not be loaded until this point, so this class cannot directly import HarmonyLib.
