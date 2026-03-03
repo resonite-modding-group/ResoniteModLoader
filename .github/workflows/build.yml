@@ -69,7 +69,7 @@ jobs:
           if-no-files-found: error
 
       - name: Attest
-        uses: actions/attest-build-provenance@v3
+        uses: actions/attest@v4
         with:
           subject-path: "${{ env.ARTIFACT_DIR }}*.dll"
 
@@ -87,7 +87,7 @@ jobs:
           if-no-files-found: error
 
       - name: Attest Weaved
-        uses: actions/attest-build-provenance@v3
+        uses: actions/attest@v4
         with:
           subject-path: "${{ env.ARTIFACT_DIR }}*.dll"
 
