@@ -204,6 +204,7 @@ public sealed partial class ModLoader {
 	}
 
 	private static bool _resolveHookRegistered;
+	private static readonly Assembly RMLAssembly = Assembly.GetExecutingAssembly();
 
 	private static void SetupResolveHook() {
 		if (_resolveHookRegistered) return;
@@ -213,8 +214,8 @@ public sealed partial class ModLoader {
 	}
 
 	private static Assembly? RMLResolveEventHandler(object? sender, ResolveEventArgs args) {
-		if (args.Name.StartsWith("ResoniteModLoader, Version=202")) {
-			return Assembly.GetExecutingAssembly();
+		if (args.Name.StartsWith("ResoniteModLoader, Version=202", StringComparison.Ordinal)) {
+			return RMLAssembly;
 		}
 
 		return null;
