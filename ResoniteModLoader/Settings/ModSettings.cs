@@ -1,3 +1,4 @@
+#if DEBUG
 using FrooxEngine;
 
 namespace ResoniteModLoader;
@@ -11,3 +12,4 @@ public sealed class ModSettings : SettingComponent<ModSettings> {
 	/// <inheritdoc/>
 	public override bool UserspaceOnly => true;
 }
+#endif
