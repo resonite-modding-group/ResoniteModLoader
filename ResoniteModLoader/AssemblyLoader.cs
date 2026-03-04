@@ -82,7 +82,7 @@ internal static class AssemblyLoader {
 		}
 		catch (Exception e) {
 			// I don't know why the above block would ever throw, but just in case it does...
-			string message = "Exception while handling assembly resolution: " + e.Message;
+			string message = $"Exception while handling assembly resolution! [{args.RequestingAssembly?.FullName}] resolving [{args.Name}]: {e.Message}";
 			if (args.Name.StartsWith("ResoniteModLoader", StringComparison.Ordinal)) {
 				Logger.WarnInternal(message);
 			}
