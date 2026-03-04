@@ -62,4 +62,36 @@ internal static class AssemblyLoader {
 		}
 		return assemblyFiles.ToArray();
 	}
+
+	private static bool _resolveHookRegistered;
+	private static readonly Assembly RMLAssembly = Assembly.GetExecutingAssembly();
+
+	internal static void SetupResolveHook() {
+		if (_resolveHookRegistered) { return; }
+		AppDomain.CurrentDomain.AssemblyResolve += RMLResolveEventHandler;
+		Logger.DebugInternal("Resolve event handler registered");
+		_resolveHookRegistered = true;
+	}
+
+	private static Assembly? RMLResolveEventHandler(object? sender, ResolveEventArgs args) {
+		try {
+			AssemblyName target = new AssemblyName(args.Name);
+			if (target is { Name: "ResoniteModLoader", Version.Major: > 2023 }) {
+				Logger.DebugInternal($"Resolving assembly reference for {args.RequestingAssembly?.FullName}");
+				return RMLAssembly;
+			}
+		}
+		catch (Exception e) {
+			// I don't know why the above block would ever throw, but just in case it does...
+			string message = $"Exception while handling assembly resolution! [{args.RequestingAssembly?.FullName}] resolving [{args.Name}]: {e.Message}";
+			if (args.Name.StartsWith("ResoniteModLoader", StringComparison.Ordinal)) {
+				Logger.WarnInternal(message);
+			}
+			else {
+				Logger.DebugInternal(message);
+			}
+		}
+
+		return null;
+	}
 }
