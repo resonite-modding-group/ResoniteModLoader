@@ -74,8 +74,21 @@ internal static class AssemblyLoader {
 	}
 
 	private static Assembly? RMLResolveEventHandler(object? sender, ResolveEventArgs args) {
-		if (args.Name.StartsWith("ResoniteModLoader, Version=202", StringComparison.Ordinal)) {
-			return RMLAssembly;
+		try {
+			AssemblyName target = new AssemblyName(args.Name);
+			if (target is { Name: "ResoniteModLoader", Version.Major: > 2023 }) {
+				return RMLAssembly;
+			}
+		}
+		catch (Exception e) {
+			// I don't know why the above block would ever throw, but just in case it does...
+			string message = "Exception while handling assembly resolution: " + e.Message;
+			if (args.Name.StartsWith("ResoniteModLoader", StringComparison.Ordinal)) {
+				Logger.WarnInternal(message);
+			}
+			else {
+				Logger.DebugInternal(message);
+			}
 		}
 
 		return null;
