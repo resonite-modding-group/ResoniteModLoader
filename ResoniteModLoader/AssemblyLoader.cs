@@ -67,7 +67,7 @@ internal static class AssemblyLoader {
 	private static readonly Assembly RMLAssembly = Assembly.GetExecutingAssembly();
 
 	internal static void SetupResolveHook() {
-		if (_resolveHookRegistered) return;
+		if (_resolveHookRegistered) { return; }
 		AppDomain.CurrentDomain.AssemblyResolve += RMLResolveEventHandler;
 		Logger.DebugInternal("Resolve event handler registered");
 		_resolveHookRegistered = true;
@@ -77,6 +77,7 @@ internal static class AssemblyLoader {
 		try {
 			AssemblyName target = new AssemblyName(args.Name);
 			if (target is { Name: "ResoniteModLoader", Version.Major: > 2023 }) {
+				Logger.DebugInternal($"Resolving assembly reference for {args.RequestingAssembly?.FullName}");
 				return RMLAssembly;
 			}
 		}
