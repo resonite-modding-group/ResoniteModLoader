@@ -1,6 +1,6 @@
 name: Bug Report
 description: Report a feature that is not working as expected.
-labels: [Bug]
+labels: [bug]
 body:
   - type: textarea
     id: describe
@@ -20,14 +20,14 @@ body:
     id: resonite-version
     attributes:
       label: Resonite Version (include branch if on any)
-      placeholder: 2025.9.12.1173
+      placeholder: 2026.3.5.946
     validations:
       required: true
   - type: input
     id: rml-version
     attributes:
       label: ResoniteModLoader Version
-      placeholder: 4.0.0
+      placeholder: 5.0.1
     validations:
       required: true
   - type: dropdown
