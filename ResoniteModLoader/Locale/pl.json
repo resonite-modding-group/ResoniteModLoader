@@ -2,16 +2,16 @@
 	"localeCode": "pl",
 	"authors": ["Alex_2Pi"],
 	"messages": {
-		"Settings.Category.ResoniteModLoader": "ResoniteModLoader",
+		
 		"Settings.ModLoaderSettings": "ResoniteModLoader Ustawienia",
 
-		"Settings.ModLoaderSettings.DebugMode": "Enable Debug",
+		"Settings.ModLoaderSettings.DebugMode": "Włącz Debugowanie",
 		"Settings.ModLoaderSettings.DebugMode.Description": "Włącza dziennik debugowania",
 		"Settings.ModLoaderSettings.HideVisuals": "Ukryj podgląd",
 		"Settings.ModLoaderSettings.HideVisuals.Description": "Ukrywa pasek postępu Modloadera podczas uruchamiania",
 		"Settings.ModLoaderSettings.LoadedMods": "Załadowane Modyfikacje",
 		"Settings.ModLoaderSettings.ModLoaderVersion": "Wersja",
-		"Settings.ModLoaderSettings.ProjectLink": "Github Repo",
+		
 
 		"Settings.ModLoaderDebugSettings": "Ustawienia debugowania",
 		"Settings.ModLoaderDebugSettings.RefreshLocale": "Odśwież ustawienia językowe",
