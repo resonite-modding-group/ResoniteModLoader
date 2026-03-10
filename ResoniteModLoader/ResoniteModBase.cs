@@ -47,4 +47,6 @@ public abstract class ResoniteModBase {
 	}
 
 	internal bool FinishedLoading { get; set; }
+
+	internal bool IsLocalized { get; set; }
 }

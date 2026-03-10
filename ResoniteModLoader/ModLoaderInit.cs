@@ -3,13 +3,14 @@ using System.Diagnostics;
 using ResoniteModLoader.Locale;
 
 namespace ResoniteModLoader;
-internal class ModLoaderInit {
+internal static class ModLoaderInit {
 
 	internal static void Initialize() {
 		Logger.DebugInternal($"Start of ModLoader Initialization");
 		Stopwatch initializationTimer = Stopwatch.StartNew();
 
 		try {
+			AssemblyLoader.SetupResolveHook();
 			LoadProgressIndicator.SetSubphase("Loading Libraries");
 			AssemblyFile[] loadedAssemblies = AssemblyLoader.LoadAssembliesFromDir("rml_libs");
 			// note that harmony may not be loaded until this point, so this class cannot directly import HarmonyLib.

@@ -23,6 +23,7 @@
 		"Settings.ModSettings.ModList": "Edit Mod Settings",
 		"Settings.ModSettings.ModList.Breadcrumb": "Mod Settings",
 		"Settings.ModSettings.NoMods": "No mods loaded",
+		"Settings.ModSettings.NoModsWithConfig": "No mods with configs to show",
 		"Settings.ModSettings.NoConfigs": "No settings are available for the selected mod.",
 		"Settings.ModSettings.ShowInternal": "Show internal use configs",
 		"Settings.ModSettings.ShowInternal.Description": "Internal configs aren't generally intended to be changed directly by the user. Can cause unintended behaviour.",

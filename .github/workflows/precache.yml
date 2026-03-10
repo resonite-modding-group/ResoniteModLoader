@@ -1,0 +1,23 @@
+name: Precache Resonite
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    name: precache-resonite
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      attestations: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Resonite Environment
+        id: resonite
+        uses: resonite-modding-group/setup-resonite-env-action@v0.2.0
+        with:
+          steam-user: ${{ secrets.STEAMUSER }}
+          steam-password: ${{ secrets.STEAMPASS }}

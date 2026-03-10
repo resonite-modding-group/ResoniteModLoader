@@ -1,3 +1,5 @@
+using System.Globalization;
+
 using HarmonyLib;
 
 namespace ResoniteModLoader;
@@ -5,8 +7,7 @@ namespace ResoniteModLoader;
 /// <summary>
 /// Contains the actual mod loader.
 /// </summary>
-public sealed class ModLoader {
-	internal const string VERSION_CONSTANT = "4.1.0";
+public sealed partial class ModLoader {
 	/// <summary>
 	/// ResoniteModLoader's version
 	/// </summary>
@@ -23,7 +24,7 @@ public sealed class ModLoader {
 	public static bool IsHeadless { // Extremely thorough, but doesn't rely on any specific class to check for headless presence
 		get {
 			return _isHeadless ??= AppDomain.CurrentDomain.GetAssemblies().Any(a => {
-				IEnumerable<Type> types;
+				IEnumerable<Type?> types;
 				try {
 					types = a.GetTypes();
 				} catch (ReflectionTypeLoadException e) {
@@ -32,8 +33,7 @@ public sealed class ModLoader {
 				return types.Any(t => {
 					try {
 						return t != null && t.Namespace == "FrooxEngine.Headless";
-					}
-					catch {
+					} catch {
 						return false;
 					}
 				}
@@ -48,10 +48,8 @@ public sealed class ModLoader {
 	/// <summary>
 	/// Allows reading metadata for all loaded mods
 	/// </summary>
-	/// <returns>A new list containing each loaded mod</returns>
-	public static IEnumerable<ResoniteModBase> Mods() {
-		return LoadedMods.ToList();
-	}
+	/// <returns>A readonly list containing each loaded mod</returns>
+	public static IEnumerable<ResoniteModBase> Mods() => LoadedMods.AsReadOnly();
 
 	internal static void LoadMods() {
 		ModLoaderConfiguration config = ModLoaderConfiguration.Get();
@@ -82,8 +80,8 @@ public sealed class ModLoader {
 				// this exception type has some inner exceptions we must also log to gain any insight into what went wrong
 				StringBuilder sb = new();
 				sb.AppendLine(reflectionTypeLoadException.ToString());
-				foreach (Exception loaderException in reflectionTypeLoadException.LoaderExceptions) {
-					sb.AppendLine($"Loader Exception: {loaderException.Message}");
+				foreach (Exception? loaderException in reflectionTypeLoadException.LoaderExceptions) {
+					sb.AppendLine(CultureInfo.InvariantCulture, $"Loader Exception: {loaderException?.Message}");
 					if (loaderException is FileNotFoundException fileNotFoundException) {
 						if (!string.IsNullOrEmpty(fileNotFoundException.FusionLog)) {
 							sb.Append("    Fusion Log:\n    ");
@@ -118,7 +116,7 @@ public sealed class ModLoader {
 						Logger.WarnInternal($"    \"{owner}\" ({TypesForOwner(patches, owner)})");
 					}
 				} else if (config.Debug) {
-					string owner = owners.FirstOrDefault();
+					string? owner = owners.FirstOrDefault();
 					Logger.DebugFuncInternal(() => $"Method \"{patchedMethod.FullDescription()}\" has been patched by \"{owner}\"");
 				}
 			}
@@ -186,6 +184,7 @@ public sealed class ModLoader {
 			}
 
 			resoniteMod.ModAssembly = mod;
+			resoniteMod.IsLocalized = Locale.LocaleLoader.ContainsLocales(resoniteMod);
 			Logger.MsgInternal($"Loaded mod [{resoniteMod.Name}/{resoniteMod.Version}] ({Path.GetFileName(mod.File)}) by {resoniteMod.Author} with Sha256: {mod.Sha256}");
 			LoadProgressIndicator.SetSubphase($"Loading configuration for [{resoniteMod.Name}/{resoniteMod.Version}]");
 			resoniteMod.ModConfiguration = ModConfiguration.LoadConfigForMod(resoniteMod);

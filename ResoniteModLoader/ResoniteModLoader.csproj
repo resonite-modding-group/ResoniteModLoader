@@ -1,26 +1,48 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<TargetFramework>net9.0</TargetFramework>
-		<LangVersion>12.0</LangVersion>
-		<Nullable>enable</Nullable>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<EnableNETAnalyzers>True</EnableNETAnalyzers>
-		<AnalysisLevel>9.0-Recommended</AnalysisLevel>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<!-- Change CopyToLibraries to true if you'd like builds to be moved into the Libraries folder automatically-->
 		<CopyToLibraries Condition="'$(CopyToLibraries)'==''">true</CopyToLibraries>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(ResonitePath)'==''">
-		<!-- If you don't want to provide a ResonitePath in dotnet build, you can specify one here -->
-		<ResonitePath>$(MSBuildThisFileDirectory)Resonite/</ResonitePath>
-		<ResonitePath Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Resonite\')">C:\Program Files (x86)\Steam\steamapps\common\Resonite\</ResonitePath>
-		<ResonitePath Condition="Exists('$(HOME)/.steam/steam/steamapps/common/Resonite/')">$(HOME)/.steam/steam/steamapps/common/Resonite/</ResonitePath>
+	<PropertyGroup>
+		<AssemblyTitle>ResoniteModLoader</AssemblyTitle>
+		<AssemblyProduct>$(AssemblyTitle)</AssemblyProduct>
+		<PackageId>$(AssemblyTitle)</PackageId>
+		<Version>5.0.1</Version>
+		<FileVersion>$(Version)</FileVersion>
+		<AssemblyVersion>$(Version)</AssemblyVersion>
+		<Authors>resonite-modding-group, DeltaWolf</Authors>
+		<Description>A modloader for Resonite</Description>
+		<Copyright>Copyright © 2026</Copyright>
+		<PackageTags>mod;mods;modding;modloader;harmony;resonite;game;resonitemodloader;frooxengine</PackageTags>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Lib.Harmony" Version="2.4.0" />
+		<None Include="..\RML_Logomark.png" Pack="true" PackagePath="icon.png" />
+		<None Include="..\README.md" Pack="true" PackagePath="" />
+	</ItemGroup>
+
+	<Target Name="GenerateVersionFile" BeforeTargets="BeforeCompile">
+		<!-- %3B is an escape sequence for ; -->
+		<WriteLinesToFile
+			File="$(IntermediateOutputPath)ModLoaderVersion.g.cs"
+			Lines="
+namespace ResoniteModLoader%3B
+public sealed partial class ModLoader {
+	internal const string VERSION_CONSTANT = &quot;$(Version)&quot;%3B
+}"
+			Overwrite="true" />
+		<ItemGroup>
+			<Compile Include="$(IntermediateOutputPath)ModLoaderVersion.g.cs" />
+		</ItemGroup>
+	</Target>
+
+	<ItemGroup>
+		<PackageReference Include="Lib.Harmony" Version="2.4.2" />
 		<Reference Include="FrooxEngine">
 			<HintPath>$(ResonitePath)FrooxEngine.dll</HintPath>
 			<Private>False</Private>
@@ -33,11 +55,7 @@
 			<HintPath>$(ResonitePath)Elements.Core.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
-		<Reference Include="Elements.Quantity">
-			<HintPath>$(ResonitePath)Elements.Quantity.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-			<Reference Include="Elements.Data">
+		<Reference Include="Elements.Data">
 			<HintPath>$(ResonitePath)Elements.Data.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
@@ -46,7 +64,7 @@
 			<Private>False</Private>
 		</Reference>
 	</ItemGroup>
-	
+
 	<ItemGroup>
 		<EmbeddedResource Include="Locale\*.json" />
 	</ItemGroup>
