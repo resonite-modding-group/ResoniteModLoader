@@ -1,0 +1,35 @@
+{
+  "localeCode": "de",
+  "authors": [ "Banane9" ],
+  "messages": {
+    "Settings.Category.ResoniteModLoader": "ResoniteModLoader",
+    "Settings.ModLoaderSettings": "ResoniteModLoader-Einstellungen",
+
+    "Settings.ModLoaderSettings.DebugMode": "Debugmodus",
+    "Settings.ModLoaderSettings.DebugMode.Description": "Aktiviert Debug-Logging.",
+    "Settings.ModLoaderSettings.HideVisuals": "Visuelle Elemente verstecken",
+    "Settings.ModLoaderSettings.HideVisuals.Description": "Versteckt die Fortschrittsanzeige des Modloaders während des Startvorgangs.",
+    "Settings.ModLoaderSettings.LoadedMods": "Geladene Mods",
+    "Settings.ModLoaderSettings.ModLoaderVersion": "Version",
+    "Settings.ModLoaderSettings.ProjectLink": "GitHub Repo",
+
+    "Settings.ModLoaderDebugSettings": "Debug-Einstellungen",
+    "Settings.ModLoaderDebugSettings.RefreshLocale": "Lokalisierung neu laden",
+    "Settings.ModLoaderDebugSettings.LocaleCount": "Einträge in der Lokalisierung zählen",
+    "Settings.ModLoaderDebugSettings.LocaleKeyCount": "Anzahl der Lokalisierungseinträge",
+    "Settings.ModLoaderDebugSettings.ForceAssetUpdate": "Asset-Update erzwingen",
+
+    "Settings.ModSettings": "Mod-Einstellungen",
+    "Settings.ModSettings.ModList": "Mod-Einstellungen editieren",
+    "Settings.ModSettings.ModList.Breadcrumb": "Mod-Einstellungen",
+    "Settings.ModSettings.NoMods": "Keine Mods geladen",
+    "Settings.ModSettings.NoModsWithConfig": "Keine Mods mit Einstellungen zum anzeigen vorhanden",
+    "Settings.ModSettings.NoConfigs": "Keine Einstellungen für die ausgewählte Mod verfügbar.",
+    "Settings.ModSettings.ShowInternal": "Zeige Einstellungen für interne Nutzung",
+    "Settings.ModSettings.ShowInternal.Description": "Interne Einstellungen sind üblicherweise nicht für die direkte Änderung durch den Nutzer gedacht. Dies kann unbeabsichtige Auswirkungen haben.",
+    "Settings.ModSettings.ShowAll": "Alle Mods anzeigen",
+    "Settings.ModSettings.ShowAll.Description": "Zeigt Einträge für alle Mods, inklusive der ohne Einstellungsmöglichkeiten.",
+
+    "Dummy": "Dummy"
+  }
+}
