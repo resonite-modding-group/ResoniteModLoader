@@ -1,0 +1,35 @@
+{
+	"localeCode": "pl",
+	"authors": ["Alex_2Pi"],
+	"messages": {
+		
+		"Settings.ModLoaderSettings": "ResoniteModLoader Ustawienia",
+
+		"Settings.ModLoaderSettings.DebugMode": "Włącz Debugowanie",
+		"Settings.ModLoaderSettings.DebugMode.Description": "Włącza dziennik debugowania",
+		"Settings.ModLoaderSettings.HideVisuals": "Ukryj podgląd",
+		"Settings.ModLoaderSettings.HideVisuals.Description": "Ukrywa pasek postępu Modloadera podczas uruchamiania",
+		"Settings.ModLoaderSettings.LoadedMods": "Załadowane Modyfikacje",
+		"Settings.ModLoaderSettings.ModLoaderVersion": "Wersja",
+		
+
+		"Settings.ModLoaderDebugSettings": "Ustawienia debugowania",
+		"Settings.ModLoaderDebugSettings.RefreshLocale": "Odśwież ustawienia językowe",
+		"Settings.ModLoaderDebugSettings.LocaleCount": "Zlicz klucze językowe",
+		"Settings.ModLoaderDebugSettings.LocaleKeyCount": "Ilość kluczy lokalnych",
+		"Settings.ModLoaderDebugSettings.ForceAssetUpdate": "Wymuszona aktualizacja zasobów",
+
+		"Settings.ModSettings": "Ustawienia modyfikacji",
+		"Settings.ModSettings.ModList": "Edytuj ustawienia modyfikacji",
+		"Settings.ModSettings.ModList.Breadcrumb": "Ustawienia modyfikacji",
+		"Settings.ModSettings.NoMods": "Brak załadowanych modów",
+		"Settings.ModSettings.NoModsWithConfig": "Brak modów z konfiguracjami do pokazania",
+		"Settings.ModSettings.NoConfigs": "Dla wybranego modu nie są dostępne żadne ustawienia.",
+		"Settings.ModSettings.ShowInternal": "Pokaż konfiguracje do użytku wewnętrznego",
+		"Settings.ModSettings.ShowInternal.Description": "Konfiguracje wewnętrzne nie są zazwyczaj przeznaczone do bezpośredniej zmiany przez użytkownika. Zmiana ich spowodować niepożądane zachowania.",
+		"Settings.ModSettings.ShowAll": "Pokaż wszystkie modyfikacje",
+		"Settings.ModSettings.ShowAll.Description": "Pokaż wszystkie wpisy dotyczące modów, w tym te bez ustawień.",
+
+		"Dummy": "Dummy"
+	}
+}
