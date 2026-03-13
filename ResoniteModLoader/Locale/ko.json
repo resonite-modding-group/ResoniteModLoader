@@ -1,0 +1,35 @@
+{
+	"localeCode": "ko",
+	"authors": ["Sinduy"],
+	"messages": {
+		"Settings.Category.ResoniteModLoader": "ResoniteModLoader",
+		"Settings.ModLoaderSettings": "ResoniteModLoader 설정",
+
+		"Settings.ModLoaderSettings.DebugMode": "디버그 활성화",
+		"Settings.ModLoaderSettings.DebugMode.Description": "디버그 로그를 활성화합니다",
+		"Settings.ModLoaderSettings.HideVisuals": "시각 요소 숨기기",
+		"Settings.ModLoaderSettings.HideVisuals.Description": "실행 시 모드로더 진행 표시기를 숨깁니다",
+		"Settings.ModLoaderSettings.LoadedMods": "로드된 모드",
+		"Settings.ModLoaderSettings.ModLoaderVersion": "버전",
+		"Settings.ModLoaderSettings.ProjectLink": "GitHub 저장소",
+
+		"Settings.ModLoaderDebugSettings": "디버깅 설정",
+		"Settings.ModLoaderDebugSettings.RefreshLocale": "로케일 새로고침",
+		"Settings.ModLoaderDebugSettings.LocaleCount": "로케일 키 개수 세기",
+		"Settings.ModLoaderDebugSettings.LocaleKeyCount": "로케일 키 개수",
+		"Settings.ModLoaderDebugSettings.ForceAssetUpdate": "에셋 강제 업데이트",
+
+		"Settings.ModSettings": "모드 설정",
+		"Settings.ModSettings.ModList": "모드 설정 편집",
+		"Settings.ModSettings.ModList.Breadcrumb": "모드 설정",
+		"Settings.ModSettings.NoMods": "로드된 모드가 없습니다",
+		"Settings.ModSettings.NoModsWithConfig": "표시할 설정이 있는 모드가 없습니다",
+		"Settings.ModSettings.NoConfigs": "선택한 모드에 사용할 수 있는 설정이 없습니다.",
+		"Settings.ModSettings.ShowInternal": "내부용 설정 표시",
+		"Settings.ModSettings.ShowInternal.Description": "내부 설정은 일반적으로 사용자가 직접 변경하도록 설계되지 않았습니다. 의도하지 않은 동작을 일으킬 수 있습니다.",
+		"Settings.ModSettings.ShowAll": "모든 모드 표시",
+		"Settings.ModSettings.ShowAll.Description": "설정이 없는 항목을 포함해 모드의 모든 항목을 표시합니다.",
+
+		"Dummy": "Dummy"
+	}
+}
