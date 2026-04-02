@@ -1,0 +1,11 @@
+name: Wiki change
+description: Submit changes to the wiki pages
+labels: [documentation]
+body:
+  - type: textarea
+    id: changes
+    attributes:
+      label: Changes and additions
+      description: Changes you'd like to submit to the wiki
+    validations:
+      required: true
