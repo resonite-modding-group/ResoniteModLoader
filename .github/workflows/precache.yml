@@ -17,7 +17,7 @@ jobs:
 
       - name: Setup Resonite Environment
         id: resonite
-        uses: resonite-modding-group/setup-resonite-env-action@v0.2.0
+        uses: resonite-modding-group/setup-resonite-env-action@v0.2.1
         with:
           steam-user: ${{ secrets.STEAMUSER }}
           steam-password: ${{ secrets.STEAMPASS }}
