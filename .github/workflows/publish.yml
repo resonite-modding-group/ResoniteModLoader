@@ -25,7 +25,7 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Download Harmony
         run: curl -L https://www.nuget.org/api/v2/package/Lib.Harmony/${{ env.HARMONY_VERSION }} --output Lib.Harmony.nupkg
