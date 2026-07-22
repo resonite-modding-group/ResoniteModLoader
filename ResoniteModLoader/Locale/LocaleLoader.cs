@@ -85,7 +85,7 @@ internal static class LocaleLoader {
 					$"{originNamespace}.{locale.Name.ToLowerInvariant()}.json",
 					$"{originNamespace}.{locale.TwoLetterISOLanguageName}.json")
 			) {
-				Logger.WarnInternal($"Embedded locale resource for '{locale.Name}' not found for {originName}. Using fallback.");
+				Logger.DebugInternal($"Embedded locale resource for '{locale.Name}' not found for {originName}. Using fallback.");
 			}
 		}
 
