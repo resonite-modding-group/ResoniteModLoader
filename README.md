@@ -5,6 +5,8 @@
 
 A mod loader for [Resonite](https://resonite.com/) utilizing the built-in plugin system. Consider joining our community on [Discord][Resonite Modding Discord] for support, updates, and more.
 
+[![NuGet](https://img.shields.io/nuget/v/ResoniteModLoader.svg?label=NuGet)](https://www.nuget.org/packages/ResoniteModLoader) [![NuGet](https://img.shields.io/nuget/dt/ResoniteModLoader.svg?label=NuGet%20Downloads)](https://www.nuget.org/packages/ResoniteModLoader) [![Github](https://img.shields.io/github/downloads/resonite-modding-group/ResoniteModLoader/ResoniteModLoader.dll?label=Github%20Downloads)](https://github.com/resonite-modding-group/ResoniteModLoader/releases/latest)
+
 ## Installation
 
 1. Download [ResoniteModLoader.dll](https://github.com/resonite-modding-group/ResoniteModLoader/releases/latest/download/ResoniteModLoader.dll) to Resonite's `Libraries` folder (`C:\Program Files (x86)\Steam\steamapps\common\Resonite\Libraries`). You may need to create this folder if it's missing. 
@@ -14,6 +16,12 @@ A mod loader for [Resonite](https://resonite.com/) utilizing the built-in plugin
 5. Start the game. If you want to verify that ResoniteModLoader is working you can check the Resonite logs. (`C:\Program Files (x86)\Steam\steamapps\common\Resonite\Logs`). The modloader adds some very obvious logs on startup, and if they're missing something has gone wrong. Here is an [example log file](https://github.com/resonite-modding-group/ResoniteModLoader/wiki/Example-Log) where everything worked correctly.
 
 If ResoniteModLoader isn't working after following these steps, take a look at our [troubleshooting page](doc/troubleshooting.md).
+
+## Finding Mods
+
+For an easy way to find and manage mods, check out [Resolute](https://github.com/Gawdl3y/Resolute). It simplifies the installation and updating for verified mods from the [mod manifest](https://github.com/resonite-modding-group/resonite-mod-manifest).
+
+New mods and updates also are posted in [our Discord][Resonite Modding Discord].
 
 ### Example Directory Structure
 
@@ -34,11 +42,6 @@ Your Resonite directory should now include the following folder structure (rml_c
 └───/rml_mods
         <Add mods here>
 ```
-## Finding Mods
-
-For an easy way to find and manage mods, check out [Resolute](https://github.com/Gawdl3y/Resolute). It simplifies the installation and updating for verified mods from the [mod manifest](https://github.com/resonite-modding-group/resonite-mod-manifest).
-
-New mods and updates also are posted in [our Discord][Resonite Modding Discord].
 
 ## Frequently Asked Questions
 
@@ -46,11 +49,13 @@ Many questions about what RML is and how it works are answered on our [frequentl
 
 ## Making a Mod
 
-Check out the [Mod Creation Guide](https://github.com/resonite-modding-group/ResoniteModLoader/wiki/Creating-Mods).
+Add `<PackageReference Include="ResoniteModLoader" Version="5.0.1" />` in your csproj file or reference your local game install.
+
+Check out the [Mod Creation Guide](https://github.com/resonite-modding-group/ResoniteModLoader/wiki/Creating-Mods) on the wiki.
 
 ## Configuration
 
-ResoniteModLoader aims to have a reasonable default configuration, but certain things can be adjusted via an [optional config file](https://github.com/resonite-modding-group/ResoniteModLoader/wiki/Modloader-Config).
+ResoniteModLoader aims to have a reasonable default configuration, but certain things can be adjusted via an [optional config file](https://github.com/resonite-modding-group/ResoniteModLoader/wiki/Modloader-Config) or in-game in the settings tab.
 
 ## Contributing
 
