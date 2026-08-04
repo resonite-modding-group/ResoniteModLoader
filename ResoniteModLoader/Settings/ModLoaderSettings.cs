@@ -75,6 +75,7 @@ public sealed class ModLoaderSettings : SettingComponent<ModLoaderSettings> {
 	/// <inheritdoc/>
 	protected override void OnStart() {
 		base.OnStart();
+		this.Slot.OrderOffset = -1; // Should be at the top in this category
 		ModLoaderVersion.Value = ModLoader.VERSION;
 		LoadedMods.Value = ModLoader.Mods().Count().ToString(CultureInfo.InvariantCulture);
 		DebugMode.Value = ModLoaderConfiguration.Get().Debug;
