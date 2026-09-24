@@ -55,6 +55,7 @@ jobs:
           files: |
             ${{ github.workspace }}/release/*.dll
             ${{ github.workspace }}/release/*.xml
+            ${{ github.workspace }}/installer/rml_libs/0Harmony.dll
             ${{ github.workspace }}/ResoniteModLoader.zip
           generate_release_notes: true
 
