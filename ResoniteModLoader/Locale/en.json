@@ -20,6 +20,9 @@
 		"Settings.ModLoaderDebugSettings.ForceAssetUpdate": "Force Asset Update",
 
 		"Settings.ModSettings": "Mod Settings",
+		"Settings.ModSettings.ModInfo": "Mod Info",
+		"Settings.ModSettings.ModConfig": "Config",
+		"Settings.ModSettings.InternalConfig": "Internal Config",
 		"Settings.ModSettings.ModList": "Edit Mod Settings",
 		"Settings.ModSettings.ModList.Breadcrumb": "Mod Settings",
 		"Settings.ModSettings.NoMods": "No mods loaded",
@@ -29,7 +32,6 @@
 		"Settings.ModSettings.ShowInternal.Description": "Internal configs aren't generally intended to be changed directly by the user. Can cause unintended behaviour.",
 		"Settings.ModSettings.ShowAll": "Show all mods",
 		"Settings.ModSettings.ShowAll.Description": "Show all entries for mods, including ones with no settings.",
-		"Settings.ModSettings.ModInfo": "Mod Info",
 		"Settings.ModSettings.Author": "Author",
 		"Settings.ModSettings.Version": "Version",
 		"Settings.ModSettings.Assembly": "Assembly",
