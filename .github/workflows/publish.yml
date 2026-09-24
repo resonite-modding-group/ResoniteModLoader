@@ -41,13 +41,13 @@ jobs:
 # /Libraries/ResoniteModLoader.xml
 # /rml_libs/0Harmony.dll
 # /rml_mods/
-      - name: Build installer
+      - name: Build zip install file
         run: |
           mkdir -p installer/{Libraries,rml_libs,rml_mods}
           cp release/{*.dll,*.xml} installer/Libraries/
           unzip -p Lib.Harmony.nupkg lib/net10.0/0Harmony.dll > installer/rml_libs/0Harmony.dll
           cd installer
-          zip ${{ github.workspace }}/ResoniteModLoader.zip *
+          zip -r ${{ github.workspace }}/ResoniteModLoader.zip .
 
       - name: Create Release
         uses: softprops/action-gh-release@v3
