@@ -46,7 +46,7 @@ public sealed partial class ModLoader {
 	</ItemDefinitionGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Lib.Harmony" Version="2.4.2" />
+		<PackageReference Include="Lib.Harmony" Version="2.4.3" />
 		<Reference Include="FrooxEngine" HintPath="$(ResonitePath)FrooxEngine.dll" />
 		<Reference Include="Elements.Assets" HintPath="$(ResonitePath)Elements.Assets.dll" />
 		<Reference Include="Elements.Core" HintPath="$(ResonitePath)Elements.Core.dll" />
