@@ -1,7 +1,5 @@
 using System.Globalization;
-
 using Elements.Core;
-
 using FrooxEngine;
 
 namespace ResoniteModLoader;
@@ -19,27 +17,22 @@ public sealed class ModLoaderSettings : SettingComponent<ModLoaderSettings> {
 #pragma warning disable CA1051 // Public fields
 
 	/// <summary>How count of loaded mods.</summary>
-	[SettingIndicatorProperty]
-	public readonly RawOutput<string> LoadedMods;
+	[SettingIndicatorProperty] public readonly RawOutput<string> LoadedMods;
 
 	/// <summary>The version of RML. Corresponds to <see cref="ModLoader.VERSION"/>.</summary>
-	[SettingIndicatorProperty]
-	public readonly RawOutput<string> ModLoaderVersion;
+	[SettingIndicatorProperty] public readonly RawOutput<string> ModLoaderVersion;
 
 	/// <summary>Corresponds to <see cref="ModLoaderConfiguration.Debug"/>.</summary>
-	[SettingProperty]
-	public readonly Sync<bool> DebugMode;
+	[SettingProperty] public readonly Sync<bool> DebugMode;
 
 	/// <summary>Corresponds to <see cref="ModLoaderConfiguration.HideVisuals"/>.</summary>
-	[SettingProperty]
-	public readonly Sync<bool> HideVisuals;
+	[SettingProperty] public readonly Sync<bool> HideVisuals;
 
 	/// <summary>
 	/// Link to the RML GitHub repository at https://github.com/resonite-modding-group/ResoniteModLoader.
 	/// </summary>
 	//TODO make clickable link in UI
-	[SettingIndicatorProperty]
-	public readonly RawOutput<string> ProjectLink;
+	[SettingIndicatorProperty] public readonly RawOutput<string> ProjectLink;
 
 #pragma warning restore CS8618, CA1051
 
@@ -56,6 +49,7 @@ public sealed class ModLoaderSettings : SettingComponent<ModLoaderSettings> {
 			slot.AttachComponent<HyperlinkOpenDialog>().Setup(new(ProjectLink.Value), "");
 		});
 	}
+
 	/// <inheritdoc/>
 	public override void ResetToDefault() {
 		DebugMode.Value = false;
@@ -81,5 +75,6 @@ public sealed class ModLoaderSettings : SettingComponent<ModLoaderSettings> {
 		DebugMode.Value = ModLoaderConfiguration.Get().Debug;
 		HideVisuals.Value = ModLoaderConfiguration.Get().HideVisuals;
 		ProjectLink.Value = "https://github.com/resonite-modding-group/ResoniteModLoader";
+		Persistent = false;
 	}
 }

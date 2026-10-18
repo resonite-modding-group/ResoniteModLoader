@@ -19,6 +19,7 @@
 		<PackageTags>mod;mods;modding;modloader;harmony;resonite;game;resonitemodloader;frooxengine</PackageTags>
 		<PackageIcon>icon.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<DebugType>full</DebugType>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -51,6 +52,7 @@ public sealed partial class ModLoader {
 		<Reference Include="Elements.Assets" HintPath="$(ResonitePath)Elements.Assets.dll" />
 		<Reference Include="Elements.Core" HintPath="$(ResonitePath)Elements.Core.dll" />
 		<Reference Include="Elements.Data" HintPath="$(ResonitePath)Elements.Data.dll" />
+		<Reference Include="Elements.Quantity" HintPath="$(ResonitePath)Elements.Quantity.dll" />
 		<Reference Include="Newtonsoft.Json" HintPath="$(ResonitePath)Newtonsoft.Json.dll" />
 	</ItemGroup>
 
@@ -62,6 +64,7 @@ public sealed partial class ModLoader {
 		<Message Text="Attempting to copy $(TargetFileName) to $(ResonitePath)Libraries" Importance="high" />
 		<Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(ResonitePath)Libraries" ContinueOnError="true" />
 		<Copy SourceFiles="$(TargetDir)$(TargetName).xml" DestinationFolder="$(ResonitePath)Libraries" ContinueOnError="true" />
+		<Copy SourceFiles="$(TargetDir)$(TargetName).pdb" DestinationFolder="$(ResonitePath)Libraries" ContinueOnError="true" />
 	</Target>
 
 </Project>

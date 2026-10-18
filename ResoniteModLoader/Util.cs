@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Security.Cryptography;
+using FrooxEngine;
 
 namespace ResoniteModLoader;
 
@@ -108,4 +109,6 @@ internal static class Util {
 			return false;
 		}
 	}
+
+	internal static bool InUserspaceContext() => Userspace.Current.World.Stage != World.RefreshStage.Finished;
 }

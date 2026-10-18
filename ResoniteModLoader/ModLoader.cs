@@ -15,6 +15,7 @@ public sealed partial class ModLoader {
 	private static readonly Type RESONITE_MOD_TYPE = typeof(ResoniteMod);
 	private static readonly List<ResoniteMod> LoadedMods = []; // used for mod enumeration
 	internal static readonly Dictionary<Assembly, ResoniteMod> AssemblyLookupMap = []; // used for logging
+	internal static readonly Dictionary<string, ResoniteMod> FileNameLookupMap = []; // Used for mod config lookup
 	private static readonly Dictionary<string, ResoniteMod> ModNameLookupMap = []; // used for duplicate mod checking
 
 
@@ -141,6 +142,8 @@ public sealed partial class ModLoader {
 
 		LoadedMods.Add(mod);
 		AssemblyLookupMap.Add(mod.ModAssembly.Assembly, mod);
+		mod.FileName = Path.GetFileNameWithoutExtension(mod.ModAssembly.File);
+		FileNameLookupMap.Add(mod.FileName, mod);
 		mod.FinishedLoading = true; // used to signal that the mod is truly loaded
 	}
 
