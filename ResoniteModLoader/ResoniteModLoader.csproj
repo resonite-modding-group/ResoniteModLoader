@@ -14,9 +14,9 @@
 		<FileVersion>$(Version)</FileVersion>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<Authors>resonite-modding-group, DeltaWolf</Authors>
-		<Description>A modloader for Resonite</Description>
+		<Description>A mod loader for Resonite utilizing the built-in plugin system.</Description>
 		<Copyright>Copyright © 2026</Copyright>
-		<PackageTags>mod;mods;modding;modloader;harmony;resonite;game;resonitemodloader;frooxengine</PackageTags>
+		<PackageTags>mod;mods;modding;modloader;harmony;resonite;plugin;game;resonitemodloader;frooxengine</PackageTags>
 		<PackageIcon>icon.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
