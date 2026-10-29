@@ -6,7 +6,7 @@ on:
       - "*.*.*"
 
 env:
-  HARMONY_VERSION: "2.4.2"
+  HARMONY_VERSION: "2.4.3"
   NUGET_REGISTRY_URL: https://api.nuget.org/v3/index.json
 
 concurrency:
