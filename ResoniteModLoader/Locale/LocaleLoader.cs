@@ -1,7 +1,5 @@
-using System.Globalization;
-
 using FrooxEngine;
-
+using System.Globalization;
 using LocaleResource = Elements.Assets.LocaleResource;
 using Stream = System.IO.Stream;
 

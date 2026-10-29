@@ -1,13 +1,10 @@
-using System.Diagnostics;
-using System.Globalization;
 using FrooxEngine;
-
 using HarmonyLib;
-
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
 using ResoniteModLoader.JsonConverters;
+using System.Diagnostics;
+using System.Globalization;
 
 namespace ResoniteModLoader;
 
