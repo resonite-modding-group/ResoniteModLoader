@@ -1,6 +1,5 @@
-using System.Diagnostics;
-
 using Elements.Core;
+using System.Diagnostics;
 
 namespace ResoniteModLoader;
 
@@ -58,10 +57,26 @@ internal sealed class Logger {
 
 	private static void LogInternal(string logLevelPrefix, object message, string? source = null) {
 		message ??= NULL_STRING;
-		if (source == null) {
-			UniLog.Log($"{logLevelPrefix}[ResoniteModLoader] {message}");
+		string formattedMessage;
+
+		if (source != null) {
+			formattedMessage = $"{logLevelPrefix}[ResoniteModLoader/{source}] {message}";
 		} else {
-			UniLog.Log($"{logLevelPrefix}[ResoniteModLoader/{source}] {message}");
+			formattedMessage = $"{logLevelPrefix}[ResoniteModLoader] {message}";
+		}
+
+		switch (logLevelPrefix) {
+			case LogType.WARN:
+				UniLog.Warning(formattedMessage);
+				break;
+			case LogType.ERROR:
+				UniLog.Error(formattedMessage);
+				break;
+			case LogType.DEBUG:
+			case LogType.INFO:
+			default:
+				UniLog.Log(formattedMessage);
+				break;
 		}
 	}
 
