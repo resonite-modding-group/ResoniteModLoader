@@ -51,7 +51,6 @@ public sealed partial class ModLoader {
 		<Reference Include="Elements.Assets" HintPath="$(ResonitePath)Elements.Assets.dll" />
 		<Reference Include="Elements.Core" HintPath="$(ResonitePath)Elements.Core.dll" />
 		<Reference Include="Elements.Data" HintPath="$(ResonitePath)Elements.Data.dll" />
-		<Reference Include="Newtonsoft.Json" HintPath="$(ResonitePath)Newtonsoft.Json.dll" />
 	</ItemGroup>
 
 	<ItemGroup>
