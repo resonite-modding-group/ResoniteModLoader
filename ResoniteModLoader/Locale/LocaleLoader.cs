@@ -1,7 +1,5 @@
-using System.Globalization;
-
 using FrooxEngine;
-
+using System.Globalization;
 using LocaleResource = Elements.Assets.LocaleResource;
 using Stream = System.IO.Stream;
 
@@ -85,7 +83,7 @@ internal static class LocaleLoader {
 					$"{originNamespace}.{locale.Name.ToLowerInvariant()}.json",
 					$"{originNamespace}.{locale.TwoLetterISOLanguageName}.json")
 			) {
-				Logger.WarnInternal($"Embedded locale resource for '{locale.Name}' not found for {originName}. Using fallback.");
+				Logger.DebugInternal($"Embedded locale resource for '{locale.Name}' not found for {originName}. Using fallback.");
 			}
 		}
 

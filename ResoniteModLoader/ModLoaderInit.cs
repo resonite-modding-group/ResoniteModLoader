@@ -1,8 +1,8 @@
+using ResoniteModLoader.Locale;
 using System.Diagnostics;
 
-using ResoniteModLoader.Locale;
-
 namespace ResoniteModLoader;
+
 internal static class ModLoaderInit {
 
 	internal static void Initialize() {

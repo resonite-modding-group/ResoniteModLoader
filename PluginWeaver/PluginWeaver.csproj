@@ -5,15 +5,13 @@
 		<Version>1.0.0</Version>
 	</PropertyGroup>
 
+	<ItemDefinitionGroup>
+		<Reference Private="False"/>
+	</ItemDefinitionGroup>
+
 	<ItemGroup>
-		<Reference Include="FrooxEngine.Weaver">
-			<HintPath>$(ResonitePath)FrooxEngine.Weaver.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Mono.Cecil">
-			<HintPath>$(ResonitePath)Mono.Cecil.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
+		<Reference Include="FrooxEngine.Weaver" HintPath="$(ResonitePath)FrooxEngine.Weaver.dll" />
+		<Reference Include="Mono.Cecil" HintPath="$(ResonitePath)Mono.Cecil.dll" />
 	</ItemGroup>
 
 </Project>

@@ -6,7 +6,7 @@ on:
       - "*.*.*"
 
 env:
-  HARMONY_VERSION: "2.4.2"
+  HARMONY_VERSION: "2.4.3"
   NUGET_REGISTRY_URL: https://api.nuget.org/v3/index.json
 
 concurrency:
@@ -41,13 +41,13 @@ jobs:
 # /Libraries/ResoniteModLoader.xml
 # /rml_libs/0Harmony.dll
 # /rml_mods/
-      - name: Build installer
+      - name: Build zip install file
         run: |
           mkdir -p installer/{Libraries,rml_libs,rml_mods}
           cp release/{*.dll,*.xml} installer/Libraries/
           unzip -p Lib.Harmony.nupkg lib/net10.0/0Harmony.dll > installer/rml_libs/0Harmony.dll
           cd installer
-          zip ${{ github.workspace }}/ResoniteModLoader.zip *
+          zip -r ${{ github.workspace }}/ResoniteModLoader.zip .
 
       - name: Create Release
         uses: softprops/action-gh-release@v3
@@ -55,6 +55,7 @@ jobs:
           files: |
             ${{ github.workspace }}/release/*.dll
             ${{ github.workspace }}/release/*.xml
+            ${{ github.workspace }}/installer/rml_libs/0Harmony.dll
             ${{ github.workspace }}/ResoniteModLoader.zip
           generate_release_notes: true
 
@@ -64,7 +65,7 @@ jobs:
     needs: [build]
     steps:
       - name: Setup Dotnet
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 10.x
 

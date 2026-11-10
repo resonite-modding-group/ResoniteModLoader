@@ -10,13 +10,13 @@
 		<AssemblyTitle>ResoniteModLoader</AssemblyTitle>
 		<AssemblyProduct>$(AssemblyTitle)</AssemblyProduct>
 		<PackageId>$(AssemblyTitle)</PackageId>
-		<Version>5.0.1</Version>
+		<Version>5.0.3</Version>
 		<FileVersion>$(Version)</FileVersion>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<Authors>resonite-modding-group, DeltaWolf</Authors>
-		<Description>A modloader for Resonite</Description>
+		<Description>A mod loader for Resonite utilizing the built-in plugin system.</Description>
 		<Copyright>Copyright © 2026</Copyright>
-		<PackageTags>mod;mods;modding;modloader;harmony;resonite;game;resonitemodloader;frooxengine</PackageTags>
+		<PackageTags>mod;mods;modding;modloader;harmony;resonite;plugin;game;resonitemodloader;frooxengine</PackageTags>
 		<PackageIcon>icon.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
@@ -41,24 +41,16 @@ public sealed partial class ModLoader {
 		</ItemGroup>
 	</Target>
 
+	<ItemDefinitionGroup>
+		<Reference Private="False"/>
+	</ItemDefinitionGroup>
+
 	<ItemGroup>
-		<PackageReference Include="Lib.Harmony" Version="2.4.2" />
-		<Reference Include="FrooxEngine">
-			<HintPath>$(ResonitePath)FrooxEngine.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Elements.Assets">
-			<HintPath>$(ResonitePath)Elements.Assets.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Elements.Core">
-			<HintPath>$(ResonitePath)Elements.Core.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Elements.Data">
-			<HintPath>$(ResonitePath)Elements.Data.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
+		<PackageReference Include="Lib.Harmony" Version="2.4.3" />
+		<Reference Include="FrooxEngine" HintPath="$(ResonitePath)FrooxEngine.dll" />
+		<Reference Include="Elements.Assets" HintPath="$(ResonitePath)Elements.Assets.dll" />
+		<Reference Include="Elements.Core" HintPath="$(ResonitePath)Elements.Core.dll" />
+		<Reference Include="Elements.Data" HintPath="$(ResonitePath)Elements.Data.dll" />
 	</ItemGroup>
 
 	<ItemGroup>

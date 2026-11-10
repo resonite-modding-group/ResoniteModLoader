@@ -29,6 +29,11 @@
 		"Settings.ModSettings.ShowInternal.Description": "Internal configs aren't generally intended to be changed directly by the user. Can cause unintended behaviour.",
 		"Settings.ModSettings.ShowAll": "Show all mods",
 		"Settings.ModSettings.ShowAll.Description": "Show all entries for mods, including ones with no settings.",
+		"Settings.ModSettings.ModInfo": "Mod Info",
+		"Settings.ModSettings.Author": "Author",
+		"Settings.ModSettings.Version": "Version",
+		"Settings.ModSettings.Assembly": "Assembly",
+		"Settings.ModSettings.ModLink": "Open mod link ({host})",
 
 		"Dummy": "Dummy"
 	}
