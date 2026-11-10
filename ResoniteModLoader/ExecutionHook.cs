@@ -26,6 +26,7 @@ public class ExecutionHook : IPlatformConnector {
 	public void NotifyOfLocalUser(User user) { }
 	public void NotifyOfFile(string file, string name) { }
 	public void NotifyOfScreenshot(World world, string file, ScreenshotType type, DateTime time) { }
+	public void NotifyOfVideo(World world, string file, DateTime time) { }
 
 	public async Task<bool> Initialize(PlatformInterface platformInterface) {
 		Logger.DebugInternal("Initialize() from platformInterface");
