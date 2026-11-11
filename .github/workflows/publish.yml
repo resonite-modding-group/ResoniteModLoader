@@ -6,7 +6,7 @@ on:
       - "*.*.*"
 
 env:
-  HARMONY_VERSION: "2.4.3"
+  HARMONY_VERSION: "3.0.0"
   NUGET_REGISTRY_URL: https://api.nuget.org/v3/index.json
 
 concurrency:
@@ -67,7 +67,7 @@ jobs:
       - name: Setup Dotnet
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: 10.x
+          dotnet-version: 11.x
 
       - name: Get NuGet Artifact
         uses: actions/download-artifact@v8
