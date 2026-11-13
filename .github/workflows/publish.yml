@@ -6,7 +6,7 @@ on:
       - "*.*.*"
 
 env:
-  HARMONY_VERSION: "2.4.3"
+  HARMONY_VERSION: "3.0.0"
   NUGET_REGISTRY_URL: https://api.nuget.org/v3/index.json
 
 concurrency:
@@ -45,7 +45,7 @@ jobs:
         run: |
           mkdir -p installer/{Libraries,rml_libs,rml_mods}
           cp release/{*.dll,*.xml} installer/Libraries/
-          unzip -p Lib.Harmony.nupkg lib/net10.0/0Harmony.dll > installer/rml_libs/0Harmony.dll
+          unzip -p Lib.Harmony.nupkg lib/net11.0/0Harmony.dll > installer/rml_libs/0Harmony.dll
           cd installer
           zip -r ${{ github.workspace }}/ResoniteModLoader.zip .
 
@@ -67,7 +67,7 @@ jobs:
       - name: Setup Dotnet
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: 10.x
+          dotnet-version: 11.x
 
       - name: Get NuGet Artifact
         uses: actions/download-artifact@v8
