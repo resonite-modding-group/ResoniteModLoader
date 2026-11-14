@@ -29,6 +29,7 @@ public abstract class ResoniteModBase {
 	/// The reference is set once the mod is successfully loaded, and is null before that.
 	/// </summary>
 	internal AssemblyFile? ModAssembly { get; set; }
+	internal string? FileName { get; set; }
 
 	internal ModConfiguration? ModConfiguration { get; set; }
 	internal bool AllowSavingConfiguration = true;
