@@ -49,7 +49,7 @@ Many questions about what RML is and how it works are answered on our [frequentl
 
 ## Making a Mod
 
-Add `<PackageReference Include="ResoniteModLoader" Version="5.0.1" />` in your csproj file or reference your local game install.
+Add `<PackageReference Include="ResoniteModLoader" Version="5.0.3" />` in your csproj file or reference your local game install.
 
 Check out the [Mod Creation Guide](https://github.com/resonite-modding-group/ResoniteModLoader/wiki/Creating-Mods) on the wiki.
 

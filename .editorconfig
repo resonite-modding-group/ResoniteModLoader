@@ -31,6 +31,9 @@ csharp_indent_block_contents = true
 csharp_space_around_binary_operators = before_and_after
 csharp_style_prefer_primary_constructors = true:suggestion
 csharp_new_line_before_open_brace = none
+csharp_new_line_before_else = false
+csharp_new_line_before_catch = false
+csharp_new_line_before_finally = false
 
 [*.yml]
 indent_style = space
