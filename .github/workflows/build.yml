@@ -6,7 +6,7 @@ on:
 
 env:
   CI_BUILD: true
-  ARTIFACT_DIR: ResoniteModLoader/bin/Release/net10.0/
+  ARTIFACT_DIR: ResoniteModLoader/bin/Release/net11.0/
   NUGET_DIR: ResoniteModLoader/bin/Release/
 
 jobs:
@@ -99,7 +99,7 @@ jobs:
       - name: Setup Dotnet
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: 10.x
+          dotnet-version: 11.x
 
       - name: Restore NuGet Package Cache
         uses: actions/cache/restore@v6
