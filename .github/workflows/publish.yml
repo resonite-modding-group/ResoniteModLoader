@@ -63,6 +63,9 @@ jobs:
     name: NuGet Release
     runs-on: ubuntu-latest
     needs: [build]
+    permissions:
+      id-token: write
+
     steps:
       - name: Setup Dotnet
         uses: actions/setup-dotnet@v6
@@ -75,6 +78,14 @@ jobs:
           name: NuGet Packages
           path: ${{ github.workspace }}/nupkgs
 
-      - name: Publish package to registry
+      - name: NuGet Login
+        uses: NuGet/login@v1.2.0
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: NuGet push
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
         run: |
-          dotnet nuget push "${{ github.workspace }}/nupkgs/*.nupkg" --api-key "${{ secrets.NUGET_APIKEY }}" --source "${{ env.NUGET_REGISTRY_URL }}"
+          dotnet nuget push "${{ github.workspace }}/nupkgs/*.nupkg" --api-key "$NUGET_API_KEY" --source "${{ env.NUGET_REGISTRY_URL }}"
