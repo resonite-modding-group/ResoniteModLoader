@@ -70,7 +70,7 @@ jobs:
       - name: Setup Dotnet
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: 10.x
+          dotnet-version: 11.x
 
       - name: Get NuGet Artifact
         uses: actions/download-artifact@v8
