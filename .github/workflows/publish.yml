@@ -43,6 +43,7 @@ jobs:
 # /rml_libs/0Harmony.dll
 # /rml_mods/
       - name: Build zip install file
+        continue-on-error: true
         run: |
           mkdir -p installer/{Libraries,rml_libs,rml_mods}
           cp release/{*.dll,*.xml} installer/Libraries/
@@ -53,6 +54,7 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v3
         with:
+          fail_on_unmatched_files: false
           files: |
             ${{ github.workspace }}/release/*.dll
             ${{ github.workspace }}/release/*.xml
