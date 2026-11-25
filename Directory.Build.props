@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>net11.0</TargetFramework>
-		<LangVersion>14.0</LangVersion>
+		<LangVersion>15.0</LangVersion>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<EnableNETAnalyzers>True</EnableNETAnalyzers>
