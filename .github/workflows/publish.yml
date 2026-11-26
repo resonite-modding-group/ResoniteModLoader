@@ -16,6 +16,7 @@ concurrency:
 jobs:
   build:
     uses: ./.github/workflows/build.yml
+    secrets: inherit
 
   release-github:
     name: GitHub Release
@@ -42,16 +43,18 @@ jobs:
 # /rml_libs/0Harmony.dll
 # /rml_mods/
       - name: Build zip install file
+        continue-on-error: true
         run: |
           mkdir -p installer/{Libraries,rml_libs,rml_mods}
           cp release/{*.dll,*.xml} installer/Libraries/
-          unzip -p Lib.Harmony.nupkg lib/net10.0/0Harmony.dll > installer/rml_libs/0Harmony.dll
+          unzip -p Lib.Harmony.nupkg lib/net11.0/0Harmony.dll > installer/rml_libs/0Harmony.dll
           cd installer
           zip -r ${{ github.workspace }}/ResoniteModLoader.zip .
 
       - name: Create Release
         uses: softprops/action-gh-release@v3
         with:
+          fail_on_unmatched_files: false
           files: |
             ${{ github.workspace }}/release/*.dll
             ${{ github.workspace }}/release/*.xml
@@ -63,11 +66,15 @@ jobs:
     name: NuGet Release
     runs-on: ubuntu-latest
     needs: [build]
+    environment: main
+    permissions:
+      id-token: write
+
     steps:
       - name: Setup Dotnet
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: 10.x
+          dotnet-version: 11.x
 
       - name: Get NuGet Artifact
         uses: actions/download-artifact@v8
@@ -75,6 +82,14 @@ jobs:
           name: NuGet Packages
           path: ${{ github.workspace }}/nupkgs
 
-      - name: Publish package to registry
+      - name: NuGet Login
+        uses: NuGet/login@v1.2.0
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: NuGet push
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
         run: |
-          dotnet nuget push "${{ github.workspace }}/nupkgs/*.nupkg" --api-key "${{ secrets.NUGET_APIKEY }}" --source "${{ env.NUGET_REGISTRY_URL }}"
+          dotnet nuget push "${{ github.workspace }}/nupkgs/*.nupkg" --api-key "$NUGET_API_KEY" --source "${{ env.NUGET_REGISTRY_URL }}"
